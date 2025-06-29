@@ -1,141 +1,235 @@
-# Bitte AI Agent NextJS Template
+# Governance Bot API Tools
 
-This template provides a starting point for creating AI agents using the Bitte Protocol with Next.js. It includes pre-configured endpoints and tools that demonstrate common agent functionalities.
+This directory contains API endpoints for the NEAR governance bot functionality. These endpoints provide access to proposal data and event handling capabilities.
 
-## Features
+## Environment Variables
 
-- 🤖 Pre-configured AI agent setup
-- 🛠️ Built-in tools and endpoints:
-  - Blockchain information retrieval
-  - NEAR transaction generation
-  - Reddit frontpage fetching
-  - Twitter share intent generation
-  - Coin flip functionality
-- ⚡ Next.js 14 with App Router
-- 🎨 Tailwind CSS for styling
-- 📝 TypeScript support
-- 🔄 Hot reload development environment
+The following environment variables are required:
 
-## Quick Start
+- `VOTING_CONTRACT`: The NEAR contract address for the voting system
+- `NEAR_RPC_URL`: (Optional) NEAR RPC endpoint (defaults to testnet)
+- `TELEGRAM_BOT_TOKEN`: Telegram bot token for notifications
+- `MONGO_URI`: MongoDB connection string
+- `WEBHOOK_URL`: Webhook URL for Telegram updates
 
-1. Clone this repository
-2. Configure environment variables (create a `.env` or `.env.local` file)
+## API Endpoints
 
-```bash
-# Get your API key from https://key.bitte.ai
-BITTE_API_KEY='your-api-key'
+### 1. Get Proposal Details
+**GET** `/api/tools/get-proposal?proposalId={id}`
 
-ACCOUNT_ID='your-account.near'
+Gets detailed information about a specific proposal.
+
+**Parameters:**
+- `proposalId` (required): The ID of the proposal to get
+
+**Response:**
+```json
+{
+  "proposal": {
+    "id": 123,
+    "title": "Proposal Title",
+    "description": "Proposal description...",
+    "link": "https://example.com",
+    "deadline": "2024-01-01T00:00:00Z",
+    "voting_power": "1000000000000000000000000"
+  }
+}
 ```
 
-3. Install dependencies:
+### 2. Fetch Recent Proposals
+**GET** `/api/tools/fetch-recent-proposals?count={number}`
 
-```bash
-pnpm install
+Fetches the most recent proposals from the voting contract.
+
+**Parameters:**
+- `count` (optional): Number of proposals to fetch (1-50, default: 5)
+
+**Response:**
+```json
+{
+  "proposals": [
+    {
+      "id": 123,
+      "title": "Proposal Title",
+      "description": "Proposal description...",
+      "status": "active"
+    }
+  ],
+  "totalCount": 100,
+  "fromIndex": 95,
+  "limit": 5
+}
 ```
 
-4. Start the development server:
+### 3. Fetch Recent Active Proposals
+**GET** `/api/tools/fetch-recent-active-proposals?count={number}`
 
-```bash
-pnpm run dev
+Fetches the most recent proposals that have been approved for voting.
+
+**Parameters:**
+- `count` (optional): Number of proposals to fetch (1-50, default: 5)
+
+**Response:**
+```json
+{
+  "proposals": [
+    {
+      "id": 123,
+      "title": "Proposal Title",
+      "description": "Proposal description...",
+      "snapshot_block": 12345678,
+      "total_voting_power": "1000000000000000000000000"
+    }
+  ],
+  "totalCount": 50,
+  "fromIndex": 45,
+  "limit": 5
+}
 ```
 
-This will:
+### 4. Handle New Proposal Event
+**POST** `/api/tools/handle-new-proposal`
 
-- Start your Next.js application
-- Launch make-agent
-- Prompt you to sign a message in Bitte wallet to create an API key
-- Launch your agent in the Bitte playground
-- Allow you to freely edit and develop your code in the playground environment
+Processes a new proposal submission event and formats a notification message.
 
-5. Build the project locally:
-
-```bash
-pnpm run build:dev
+**Request Body:**
+```json
+{
+  "proposalId": "123",
+  "eventDetails": {
+    "title": "Proposal Title",
+    "description": "Proposal description...",
+    "link": "https://example.com"
+  }
+}
 ```
 
-This will build the project and not trigger `make-agent deploy`
-
-- using just `build` will trigger make-agent deploy and not work unless you provide your deployed plugin url using the `-u` flag.
-
-## Available Tools
-
-The template includes several pre-built tools:
-
-### 1. Blockchain Information
-
-- Endpoint: `/api/tools/get-blockchains`
-- Returns a randomized list of blockchain networks
-
-### 2. NEAR Transaction Generator
-
-- Endpoint: `/api/tools/create-near-transaction`
-- Creates NEAR transaction payloads for token transfers
-
-### 3. EVM Transaction Generator
-
-- Endpoint: `/api/tools/create-evm-transaction`
-- Creates EVM transaction payloads for native eth transfers
-
-### 4. Twitter Share
-
-- Endpoint: `/api/tools/twitter`
-- Generates Twitter share intent URLs
-
-### 5. Coin Flip
-
-- Endpoint: `/api/tools/coinflip`
-- Simple random coin flip generator
-
-### 6. Get User
-
-- Endpoint: `/api/tools/get-user`
-- Returns the user's account ID
-
-## AI Agent Configuration
-
-The template includes a pre-configured AI agent manifest at `/.well-known/ai-plugin.json`. You can customize the agent's behavior by modifying the configuration in `/api/ai-plugins/route.ts`. This route generates and returns the manifest object.
-
-## Deployment
-
-1. Push your code to GitHub
-2. Deploy to Vercel or your preferred hosting platform
-3. Add your `BITTE_API_KEY` to the environment variables
-4. The `make-agent deploy` command will automatically run during build
-
-## Making your own agent
-
-Whether you want to add a tool to this boilerplate or make your own standalone agent tool, here's you'll need:
-
-1. Make sure [`make-agent`](https://github.com/BitteProtocol/make-agent) is installed in your project:
-
-```bash
-pnpm install --D make-agent
+**Response:**
+```json
+{
+  "success": true,
+  "proposalId": "123",
+  "message": "📥 <b>New Proposal</b>\n\n<b>Proposal Title</b>\n\nProposal description...\n\n🗳️ <a href=\"https://near.vote/proposal/123\">VOTE HERE</a>",
+  "proposal": {
+    "id": 123,
+    "title": "Proposal Title",
+    "description": "Proposal description..."
+  },
+  "eventDetails": {
+    "title": "Proposal Title",
+    "description": "Proposal description..."
+  }
+}
 ```
 
-2. Set up a manifest following the OpenAPI specification that describes your agent and its paths.
-3. Have an api endpoint with the path `GET /api/ai-plugin` that returns your manifest
+### 5. Handle Proposal Approval Event
+**POST** `/api/tools/handle-proposal-approval`
 
-## Setting up the manifest
+Processes a proposal approval event and formats a notification message.
 
-Follow the [OpenAPI Specification](https://swagger.io/specification/#schema-1) to add the following fields in the manifest object:
+**Request Body:**
+```json
+{
+  "proposalId": "123",
+  "eventDetails": {
+    "title": "Proposal Title",
+    "description": "Proposal description...",
+    "link": "https://example.com"
+  },
+  "currentStatus": "Pending"
+}
+```
 
-- `openapi`: The OpenAPI specification version that your manifest is following. Usually this is the latest version.
-- `info`: Object containing information about the agent, namely its 'title', 'description' and 'version'.
-- `servers`: Array of objects containing the urls for the deployed instances of the agent.
-- `paths`: Object containing all your agent's paths and their operations.
-- `"x-mb"`: Our custom field, containing the account id of the owner and an 'assistant' object with the agent's metadata, namely the tools it uses, and additional instructions to guide it.
+**Response:**
+```json
+{
+  "success": true,
+  "proposalId": "123",
+  "message": "🗳️ <b>Proposal Approved for Voting</b>\n\n<b>Proposal Title</b>\n\nProposal description...\n\n📊 <b>Voting Snapshot:</b>\n   Block: 12345678\n   Total Power: 1000000000000000000000000 veNEAR\n\n🗳️ <a href=\"https://near.vote/proposal/123\">VOTE HERE</a>",
+  "proposal": {
+    "id": 123,
+    "title": "Proposal Title",
+    "description": "Proposal description...",
+    "snapshot_block": 12345678
+  },
+  "eventDetails": {
+    "title": "Proposal Title",
+    "description": "Proposal description..."
+  },
+  "newStatus": "Approved"
+}
+```
 
-## Learn More
+### 6. Create NEAR Transaction
+**GET** `/api/tools/create-near-transaction?receiverId={address}&amount={amount}`
 
-- [Bitte Protocol Documentation](https://docs.bitte.ai)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [OpenAPI Specification](https://swagger.io/specification/)
+Creates a NEAR transaction payload for transferring tokens.
 
-## Contributing
+**Parameters:**
+- `receiverId` (required): The NEAR account ID to send tokens to
+- `amount` (required): The amount of NEAR to send
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+**Response:**
+```json
+{
+  "transactionPayload": {
+    "receiverId": "user.near",
+    "actions": [
+      {
+        "type": "Transfer",
+        "params": {
+          "deposit": "1000000000000000000000000"
+        }
+      }
+    ]
+  }
+}
+```
 
-## License
+## Error Handling
 
-MIT License
+All endpoints return appropriate HTTP status codes and error messages:
+
+- `400`: Bad Request - Missing or invalid parameters
+- `404`: Not Found - Proposal doesn't exist
+- `500`: Internal Server Error - Server or RPC errors
+
+Error responses include:
+```json
+{
+  "error": "Error description",
+  "details": "Additional error details"
+}
+```
+
+## Configuration
+
+The API uses centralized configuration from `@/app/config`:
+
+- `NEAR_RPC_URL`: NEAR RPC endpoint (defaults to testnet)
+- `VOTING_CONTRACT`: NEAR voting contract address
+
+## Usage Examples
+
+### Get Proposal Details
+```bash
+curl "http://localhost:3000/api/tools/get-proposal?proposalId=123"
+```
+
+### Handle a new proposal event
+```bash
+curl -X POST "http://localhost:3000/api/tools/handle-new-proposal" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "proposalId": "123",
+    "eventDetails": {
+      "title": "New Feature Proposal",
+      "description": "This proposal suggests adding a new feature..."
+    }
+  }'
+```
+
+### Get recent active proposals
+```bash
+curl "http://localhost:3000/api/tools/fetch-recent-active-proposals?count=10"
+``` 

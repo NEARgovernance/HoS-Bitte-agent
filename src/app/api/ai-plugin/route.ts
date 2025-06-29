@@ -108,11 +108,11 @@ export async function GET() {
                     }
                 }
             },
-            "/api/tools/fetch-recent-proposals": {
+            "/api/tools/get-recent-proposals": {
                 get: {
                     summary: "Fetch recent proposals",
                     description: "Fetches the most recent governance proposals from the voting contract",
-                    operationId: "fetch-recent-proposals",
+                    operationId: "get-recent-proposals",
                     parameters: [
                         {
                             name: "count",
@@ -184,11 +184,11 @@ export async function GET() {
                     }
                 }
             },
-            "/api/tools/fetch-recent-active-proposals": {
+            "/api/tools/get-recent-active-proposals": {
                 get: {
                     summary: "Fetch recent active proposals",
                     description: "Fetches the most recent proposals that have been approved for voting",
-                    operationId: "fetch-recent-active-proposals",
+                    operationId: "get-recent-active-proposals",
                     parameters: [
                         {
                             name: "count",
