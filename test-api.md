@@ -8,9 +8,6 @@ This file contains examples of how to test the governance bot API endpoints.
 ```env
 VOTING_CONTRACT=your.voting.contract.near
 NEAR_RPC_URL=https://rpc.testnet.near.org
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-MONGO_URI=your_mongodb_connection_string
-WEBHOOK_URL=your_webhook_url
 ```
 
 2. Start your Next.js development server:
@@ -98,71 +95,7 @@ curl "http://localhost:3000/api/tools/fetch-recent-active-proposals?count=3"
 }
 ```
 
-### 4. Handle New Proposal Event
-
-```bash
-curl -X POST "http://localhost:3000/api/tools/handle-new-proposal" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "proposalId": "123",
-    "eventDetails": {
-      "title": "New Feature Proposal",
-      "description": "This proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.",
-      "link": "https://forum.near.org/t/new-feature-proposal"
-    }
-  }'
-
-# Expected response:
-{
-  "success": true,
-  "proposalId": "123",
-  "message": "📥 <b>New Proposal</b>\n\n<b>New Feature Proposal</b>\n\nThis proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.\n\n🗳️ <a href=\"https://near.vote/proposal/123\">VOTE HERE</a>\n🔗 <a href=\"https://forum.near.org/t/new-feature-proposal\">More Info</a>",
-  "proposal": null,
-  "eventDetails": {
-    "title": "New Feature Proposal",
-    "description": "This proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.",
-    "link": "https://forum.near.org/t/new-feature-proposal"
-  }
-}
-```
-
-### 5. Handle Proposal Approval Event
-
-```bash
-curl -X POST "http://localhost:3000/api/tools/handle-proposal-approval" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "proposalId": "123",
-    "eventDetails": {
-      "title": "New Feature Proposal",
-      "description": "This proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.",
-      "link": "https://forum.near.org/t/new-feature-proposal"
-    },
-    "currentStatus": "Pending"
-  }'
-
-# Expected response:
-{
-  "success": true,
-  "proposalId": "123",
-  "message": "🗳️ <b>Proposal Approved for Voting</b>\n\n<b>New Feature Proposal</b>\n\nThis proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.\n\n📊 <b>Voting Snapshot:</b>\n   Block: 12345678\n   Total Power: 1000000000000000000000000 veNEAR\n\n🗳️ <a href=\"https://near.vote/proposal/123\">VOTE HERE</a>\n🔗 <a href=\"https://forum.near.org/t/new-feature-proposal\">More Info</a>",
-  "proposal": {
-    "id": 123,
-    "title": "New Feature Proposal",
-    "description": "This proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.",
-    "snapshot_block": 12345678,
-    "total_voting_power": "1000000000000000000000000"
-  },
-  "eventDetails": {
-    "title": "New Feature Proposal",
-    "description": "This proposal suggests adding a new feature to the platform that will improve user experience and increase engagement.",
-    "link": "https://forum.near.org/t/new-feature-proposal"
-  },
-  "newStatus": "Approved"
-}
-```
-
-### 6. Create NEAR Transaction
+### 4. Create NEAR Transaction
 
 ```bash
 # Create a transaction to send 1 NEAR
@@ -202,6 +135,114 @@ curl "http://localhost:3000/api/tools/create-near-transaction?receiverId=user.ne
 }
 ```
 
+### 5. Get Votes for Proposal
+
+```bash
+# Get votes for a specific proposal
+curl "http://localhost:3000/api/tools/get-votes?proposalId=123"
+
+# Expected response:
+{
+  "proposalId": "123",
+  "votes": [
+    {
+      "voter": "user1.near",
+      "vote": "Yes",
+      "voting_power": "1000000000000000000000000",
+      "timestamp": "2024-01-01T00:00:00Z"
+    },
+    {
+      "voter": "user2.near",
+      "vote": "No",
+      "voting_power": "500000000000000000000000",
+      "timestamp": "2024-01-01T01:00:00Z"
+    },
+    {
+      "voter": "user3.near",
+      "vote": "Abstain",
+      "voting_power": "250000000000000000000000",
+      "timestamp": "2024-01-01T02:00:00Z"
+    }
+  ],
+  "decisionSplit": {
+    "total": 3,
+    "yes": 1,
+    "no": 1,
+    "abstain": 1,
+    "yesPercentage": "33.33",
+    "noPercentage": "33.33",
+    "abstainPercentage": "33.33"
+  }
+}
+```
+
+### 6. Get Delegators for Account
+
+```bash
+# Get delegators for a specific account
+curl "http://localhost:3000/api/tools/get-delegators?accountId=delegate.near"
+
+# Expected response:
+{
+  "accountId": "delegate.near",
+  "delegators": [
+    {
+      "delegator": "voter1.near",
+      "delegated_power": "1000000000000000000000000",
+      "delegation_date": "2024-01-01T00:00:00Z"
+    },
+    {
+      "delegator": "voter2.near",
+      "delegated_power": "500000000000000000000000",
+      "delegation_date": "2024-01-01T01:00:00Z"
+    },
+    {
+      "delegator": "voter3.near",
+      "delegated_power": "750000000000000000000000",
+      "delegation_date": "2024-01-01T02:00:00Z"
+    }
+  ],
+  "delegationStats": {
+    "accountId": "delegate.near",
+    "totalDelegators": 3,
+    "totalDelegatedPower": "2250000000000000000000000",
+    "averageDelegation": "750000000000000000000000"
+  }
+}
+```
+
+### 7. Create Proposal Transaction
+
+```bash
+# Create a new proposal transaction
+curl "http://localhost:3000/api/tools/create-proposal?title=Add%20New%20Feature%20to%20Platform&description=This%20proposal%20suggests%20adding%20a%20new%20feature%20that%20will%20improve%20user%20experience%20and%20increase%20platform%20adoption.&link=https://forum.near.org/t/add-new-feature-proposal&votingOptions=Yes,No,Abstain"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "voting.contract.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "create_proposal",
+          "gas": "100000000000000",
+          "deposit": "200000000000000000000000",
+          "args": {
+            "metadata": {
+              "title": "Add New Feature to Platform",
+              "description": "This proposal suggests adding a new feature that will improve user experience and increase platform adoption.",
+              "link": "https://forum.near.org/t/add-new-feature-proposal",
+              "voting_options": ["Yes", "No", "Abstain"]
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Error Testing
 
 ### Test Missing Parameters
@@ -221,6 +262,22 @@ curl "http://localhost:3000/api/tools/create-near-transaction?amount=1"
 # Expected response:
 {
   "error": "receiverId and amount are required parameters"
+}
+
+# Missing proposalId for votes
+curl "http://localhost:3000/api/tools/get-votes"
+
+# Expected response:
+{
+  "error": "proposalId is required"
+}
+
+# Missing accountId for delegators
+curl "http://localhost:3000/api/tools/get-delegators"
+
+# Expected response:
+{
+  "error": "accountId is required"
 }
 ```
 
@@ -257,6 +314,26 @@ curl "http://localhost:3000/api/tools/get-proposal?proposalId=1"
 }
 ```
 
+### Test Missing Required Fields for Proposal Creation
+
+```bash
+# Missing title for proposal creation
+curl "http://localhost:3000/api/tools/create-proposal?description=Test%20description&votingOptions=Yes,No"
+
+# Expected response:
+{
+  "error": "title and description are required"
+}
+
+# Missing voting options for proposal creation
+curl "http://localhost:3000/api/tools/create-proposal?title=Test%20Proposal&description=Test%20description&votingOptions="
+
+# Expected response:
+{
+  "error": "At least one voting option is required"
+}
+```
+
 ## JavaScript/TypeScript Examples
 
 ### Using fetch API
@@ -274,38 +351,10 @@ async function fetchProposal(proposalId) {
   return data.proposal;
 }
 
-// Handle new proposal event
-async function handleNewProposal(proposalId, eventDetails) {
-  const response = await fetch('/api/tools/handle-new-proposal', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      proposalId,
-      eventDetails
-    })
-  });
-  
-  const data = await response.json();
-  
-  if (!response.ok) {
-    throw new Error(data.error);
-  }
-  
-  return data;
-}
-
 // Usage
 try {
   const proposal = await fetchProposal('123');
   console.log('Proposal:', proposal);
-  
-  const result = await handleNewProposal('123', {
-    title: 'Test Proposal',
-    description: 'This is a test proposal'
-  });
-  console.log('Message:', result.message);
 } catch (error) {
   console.error('Error:', error.message);
 }
@@ -327,39 +376,56 @@ async function getRecentProposals(count = 5) {
   }
 }
 
-// Handle proposal approval
-async function handleProposalApproval(proposalId, eventDetails, currentStatus) {
+// Fetch recent active proposals
+async function getRecentActiveProposals(count = 5) {
   try {
-    const response = await axios.post('/api/tools/handle-proposal-approval', {
-      proposalId,
-      eventDetails,
-      currentStatus
-    });
-    return response.data;
+    const response = await axios.get(`/api/tools/fetch-recent-active-proposals?count=${count}`);
+    return response.data.proposals;
   } catch (error) {
-    console.error('Error handling approval:', error.response?.data?.error || error.message);
+    console.error('Error fetching active proposals:', error.response?.data?.error || error.message);
     throw error;
   }
 }
-```
 
-## Integration with Telegram Bot
-
-These API endpoints can be integrated with a Telegram bot to send notifications:
-
-```javascript
-// Example: Send proposal notification to Telegram
-async function sendProposalNotification(proposalId, eventDetails) {
+// Get votes for a proposal
+async function getVotes(proposalId) {
   try {
-    // Get formatted message from API
-    const result = await handleNewProposal(proposalId, eventDetails);
-    
-    // Send to Telegram (you would implement this)
-    await sendTelegramMessage(result.message);
-    
-    console.log('Notification sent successfully');
+    const response = await axios.get(`/api/tools/get-votes?proposalId=${proposalId}`);
+    return response.data;
   } catch (error) {
-    console.error('Failed to send notification:', error);
+    console.error('Error fetching votes:', error.response?.data?.error || error.message);
+    throw error;
   }
 }
-``` 
+
+// Get delegators for an account
+async function getDelegators(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/get-delegators?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching delegators:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Create a proposal transaction
+async function createProposal(title, description, link, votingOptions) {
+  try {
+    const params = new URLSearchParams({
+      title,
+      description,
+      votingOptions: votingOptions.join(',')
+    });
+    
+    if (link) {
+      params.append('link', link);
+    }
+    
+    const response = await axios.get(`/api/tools/create-proposal?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating proposal:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}

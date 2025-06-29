@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 
-// Fetch proposal details from NEAR RPC
-async function fetchProposal(proposalId: string) {
+// Fetch votes for a specific proposal from NEAR RPC
+async function fetchVotes(proposalId: string) {
   if (!VOTING_CONTRACT) {
     throw new Error('VOTING_CONTRACT environment variable not set');
   }
@@ -20,7 +20,7 @@ async function fetchProposal(proposalId: string) {
       request_type: "call_function",
       finality: "final",
       account_id: VOTING_CONTRACT,
-      method_name: "get_proposal",
+      method_name: "get_votes",
       args_base64: Buffer.from(JSON.stringify({ proposal_id: id })).toString("base64"),
     },
   };
@@ -42,15 +42,15 @@ async function fetchProposal(proposalId: string) {
   }
 
   if (!json.result || !json.result.result || json.result.result.length === 0) {
-    throw new Error(`Proposal ${proposalId} does not exist`);
+    throw new Error(`No votes found for proposal ${proposalId}`);
   }
 
   // Convert byte array to string, then parse JSON
   const bytes = json.result.result;
   const raw = Buffer.from(bytes).toString("utf-8");
-  const proposal = JSON.parse(raw);
+  const votes = JSON.parse(raw);
 
-  return proposal;
+  return votes;
 }
 
 export async function GET(request: Request) {
@@ -66,13 +66,33 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
     }
 
-    const proposal = await fetchProposal(proposalId);
+    const votes = await fetchVotes(proposalId);
 
-    return NextResponse.json({ proposal });
-  } catch (error) {
-    console.error('Error fetching proposal:', error);
+    // Calculate decision split statistics
+    const totalVotes = votes.length;
+    const yesVotes = votes.filter((vote: any) => vote.vote === 'Yes').length;
+    const noVotes = votes.filter((vote: any) => vote.vote === 'No').length;
+    const abstainVotes = votes.filter((vote: any) => vote.vote === 'Abstain').length;
+    
+    const decisionSplit = {
+      total: totalVotes,
+      yes: yesVotes,
+      no: noVotes,
+      abstain: abstainVotes,
+      yesPercentage: totalVotes > 0 ? ((yesVotes / totalVotes) * 100).toFixed(2) : '0.00',
+      noPercentage: totalVotes > 0 ? ((noVotes / totalVotes) * 100).toFixed(2) : '0.00',
+      abstainPercentage: totalVotes > 0 ? ((abstainVotes / totalVotes) * 100).toFixed(2) : '0.00'
+    };
+
     return NextResponse.json({ 
-      error: 'Failed to fetch proposal',
+      proposalId,
+      votes,
+      decisionSplit
+    });
+  } catch (error) {
+    console.error('Error fetching votes:', error);
+    return NextResponse.json({ 
+      error: 'Failed to fetch votes',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }

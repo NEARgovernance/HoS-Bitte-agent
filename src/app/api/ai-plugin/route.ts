@@ -261,170 +261,6 @@ export async function GET() {
                     }
                 }
             },
-            "/api/tools/handle-new-proposal": {
-                post: {
-                    summary: "Handle new proposal event",
-                    description: "Processes a new proposal submission event and formats a notification message",
-                    operationId: "handle-new-proposal",
-                    requestBody: {
-                        required: true,
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    required: ["proposalId"],
-                                    properties: {
-                                        proposalId: {
-                                            type: "string",
-                                            description: "The ID of the new proposal"
-                                        },
-                                        eventDetails: {
-                                            type: "object",
-                                            properties: {
-                                                title: { type: "string" },
-                                                description: { type: "string" },
-                                                link: { type: "string" }
-                                            },
-                                            description: "Optional event details"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            success: { type: "boolean" },
-                                            proposalId: { type: "string" },
-                                            message: { type: "string" },
-                                            proposal: { type: "object" },
-                                            eventDetails: { type: "object" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "/api/tools/handle-proposal-approval": {
-                post: {
-                    summary: "Handle proposal approval event",
-                    description: "Processes a proposal approval event and formats a notification message",
-                    operationId: "handle-proposal-approval",
-                    requestBody: {
-                        required: true,
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    required: ["proposalId"],
-                                    properties: {
-                                        proposalId: {
-                                            type: "string",
-                                            description: "The ID of the approved proposal"
-                                        },
-                                        eventDetails: {
-                                            type: "object",
-                                            properties: {
-                                                title: { type: "string" },
-                                                description: { type: "string" },
-                                                link: { type: "string" }
-                                            },
-                                            description: "Optional event details"
-                                        },
-                                        currentStatus: {
-                                            type: "string",
-                                            description: "Current status of the proposal"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            success: { type: "boolean" },
-                                            proposalId: { type: "string" },
-                                            message: { type: "string" },
-                                            proposal: { type: "object" },
-                                            eventDetails: { type: "object" },
-                                            newStatus: { type: "string" },
-                                            alreadyProcessed: { type: "boolean" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "/api/tools/create-near-transaction": {
                 get: {
                     operationId: "createNearTransaction",
@@ -520,6 +356,311 @@ export async function GET() {
                                                 type: "string",
                                                 description: "Error message"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-votes": {
+                get: {
+                    summary: "Get votes for a proposal",
+                    description: "Fetches all votes for a specific proposal to track decision split",
+                    operationId: "get-votes",
+                    parameters: [
+                        {
+                            name: "proposalId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The ID of the proposal to get votes for"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            proposalId: { type: "string" },
+                                            votes: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        voter: { type: "string" },
+                                                        vote: { type: "string" },
+                                                        voting_power: { type: "string" },
+                                                        timestamp: { type: "string" }
+                                                    }
+                                                }
+                                            },
+                                            decisionSplit: {
+                                                type: "object",
+                                                properties: {
+                                                    total: { type: "number" },
+                                                    yes: { type: "number" },
+                                                    no: { type: "number" },
+                                                    abstain: { type: "number" },
+                                                    yesPercentage: { type: "string" },
+                                                    noPercentage: { type: "string" },
+                                                    abstainPercentage: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" },
+                                            details: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-delegators": {
+                get: {
+                    summary: "Get delegators for an account",
+                    description: "Fetches all delegators for a specific account to provide voter-delegate context",
+                    operationId: "get-delegators",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The NEAR account ID to get delegators for"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            accountId: { type: "string" },
+                                            delegators: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        delegator: { type: "string" },
+                                                        delegated_power: { type: "string" },
+                                                        delegation_date: { type: "string" }
+                                                    }
+                                                }
+                                            },
+                                            delegationStats: {
+                                                type: "object",
+                                                properties: {
+                                                    accountId: { type: "string" },
+                                                    totalDelegators: { type: "number" },
+                                                    totalDelegatedPower: { type: "string" },
+                                                    averageDelegation: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" },
+                                            details: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/create-proposal": {
+                get: {
+                    summary: "Create a proposal transaction",
+                    description: "Creates a NEAR transaction payload for creating a new governance proposal",
+                    operationId: "create-proposal",
+                    parameters: [
+                        {
+                            name: "title",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The title of the proposal"
+                        },
+                        {
+                            name: "description",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The description of the proposal"
+                        },
+                        {
+                            name: "link",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "Optional link to additional information"
+                        },
+                        {
+                            name: "votingOptions",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "Comma-separated list of voting options (e.g., 'Yes,No,Abstain')"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: {
+                                                        type: "string",
+                                                        description: "The voting contract account ID"
+                                                    },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: {
+                                                                    type: "string",
+                                                                    description: "The type of action (FunctionCall)"
+                                                                },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: {
+                                                                            type: "string",
+                                                                            description: "The contract method to call (create_proposal)"
+                                                                        },
+                                                                        gas: {
+                                                                            type: "string",
+                                                                            description: "Gas limit in gas units"
+                                                                        },
+                                                                        deposit: {
+                                                                            type: "string",
+                                                                            description: "Deposit amount in yoctoNEAR"
+                                                                        },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                metadata: {
+                                                                                    type: "object",
+                                                                                    properties: {
+                                                                                        title: { type: "string" },
+                                                                                        description: { type: "string" },
+                                                                                        link: { type: "string" },
+                                                                                        voting_options: {
+                                                                                            type: "array",
+                                                                                            items: { type: "string" }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" },
+                                            details: { type: "string" }
                                         }
                                     }
                                 }

@@ -11,6 +11,9 @@ importers:
       '@bitte-ai/agent-sdk':
         specifier: ^0.1.11
         version: 0.1.11(typescript@5.8.3)
+      near-api-js:
+        specifier: ^6.1.0
+        version: 6.1.0(@near-js/accounts@1.4.1)(@near-js/crypto@1.4.2)(@near-js/keystores-browser@0.2.2)(@near-js/keystores-node@0.1.2)(@near-js/keystores@0.2.2)(@near-js/providers@1.0.3)(@near-js/signers@0.2.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@1.1.0)
       next:
         specifier: ^15.3.4
         version: 15.3.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2117,6 +2120,20 @@ packages:
 
   near-api-js@5.1.1:
     resolution: {integrity: sha512-h23BGSKxNv8ph+zU6snicstsVK1/CTXsQz4LuGGwoRE24Hj424nSe4+/1tzoiC285Ljf60kPAqRCmsfv9etF2g==}
+
+  near-api-js@6.1.0:
+    resolution: {integrity: sha512-U6BLjC6RH4l56mhbEhEnsQCjsgkwO2WkCwKFxnA6nQj1nd91VPp5g+GbAHApOYFXxwX3YTflhkZ5JBSHQkOvzg==}
+    peerDependencies:
+      '@near-js/accounts': ^2.0.1
+      '@near-js/crypto': ^2.0.1
+      '@near-js/keystores': ^2.0.1
+      '@near-js/keystores-browser': ^2.0.1
+      '@near-js/keystores-node': ^2.0.1
+      '@near-js/providers': ^2.0.1
+      '@near-js/signers': ^2.0.1
+      '@near-js/transactions': ^2.0.1
+      '@near-js/types': ^2.0.1
+      '@near-js/utils': ^2.0.1
 
   near-ca@0.10.0:
     resolution: {integrity: sha512-aRSqMC9bpAXJ1CmbgCU+tbR0kvzS4xya7oxib7T2RWfc4lkGdm5oOhIw7JY4xIL8HspoT/L8hcNJnbZnQknPRg==}
@@ -5571,6 +5588,27 @@ snapshots:
       '@near-js/types': 0.3.1
       '@near-js/utils': 1.1.0
       '@near-js/wallet-account': 1.3.3
+      '@noble/curves': 1.8.1
+      borsh: 1.0.0
+      depd: 2.0.0
+      http-errors: 1.7.2
+      near-abi: 0.2.0
+      node-fetch: 2.6.7
+    transitivePeerDependencies:
+      - encoding
+
+  near-api-js@6.1.0(@near-js/accounts@1.4.1)(@near-js/crypto@1.4.2)(@near-js/keystores-browser@0.2.2)(@near-js/keystores-node@0.1.2)(@near-js/keystores@0.2.2)(@near-js/providers@1.0.3)(@near-js/signers@0.2.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@1.1.0):
+    dependencies:
+      '@near-js/accounts': 1.4.1
+      '@near-js/crypto': 1.4.2
+      '@near-js/keystores': 0.2.2
+      '@near-js/keystores-browser': 0.2.2
+      '@near-js/keystores-node': 0.1.2
+      '@near-js/providers': 1.0.3
+      '@near-js/signers': 0.2.2
+      '@near-js/transactions': 1.3.3
+      '@near-js/types': 0.3.1
+      '@near-js/utils': 1.1.0
       '@noble/curves': 1.8.1
       borsh: 1.0.0
       depd: 2.0.0

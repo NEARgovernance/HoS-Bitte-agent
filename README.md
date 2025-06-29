@@ -8,9 +8,6 @@ The following environment variables are required:
 
 - `VOTING_CONTRACT`: The NEAR contract address for the voting system
 - `NEAR_RPC_URL`: (Optional) NEAR RPC endpoint (defaults to testnet)
-- `TELEGRAM_BOT_TOKEN`: Telegram bot token for notifications
-- `MONGO_URI`: MongoDB connection string
-- `WEBHOOK_URL`: Webhook URL for Telegram updates
 
 ## API Endpoints
 
@@ -87,80 +84,7 @@ Fetches the most recent proposals that have been approved for voting.
 }
 ```
 
-### 4. Handle New Proposal Event
-**POST** `/api/tools/handle-new-proposal`
-
-Processes a new proposal submission event and formats a notification message.
-
-**Request Body:**
-```json
-{
-  "proposalId": "123",
-  "eventDetails": {
-    "title": "Proposal Title",
-    "description": "Proposal description...",
-    "link": "https://example.com"
-  }
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "proposalId": "123",
-  "message": "📥 <b>New Proposal</b>\n\n<b>Proposal Title</b>\n\nProposal description...\n\n🗳️ <a href=\"https://near.vote/proposal/123\">VOTE HERE</a>",
-  "proposal": {
-    "id": 123,
-    "title": "Proposal Title",
-    "description": "Proposal description..."
-  },
-  "eventDetails": {
-    "title": "Proposal Title",
-    "description": "Proposal description..."
-  }
-}
-```
-
-### 5. Handle Proposal Approval Event
-**POST** `/api/tools/handle-proposal-approval`
-
-Processes a proposal approval event and formats a notification message.
-
-**Request Body:**
-```json
-{
-  "proposalId": "123",
-  "eventDetails": {
-    "title": "Proposal Title",
-    "description": "Proposal description...",
-    "link": "https://example.com"
-  },
-  "currentStatus": "Pending"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "proposalId": "123",
-  "message": "🗳️ <b>Proposal Approved for Voting</b>\n\n<b>Proposal Title</b>\n\nProposal description...\n\n📊 <b>Voting Snapshot:</b>\n   Block: 12345678\n   Total Power: 1000000000000000000000000 veNEAR\n\n🗳️ <a href=\"https://near.vote/proposal/123\">VOTE HERE</a>",
-  "proposal": {
-    "id": 123,
-    "title": "Proposal Title",
-    "description": "Proposal description...",
-    "snapshot_block": 12345678
-  },
-  "eventDetails": {
-    "title": "Proposal Title",
-    "description": "Proposal description..."
-  },
-  "newStatus": "Approved"
-}
-```
-
-### 6. Create NEAR Transaction
+### 4. Create NEAR Transaction
 **GET** `/api/tools/create-near-transaction?receiverId={address}&amount={amount}`
 
 Creates a NEAR transaction payload for transferring tokens.
@@ -179,6 +103,115 @@ Creates a NEAR transaction payload for transferring tokens.
         "type": "Transfer",
         "params": {
           "deposit": "1000000000000000000000000"
+        }
+      }
+    ]
+  }
+}
+```
+
+### 5. Get Votes for Proposal
+**GET** `/api/tools/get-votes?proposalId={id}`
+
+Gets all votes for a specific proposal to track decision split.
+
+**Parameters:**
+- `proposalId` (required): The ID of the proposal to get votes for
+
+**Response:**
+```json
+{
+  "proposalId": "123",
+  "votes": [
+    {
+      "voter": "user1.near",
+      "vote": "Yes",
+      "voting_power": "1000000000000000000000000",
+      "timestamp": "2024-01-01T00:00:00Z"
+    },
+    {
+      "voter": "user2.near",
+      "vote": "No",
+      "voting_power": "500000000000000000000000",
+      "timestamp": "2024-01-01T01:00:00Z"
+    }
+  ],
+  "decisionSplit": {
+    "total": 2,
+    "yes": 1,
+    "no": 1,
+    "abstain": 0,
+    "yesPercentage": "50.00",
+    "noPercentage": "50.00",
+    "abstainPercentage": "0.00"
+  }
+}
+```
+
+### 6. Get Delegators for Account
+**GET** `/api/tools/get-delegators?accountId={account}`
+
+Gets all delegators for a specific account to provide voter-delegate context.
+
+**Parameters:**
+- `accountId` (required): The NEAR account ID to get delegators for
+
+**Response:**
+```json
+{
+  "accountId": "delegate.near",
+  "delegators": [
+    {
+      "delegator": "voter1.near",
+      "delegated_power": "1000000000000000000000000",
+      "delegation_date": "2024-01-01T00:00:00Z"
+    },
+    {
+      "delegator": "voter2.near",
+      "delegated_power": "500000000000000000000000",
+      "delegation_date": "2024-01-01T01:00:00Z"
+    }
+  ],
+  "delegationStats": {
+    "accountId": "delegate.near",
+    "totalDelegators": 2,
+    "totalDelegatedPower": "1500000000000000000000000",
+    "averageDelegation": "750000000000000000000000"
+  }
+}
+```
+
+### 7. Create Proposal Transaction
+**GET** `/api/tools/create-proposal?title={title}&description={description}&link={link}&votingOptions={options}`
+
+Creates a NEAR transaction payload for creating a new governance proposal.
+
+**Parameters:**
+- `title` (required): The title of the proposal
+- `description` (required): The description of the proposal
+- `link` (optional): Link to additional information
+- `votingOptions` (required): Comma-separated list of voting options (e.g., "Yes,No,Abstain")
+
+**Response:**
+```json
+{
+  "transactionPayload": {
+    "receiverId": "voting.contract.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "create_proposal",
+          "gas": "100000000000000",
+          "deposit": "200000000000000000000000",
+          "args": {
+            "metadata": {
+              "title": "Proposal Title",
+              "description": "Detailed description of the proposal...",
+              "link": "https://forum.near.org/t/proposal-discussion",
+              "voting_options": ["Yes", "No", "Abstain"]
+            }
+          }
         }
       }
     ]
@@ -214,19 +247,6 @@ The API uses centralized configuration from `@/app/config`:
 ### Get Proposal Details
 ```bash
 curl "http://localhost:3000/api/tools/get-proposal?proposalId=123"
-```
-
-### Handle a new proposal event
-```bash
-curl -X POST "http://localhost:3000/api/tools/handle-new-proposal" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "proposalId": "123",
-    "eventDetails": {
-      "title": "New Feature Proposal",
-      "description": "This proposal suggests adding a new feature..."
-    }
-  }'
 ```
 
 ### Get recent active proposals
