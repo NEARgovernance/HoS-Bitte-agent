@@ -61,7 +61,7 @@ export async function GET(request: Request) {
           type: "FunctionCall",
           params: {
             methodName: "create_proposal",
-            gas: tgasToGas("100"), // 100 Tgas
+            gas: tgasToGas("300"), // 100 Tgas
             deposit: parseNearAmount("0.2"), // 0.2 NEAR
             args: {
               metadata: {
