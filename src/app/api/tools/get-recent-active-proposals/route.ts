@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 
+// Define active proposal type
+interface ActiveProposal {
+  id: number;
+  title: string;
+  description: string;
+  snapshot_block?: number;
+  total_voting_power?: string;
+  link?: string;
+  deadline?: string;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -94,15 +105,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const proposals = JSON.parse(
+    const proposals: ActiveProposal[] = JSON.parse(
       Buffer.from(proposalsJson.result.result).toString("utf-8")
     );
 
     // Reverse to show most recent first and add proper IDs
     const proposalsWithIds = proposals
-      .map((proposal: any, index: number) => ({
-        id: fromIndex + index,
+      .map((proposal: ActiveProposal, index: number) => ({
         ...proposal,
+        id: fromIndex + index,
       }))
       .reverse();
 

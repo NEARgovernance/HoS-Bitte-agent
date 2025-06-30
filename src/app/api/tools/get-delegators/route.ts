@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 
+// Define delegator type
+interface Delegator {
+  delegator: string;
+  delegated_power: string;
+  delegation_date?: string;
+}
+
 // Fetch delegators for a specific account from NEAR RPC
-async function fetchDelegators(accountId: string) {
+async function fetchDelegators(accountId: string): Promise<Delegator[]> {
   if (!VOTING_CONTRACT) {
     throw new Error('VOTING_CONTRACT environment variable not set');
   }
@@ -47,7 +54,7 @@ async function fetchDelegators(accountId: string) {
   // Convert byte array to string, then parse JSON
   const bytes = json.result.result;
   const raw = Buffer.from(bytes).toString("utf-8");
-  const delegators = JSON.parse(raw);
+  const delegators: Delegator[] = JSON.parse(raw);
 
   return delegators;
 }
@@ -69,7 +76,7 @@ export async function GET(request: Request) {
 
     // Calculate delegation statistics
     const totalDelegators = delegators.length;
-    const totalDelegatedPower = delegators.reduce((sum: number, delegator: any) => {
+    const totalDelegatedPower = delegators.reduce((sum: number, delegator: Delegator) => {
       return sum + (parseFloat(delegator.delegated_power || '0') || 0);
     }, 0);
 

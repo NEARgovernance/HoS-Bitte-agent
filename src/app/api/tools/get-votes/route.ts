@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 
+// Define vote type
+interface Vote {
+  voter: string;
+  vote: 'Yes' | 'No' | 'Abstain';
+  voting_power: string;
+  timestamp?: string;
+}
+
 // Fetch votes for a specific proposal from NEAR RPC
-async function fetchVotes(proposalId: string) {
+async function fetchVotes(proposalId: string): Promise<Vote[]> {
   if (!VOTING_CONTRACT) {
     throw new Error('VOTING_CONTRACT environment variable not set');
   }
@@ -48,7 +56,7 @@ async function fetchVotes(proposalId: string) {
   // Convert byte array to string, then parse JSON
   const bytes = json.result.result;
   const raw = Buffer.from(bytes).toString("utf-8");
-  const votes = JSON.parse(raw);
+  const votes: Vote[] = JSON.parse(raw);
 
   return votes;
 }
@@ -70,9 +78,9 @@ export async function GET(request: Request) {
 
     // Calculate decision split statistics
     const totalVotes = votes.length;
-    const yesVotes = votes.filter((vote: any) => vote.vote === 'Yes').length;
-    const noVotes = votes.filter((vote: any) => vote.vote === 'No').length;
-    const abstainVotes = votes.filter((vote: any) => vote.vote === 'Abstain').length;
+    const yesVotes = votes.filter((vote: Vote) => vote.vote === 'Yes').length;
+    const noVotes = votes.filter((vote: Vote) => vote.vote === 'No').length;
+    const abstainVotes = votes.filter((vote: Vote) => vote.vote === 'Abstain').length;
     
     const decisionSplit = {
       total: totalVotes,

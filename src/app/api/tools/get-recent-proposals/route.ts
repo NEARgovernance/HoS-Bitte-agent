@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 
+// Define proposal type
+interface Proposal {
+  id: number;
+  title: string;
+  description: string;
+  status?: string;
+  link?: string;
+  deadline?: string;
+  voting_power?: string;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -92,15 +103,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const proposals = JSON.parse(
+    const proposals: Proposal[] = JSON.parse(
       Buffer.from(proposalsJson.result.result).toString("utf-8")
     );
 
     // Reverse to show most recent first and add IDs
     const proposalsWithIds = proposals
-      .map((proposal: any, index: number) => ({
-        id: fromIndex + index,
+      .map((proposal: Proposal, index: number) => ({
         ...proposal,
+        id: fromIndex + index,
       }))
       .reverse();
 
