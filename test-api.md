@@ -243,6 +243,105 @@ curl "http://localhost:3000/api/tools/create-proposal?title=Add%20New%20Feature%
 }
 ```
 
+### 8. Vote on Proposal
+
+```bash
+# Vote "Yes" on proposal 123
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=voter.near&snapshotBlockHeight=12345678"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "voting.contract.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "vote",
+          "gas": "300000000000000",
+          "deposit": "0",
+          "args": {
+            "proposal_id": 123,
+            "vote": "Yes",
+            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+            "v_account": "voter.near"
+          }
+        }
+      }
+    ]
+  },
+  "vote": {
+    "proposalId": 123,
+    "vote": "Yes",
+    "accountId": "voter.near",
+    "snapshotBlockHeight": 12345678,
+    "merkleProof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+    "vAccount": "voter.near"
+  }
+}
+
+# Vote "No" on proposal 456
+curl "http://localhost:3000/api/tools/vote?proposalId=456&vote=No&accountId=delegate.near&snapshotBlockHeight=12345679"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "voting.contract.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "vote",
+          "gas": "300000000000000",
+          "deposit": "0",
+          "args": {
+            "proposal_id": 456,
+            "vote": "No",
+            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+            "v_account": "delegate.near"
+          }
+        }
+      }
+    ]
+  },
+  "vote": {
+    "proposalId": 456,
+    "vote": "No",
+    "votingPower": "500000000000000000000000"
+  }
+}
+
+# Vote "Abstain" on proposal 789
+curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId=user.near&snapshotBlockHeight=12345680"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "voting.contract.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "vote",
+          "gas": "300000000000000",
+          "deposit": "0",
+          "args": {
+            "proposal_id": 789,
+            "vote": "Abstain",
+            "voting_power": "2500000000000000000000000"
+          }
+        }
+      }
+    ]
+  },
+  "vote": {
+    "proposalId": 789,
+    "vote": "Abstain",
+    "votingPower": "2500000000000000000000000"
+  }
+}
+```
+
 ## Error Testing
 
 ### Test Missing Parameters
@@ -279,6 +378,38 @@ curl "http://localhost:3000/api/tools/get-delegators"
 {
   "error": "accountId is required"
 }
+
+# Missing proposalId for vote
+curl "http://localhost:3000/api/tools/vote?vote=Yes&accountId=voter.near&snapshotBlockHeight=12345678"
+
+# Expected response:
+{
+  "error": "proposalId is required"
+}
+
+# Missing vote choice
+curl "http://localhost:3000/api/tools/vote?proposalId=123&accountId=voter.near&snapshotBlockHeight=12345678"
+
+# Expected response:
+{
+  "error": "vote is required (Yes, No, or Abstain)"
+}
+
+# Missing accountId
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&snapshotBlockHeight=12345678"
+
+# Expected response:
+{
+  "error": "accountId is required"
+}
+
+# Missing snapshot block height
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=voter.near"
+
+# Expected response:
+{
+  "error": "snapshotBlockHeight is required"
+}
 ```
 
 ### Test Invalid Parameters
@@ -299,6 +430,30 @@ curl "http://localhost:3000/api/tools/fetch-recent-proposals?count=100"
 # Expected response:
 {
   "error": "count must be a number between 1 and 50"
+}
+
+# Invalid vote choice
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Maybe&votingPower=1"
+
+# Expected response:
+{
+  "error": "vote must be one of: Yes, No, Abstain"
+}
+
+# Invalid proposal ID for vote
+curl "http://localhost:3000/api/tools/vote?proposalId=-1&vote=Yes&accountId=voter.near&snapshotBlockHeight=12345678"
+
+# Expected response:
+{
+  "error": "proposalId must be a valid positive number"
+}
+
+# Invalid snapshot block height
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=voter.near&snapshotBlockHeight=0"
+
+# Expected response:
+{
+  "error": "snapshotBlockHeight must be a valid positive number"
 }
 ```
 
@@ -426,6 +581,24 @@ async function createProposal(title, description, link, votingOptions) {
     return response.data;
   } catch (error) {
     console.error('Error creating proposal:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Vote on a proposal
+async function voteOnProposal(proposalId, vote, accountId, snapshotBlockHeight) {
+  try {
+    const params = new URLSearchParams({
+      proposalId: proposalId.toString(),
+      vote,
+      accountId,
+      snapshotBlockHeight: snapshotBlockHeight.toString()
+    });
+    
+    const response = await axios.get(`/api/tools/vote?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error voting on proposal:', error.response?.data?.error || error.message);
     throw error;
   }
 }

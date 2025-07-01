@@ -47,12 +47,12 @@ export async function GET(request: Request) {
     );
 
     if (!totalRes.ok) {
-      throw new Error(`Failed to get proposal count: ${totalRes.status}`);
+      return NextResponse.json({ error: `Failed to get proposal count: ${totalRes.status}` }, { status: 500 });
     }
 
     const totalJson = await totalRes.json();
     if (totalJson.error) {
-      throw new Error(`RPC error getting count: ${totalJson.error.message}`);
+      return NextResponse.json({ error: `RPC error getting count: ${totalJson.error.message}` }, { status: 500 });
     }
 
     const totalCount = JSON.parse(
@@ -93,14 +93,12 @@ export async function GET(request: Request) {
     );
 
     if (!proposalsRes.ok) {
-      throw new Error(`Failed to get proposals: ${proposalsRes.status}`);
+      return NextResponse.json({ error: `Failed to get proposals: ${proposalsRes.status}` }, { status: 500 });
     }
 
     const proposalsJson = await proposalsRes.json();
     if (proposalsJson.error) {
-      throw new Error(
-        `RPC error getting proposals: ${proposalsJson.error.message}`
-      );
+      return NextResponse.json({ error: `RPC error getting proposals: ${proposalsJson.error.message}` }, { status: 500 });
     }
 
     const proposals: Proposal[] = JSON.parse(

@@ -9,13 +9,13 @@ interface Delegator {
 }
 
 // Fetch delegators for a specific account from NEAR RPC
-async function fetchDelegators(accountId: string): Promise<Delegator[]> {
+async function fetchDelegators(accountId: string): Promise<Delegator[] | NextResponse> {
   if (!VOTING_CONTRACT) {
-    throw new Error('VOTING_CONTRACT environment variable not set');
+    return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
   }
 
   if (!accountId || accountId.trim() === '') {
-    throw new Error('Invalid account ID');
+    return NextResponse.json({ error: 'Invalid account ID' }, { status: 400 });
   }
   
   const payload = {
@@ -38,17 +38,17 @@ async function fetchDelegators(accountId: string): Promise<Delegator[]> {
   });
 
   if (!res.ok) {
-    throw new Error(`RPC request failed: ${res.status}`);
+    return NextResponse.json({ error: `RPC request failed: ${res.status}` }, { status: 500 });
   }
 
   const json = await res.json();
 
   if (json.error) {
-    throw new Error(`RPC error: ${json.error.message}`);
+    return NextResponse.json({ error: `RPC error: ${json.error.message}` }, { status: 500 });
   }
 
   if (!json.result || !json.result.result || json.result.result.length === 0) {
-    throw new Error(`No delegators found for account ${accountId}`);
+    return NextResponse.json({ error: `No delegators found for account ${accountId}` }, { status: 404 });
   }
 
   // Convert byte array to string, then parse JSON
@@ -72,7 +72,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
     }
 
-    const delegators = await fetchDelegators(accountId);
+    const result = await fetchDelegators(accountId);
+    
+    // Check if result is an error response
+    if (result instanceof NextResponse) {
+      return result;
+    }
+
+    const delegators = result;
 
     // Calculate delegation statistics
     const totalDelegators = delegators.length;

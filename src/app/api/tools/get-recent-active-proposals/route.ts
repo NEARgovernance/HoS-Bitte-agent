@@ -47,14 +47,12 @@ export async function GET(request: Request) {
     );
 
     if (!totalRes.ok) {
-      throw new Error(`Failed to get active proposal count: ${totalRes.status}`);
+      return NextResponse.json({ error: `Failed to get active proposal count: ${totalRes.status}` }, { status: 500 });
     }
 
     const totalJson = await totalRes.json();
     if (totalJson.error) {
-      throw new Error(
-        `RPC error getting active proposal count: ${totalJson.error.message}`
-      );
+      return NextResponse.json({ error: `RPC error getting active proposal count: ${totalJson.error.message}` }, { status: 500 });
     }
 
     const totalCount = JSON.parse(
@@ -95,14 +93,12 @@ export async function GET(request: Request) {
     );
 
     if (!proposalsRes.ok) {
-      throw new Error(`Failed to get active proposals: ${proposalsRes.status}`);
+      return NextResponse.json({ error: `Failed to get active proposals: ${proposalsRes.status}` }, { status: 500 });
     }
 
     const proposalsJson = await proposalsRes.json();
     if (proposalsJson.error) {
-      throw new Error(
-        `RPC error getting active proposals: ${proposalsJson.error.message}`
-      );
+      return NextResponse.json({ error: `RPC error getting active proposals: ${proposalsJson.error.message}` }, { status: 500 });
     }
 
     const proposals: ActiveProposal[] = JSON.parse(

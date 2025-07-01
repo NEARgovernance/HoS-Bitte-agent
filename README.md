@@ -219,6 +219,50 @@ Creates a NEAR transaction payload for creating a new governance proposal.
 }
 ```
 
+### 8. Vote on Proposal
+**GET** `/api/tools/vote?proposalId={id}&vote={choice}&accountId={account}&snapshotBlockHeight={block}`
+
+Creates a NEAR transaction payload for voting on a governance proposal. The endpoint automatically fetches the required merkle proof and vAccount from the veNEAR contract.
+
+**Parameters:**
+- `proposalId` (required): The ID of the proposal to vote on
+- `vote` (required): The vote choice ("Yes", "No", or "Abstain")
+- `accountId` (required): The NEAR account ID of the voter
+- `snapshotBlockHeight` (required): The snapshot block height for the proposal
+
+**Response:**
+```json
+{
+  "transactionPayload": {
+    "receiverId": "voting.contract.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "vote",
+          "gas": "300000000000000",
+          "deposit": "0",
+          "args": {
+            "proposal_id": 123,
+            "vote": "Yes",
+            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+            "v_account": "voter.near"
+          }
+        }
+      }
+    ]
+  },
+  "vote": {
+    "proposalId": 123,
+    "vote": "Yes",
+    "accountId": "voter.near",
+    "snapshotBlockHeight": 12345678,
+    "merkleProof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+    "vAccount": "voter.near"
+  }
+}
+```
+
 ## Error Handling
 
 All endpoints return appropriate HTTP status codes and error messages:

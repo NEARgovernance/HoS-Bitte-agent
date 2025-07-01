@@ -1,15 +1,28 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 
+// Define proposal type
+interface Proposal {
+  id: number;
+  title: string;
+  description: string;
+  link?: string;
+  deadline?: string;
+  voting_power?: string;
+  status?: string;
+  snapshot_block?: number;
+  total_voting_power?: string;
+}
+
 // Fetch proposal details from NEAR RPC
-async function fetchProposal(proposalId: string) {
+async function fetchProposal(proposalId: string): Promise<Proposal | NextResponse> {
   if (!VOTING_CONTRACT) {
-    throw new Error('VOTING_CONTRACT environment variable not set');
+    return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
   }
 
   const id = parseInt(proposalId);
   if (isNaN(id)) {
-    throw new Error('Invalid proposal ID');
+    return NextResponse.json({ error: 'Invalid proposal ID' }, { status: 400 });
   }
   
   const payload = {
@@ -30,25 +43,25 @@ async function fetchProposal(proposalId: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-
+  
   if (!res.ok) {
-    throw new Error(`RPC request failed: ${res.status}`);
+    return NextResponse.json({ error: `RPC request failed: ${res.status}` }, { status: 500 });
   }
 
   const json = await res.json();
 
   if (json.error) {
-    throw new Error(`RPC error: ${json.error.message}`);
+    return NextResponse.json({ error: `RPC error: ${json.error.message}` }, { status: 500 });
   }
 
   if (!json.result || !json.result.result || json.result.result.length === 0) {
-    throw new Error(`Proposal ${proposalId} does not exist`);
+    return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 404 });
   }
 
   // Convert byte array to string, then parse JSON
   const bytes = json.result.result;
   const raw = Buffer.from(bytes).toString("utf-8");
-  const proposal = JSON.parse(raw);
+  const proposal: Proposal = JSON.parse(raw);
 
   return proposal;
 }
@@ -66,7 +79,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
     }
 
-    const proposal = await fetchProposal(proposalId);
+    const result = await fetchProposal(proposalId);
+    
+    // Check if result is an error response
+    if (result instanceof NextResponse) {
+      return result;
+    }
+
+    const proposal = result;
 
     return NextResponse.json({ proposal });
   } catch (error) {

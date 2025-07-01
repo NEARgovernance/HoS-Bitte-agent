@@ -3,10 +3,10 @@ import { VOTING_CONTRACT } from '@/app/config';
 import { parseNearAmount } from "near-api-js/lib/utils/format";
 
 // Convert Tgas to gas units (1 Tgas = 10^12 gas)
-function tgasToGas(tgas: string): string {
+function tgasToGas(tgas: string): string | NextResponse {
   const tgasValue = parseFloat(tgas);
   if (isNaN(tgasValue)) {
-    throw new Error('Invalid Tgas amount');
+    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 400 });
   }
   return (tgasValue * 1e12).toString();
 }
@@ -53,6 +53,12 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
+    // Convert Tgas to gas units
+    const gasResult = tgasToGas("300");
+    if (gasResult instanceof NextResponse) {
+      return gasResult;
+    }
+
     // Create the proposal transaction payload
     const transactionPayload = {
       receiverId: VOTING_CONTRACT,
@@ -61,7 +67,7 @@ export async function GET(request: Request) {
           type: "FunctionCall",
           params: {
             methodName: "create_proposal",
-            gas: tgasToGas("300"), // 100 Tgas
+            gas: gasResult, // 300 Tgas
             deposit: parseNearAmount("0.2"), // 0.2 NEAR
             args: {
               metadata: {

@@ -669,6 +669,150 @@ export async function GET() {
                     }
                 }
             },
+            "/api/tools/vote": {
+                get: {
+                    summary: "Create a vote transaction",
+                    description: "Creates a NEAR transaction payload for voting on a governance proposal",
+                    operationId: "vote",
+                    parameters: [
+                        {
+                            name: "proposalId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The ID of the proposal to vote on"
+                        },
+                        {
+                            name: "vote",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                enum: ["Yes", "No", "Abstain"]
+                            },
+                            description: "The vote choice (Yes, No, or Abstain)"
+                        },
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The NEAR account ID of the voter"
+                        },
+                        {
+                            name: "snapshotBlockHeight",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The snapshot block height for the proposal"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: {
+                                                        type: "string",
+                                                        description: "The voting contract account ID"
+                                                    },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: {
+                                                                    type: "string",
+                                                                    description: "The type of action (FunctionCall)"
+                                                                },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: {
+                                                                            type: "string",
+                                                                            description: "The contract method to call (vote)"
+                                                                        },
+                                                                        gas: {
+                                                                            type: "string",
+                                                                            description: "Gas limit in gas units"
+                                                                        },
+                                                                        deposit: {
+                                                                            type: "string",
+                                                                            description: "Deposit amount in yoctoNEAR"
+                                                                        },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                proposal_id: { type: "number" },
+                                                                                vote: { type: "string" },
+                                                                                merkle_proof: { type: "string" },
+                                                                                v_account: { type: "string" }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            vote: {
+                                                type: "object",
+                                                properties: {
+                                                    proposalId: { type: "number" },
+                                                    vote: { type: "string" },
+                                                    accountId: { type: "string" },
+                                                    snapshotBlockHeight: { type: "number" },
+                                                    merkleProof: { type: "string" },
+                                                    vAccount: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
         },
     };
 
