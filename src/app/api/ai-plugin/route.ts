@@ -746,7 +746,7 @@ export async function GET() {
                                                                         },
                                                                         gas: {
                                                                             type: "string",
-                                                                            description: "Gas limit in gas units"
+                                                                            description: "Gas limit in gas units (200 Tgas = 200000000000000)"
                                                                         },
                                                                         deposit: {
                                                                             type: "string",
