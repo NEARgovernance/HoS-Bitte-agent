@@ -342,6 +342,75 @@ curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId
 }
 ```
 
+### 9. Get veNEAR Balance
+
+```bash
+# Get veNEAR balance for a specific account
+curl "http://localhost:3000/api/tools/get-venear-balance?accountId=user.near"
+
+# Expected response:
+{
+  "accountId": "user.near",
+  "balance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "lockedBalance": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "unlockTime": "2024-12-31T23:59:59Z",
+  "votingPower": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "delegationPower": {
+    "raw": "200000000000000000000000",
+    "nears": "0.200000"
+  },
+  "totalPower": {
+    "raw": "1200000000000000000000000",
+    "nears": "1.200000"
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "description": "Voting power and delegation information for House of Stake governance"
+  }
+}
+
+# Get veNEAR balance for a delegate account
+curl "http://localhost:3000/api/tools/get-venear-balance?accountId=delegate.near"
+
+# Expected response:
+{
+  "accountId": "delegate.near",
+  "balance": {
+    "raw": "5000000000000000000000000",
+    "nears": "5.000000"
+  },
+  "lockedBalance": null,
+  "unlockTime": null,
+  "votingPower": {
+    "raw": "5000000000000000000000000",
+    "nears": "5.000000"
+  },
+  "delegationPower": {
+    "raw": "3000000000000000000000000",
+    "nears": "3.000000"
+  },
+  "totalPower": {
+    "raw": "8000000000000000000000000",
+    "nears": "8.000000"
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "description": "Voting power and delegation information for House of Stake governance"
+  }
+}
+```
+
 ## Error Testing
 
 ### Test Missing Parameters
@@ -410,6 +479,14 @@ curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=vot
 {
   "error": "snapshotBlockHeight is required"
 }
+
+# Missing accountId for veNEAR balance
+curl "http://localhost:3000/api/tools/get-venear-balance"
+
+# Expected response:
+{
+  "error": "accountId is required"
+}
 ```
 
 ### Test Invalid Parameters
@@ -454,6 +531,14 @@ curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=vot
 # Expected response:
 {
   "error": "snapshotBlockHeight must be a valid positive number"
+}
+
+# Invalid account ID for veNEAR balance
+curl "http://localhost:3000/api/tools/get-venear-balance?accountId="
+
+# Expected response:
+{
+  "error": "Invalid account ID"
 }
 ```
 
@@ -599,6 +684,17 @@ async function voteOnProposal(proposalId, vote, accountId, snapshotBlockHeight) 
     return response.data;
   } catch (error) {
     console.error('Error voting on proposal:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Get veNEAR balance for an account
+async function getVeNEARBalance(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/get-venear-balance?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching veNEAR balance:', error.response?.data?.error || error.message);
     throw error;
   }
 }

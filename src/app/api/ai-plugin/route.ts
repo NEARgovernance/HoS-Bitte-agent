@@ -813,6 +813,130 @@ export async function GET() {
                     }
                 }
             },
+            "/api/tools/get-venear-balance": {
+                get: {
+                    summary: "Get veNEAR balance for account",
+                    description: "Fetches veNEAR balance and voting power information for a specific account",
+                    operationId: "get-venear-balance",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The NEAR account ID to get veNEAR balance for"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            accountId: { type: "string" },
+                                            balance: {
+                                                type: "object",
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            lockedBalance: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            unlockTime: { 
+                                                type: "string",
+                                                nullable: true
+                                            },
+                                            votingPower: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            delegationPower: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            totalPower: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            metadata: {
+                                                type: "object",
+                                                properties: {
+                                                    contract: { type: "string" },
+                                                    token: { type: "string" },
+                                                    description: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            description: "Account not found",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" },
+                                            details: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
         },
     };
 

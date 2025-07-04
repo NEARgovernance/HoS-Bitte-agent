@@ -263,6 +263,47 @@ Creates a NEAR transaction payload for voting on a governance proposal. The endp
 }
 ```
 
+### 9. Get veNEAR Balance
+**GET** `/api/tools/get-venear-balance?accountId={account}`
+
+Gets veNEAR balance and voting power information for a specific account.
+
+**Parameters:**
+- `accountId` (required): The NEAR account ID to get veNEAR balance for
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "balance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "lockedBalance": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "unlockTime": "2024-12-31T23:59:59Z",
+  "votingPower": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "delegationPower": {
+    "raw": "200000000000000000000000",
+    "nears": "0.200000"
+  },
+  "totalPower": {
+    "raw": "1200000000000000000000000",
+    "nears": "1.200000"
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "description": "Voting power and delegation information for House of Stake governance"
+  }
+}
+```
+
 ## Error Handling
 
 All endpoints return appropriate HTTP status codes and error messages:

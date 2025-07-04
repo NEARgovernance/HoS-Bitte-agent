@@ -8,7 +8,7 @@ const PLUGIN_URL = DEPLOYMENT_URL || `${process.env.NEXT_PUBLIC_HOST || 'localho
 // NEAR configuration
 const NEAR_RPC_URL = process.env.NEAR_RPC_URL || "https://rpc.testnet.near.org";
 const VOTING_CONTRACT = process.env.VOTING_CONTRACT;
-const VENEAR_CONTRACT_ID = process.env.VENEAR_CONTRACT_ID || "venear.near";
+const VENEAR_CONTRACT_ID = process.env.VENEAR_CONTRACT_ID || "v.hos03.testnet";
 
 if (!PLUGIN_URL) {
   console.error(
