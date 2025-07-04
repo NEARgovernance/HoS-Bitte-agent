@@ -937,6 +937,147 @@ export async function GET() {
                     }
                 }
             },
+            "/api/tools/search-proposal": {
+                get: {
+                    summary: "Search proposals by query and filters",
+                    description: "Searches through all governance proposals using text queries, status filters, and sorting options",
+                    operationId: "search-proposal",
+                    parameters: [
+                        {
+                            name: "q",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "Search query to find proposals by title, description, or ID"
+                        },
+                        {
+                            name: "status",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "Filter by proposal status (e.g., 'active', 'completed', 'pending')"
+                        },
+                        {
+                            name: "sort",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string",
+                                enum: ["relevance", "newest", "oldest", "id"]
+                            },
+                            description: "Sort order for results (default: relevance)"
+                        },
+                        {
+                            name: "limit",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "integer",
+                                minimum: 1,
+                                maximum: 100
+                            },
+                            description: "Maximum number of proposals to return (1-100, default: 50)"
+                        },
+                        {
+                            name: "searchType",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string",
+                                enum: ["semantic", "traditional", "hybrid"]
+                            },
+                            description: "Search type: semantic (AI-powered), traditional (keyword-based), or hybrid (combines both, default)"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful search response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            proposals: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        id: { type: "number" },
+                                                        title: { type: "string" },
+                                                        description: { type: "string" },
+                                                        status: { type: "string" }
+                                                    }
+                                                }
+                                            },
+                                            search: {
+                                                type: "object",
+                                                properties: {
+                                                    query: { type: "string", nullable: true },
+                                                    status: { type: "string", nullable: true },
+                                                    sortBy: { type: "string" },
+                                                    searchType: { type: "string" },
+                                                    totalFound: { type: "number" },
+                                                    limit: { type: "number" }
+                                                }
+                                            },
+                                            statistics: {
+                                                type: "object",
+                                                properties: {
+                                                    totalFound: { type: "number" },
+                                                    limit: { type: "number" },
+                                                    statusCounts: {
+                                                        type: "object",
+                                                        additionalProperties: { type: "number" }
+                                                    },
+
+                                                }
+                                            },
+                                            metadata: {
+                                                type: "object",
+                                                properties: {
+                                                    contract: { type: "string" },
+                                                    description: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" },
+                                            details: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
         },
     };
 

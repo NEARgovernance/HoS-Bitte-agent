@@ -411,6 +411,278 @@ curl "http://localhost:3000/api/tools/get-venear-balance?accountId=delegate.near
 }
 ```
 
+### 10. Search Proposals
+
+```bash
+# Basic search by query
+curl "http://localhost:3000/api/tools/search-proposal?q=treasury"
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 123,
+      "title": "Treasury Funding Proposal",
+      "description": "This proposal requests funding for community initiatives...",
+      "status": "active"
+    },
+    {
+      "id": 124,
+      "title": "Budget Allocation for Q4",
+      "description": "Proposal to allocate treasury funds for Q4 projects...",
+      "status": "pending"
+    }
+  ],
+  "search": {
+    "query": "treasury",
+    "status": null,
+    "sortBy": "relevance",
+    "totalFound": 2,
+    "limit": 50
+  },
+  "statistics": {
+    "totalFound": 2,
+    "limit": 50,
+    "statusCounts": {
+      "active": 1,
+      "pending": 1
+    },
+
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+
+# Search with status filter
+curl "http://localhost:3000/api/tools/search-proposal?q=security&status=active&sort=newest"
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 125,
+      "title": "Security Upgrade Implementation",
+      "description": "Proposal to implement critical security upgrades...",
+      "status": "active"
+    }
+  ],
+  "search": {
+    "query": "security",
+    "status": "active",
+    "sortBy": "newest",
+    "totalFound": 1,
+    "limit": 50
+  },
+  "statistics": {
+    "totalFound": 1,
+    "limit": 50,
+    "statusCounts": {
+      "active": 1
+    },
+
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+
+# Search by proposal ID
+curl "http://localhost:3000/api/tools/search-proposal?q=123"
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 123,
+      "title": "Treasury Funding Proposal",
+      "description": "This proposal requests funding for community initiatives...",
+      "status": "active"
+    }
+  ],
+  "search": {
+    "query": "123",
+    "status": null,
+    "sortBy": "relevance",
+    "totalFound": 1,
+    "limit": 50
+  },
+  "statistics": {
+    "totalFound": 1,
+    "limit": 50,
+    "statusCounts": {
+      "active": 1
+    },
+    "uniqueTags": ["treasury", "funding", "community"]
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+
+# Search with multiple terms and sorting
+curl "http://localhost:3000/api/tools/search-proposal?q=governance policy&sort=oldest&limit=10"
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 100,
+      "title": "Governance Policy Update",
+      "description": "Proposal to update governance policies and procedures...",
+      "status": "completed",
+      "tags": ["governance", "policy", "update"]
+    },
+    {
+      "id": 127,
+      "title": "New Governance Framework",
+      "description": "Proposal for implementing new governance framework...",
+      "status": "active",
+      "tags": ["governance", "framework", "policy"]
+    }
+  ],
+  "search": {
+    "query": "governance policy",
+    "status": null,
+    "sortBy": "oldest",
+    "totalFound": 2,
+    "limit": 10
+  },
+  "statistics": {
+    "totalFound": 2,
+    "limit": 10,
+    "statusCounts": {
+      "completed": 1,
+      "active": 1
+    },
+    "uniqueTags": ["governance", "policy", "framework", "update"]
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+
+# Search without query (get all proposals)
+curl "http://localhost:3000/api/tools/search-proposal?sort=newest&limit=5"
+
+# Semantic search only
+curl "http://localhost:3000/api/tools/search-proposal?q=treasury funding&searchType=semantic&limit=10"
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 123,
+      "title": "Treasury Funding Proposal",
+      "description": "This proposal requests funding for community initiatives...",
+      "status": "active"
+    },
+    {
+      "id": 124,
+      "title": "Budget Allocation for Q4",
+      "description": "Proposal to allocate treasury funds for Q4 projects...",
+      "status": "pending"
+    }
+  ],
+  "search": {
+    "query": "treasury funding",
+    "status": null,
+    "sortBy": "relevance",
+    "searchType": "semantic",
+    "totalFound": 2,
+    "limit": 10
+  },
+  "statistics": {
+    "totalFound": 2,
+    "limit": 10,
+    "statusCounts": {
+      "active": 1,
+      "pending": 1
+    }
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+
+# Traditional keyword search only
+curl "http://localhost:3000/api/tools/search-proposal?q=security upgrade&searchType=traditional&limit=10"
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 125,
+      "title": "Security Upgrade Implementation",
+      "description": "Proposal to implement critical security upgrades...",
+      "status": "active"
+    }
+  ],
+  "search": {
+    "query": "security upgrade",
+    "status": null,
+    "sortBy": "relevance",
+    "searchType": "traditional",
+    "totalFound": 1,
+    "limit": 10
+  },
+  "statistics": {
+    "totalFound": 1,
+    "limit": 10,
+    "statusCounts": {
+      "active": 1
+    }
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+
+# Expected response:
+{
+  "proposals": [
+    {
+      "id": 130,
+      "title": "Latest Proposal",
+      "description": "Most recent governance proposal...",
+      "status": "active"
+    },
+    {
+      "id": 129,
+      "title": "Second Latest Proposal",
+      "description": "Second most recent proposal...",
+      "status": "active"
+    }
+  ],
+  "search": {
+    "query": null,
+    "status": null,
+    "sortBy": "newest",
+    "totalFound": 5,
+    "limit": 5
+  },
+  "statistics": {
+    "totalFound": 5,
+    "limit": 5,
+    "statusCounts": {
+      "active": 5
+    },
+    "uniqueTags": ["governance", "funding", "technical"]
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+```
+
+
 ## Error Testing
 
 ### Test Missing Parameters
