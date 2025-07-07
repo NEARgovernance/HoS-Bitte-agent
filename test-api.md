@@ -247,7 +247,7 @@ curl "http://localhost:3000/api/tools/create-proposal?title=Add%20New%20Feature%
 
 ```bash
 # Vote "Yes" on proposal 123
-curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=voter.near&snapshotBlockHeight=12345678"
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=voter.near"
 
 # Expected response:
 {
@@ -260,28 +260,27 @@ curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=vot
           "methodName": "vote",
           "gas": "300000000000000",
           "deposit": "0",
-          "args": {
-            "proposal_id": 123,
-            "vote": "Yes",
-            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
-            "v_account": "voter.near"
-          }
+                      "args": {
+              "proposal_id": 123,
+              "vote": 0,
+              "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+              "v_account": "voter.near"
+            }
         }
       }
     ]
   },
   "vote": {
     "proposalId": 123,
-    "vote": "Yes",
+    "vote": 0,
     "accountId": "voter.near",
-    "snapshotBlockHeight": 12345678,
     "merkleProof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
     "vAccount": "voter.near"
   }
 }
 
 # Vote "No" on proposal 456
-curl "http://localhost:3000/api/tools/vote?proposalId=456&vote=No&accountId=delegate.near&snapshotBlockHeight=12345679"
+curl "http://localhost:3000/api/tools/vote?proposalId=456&vote=No&accountId=delegate.near"
 
 # Expected response:
 {
@@ -294,25 +293,25 @@ curl "http://localhost:3000/api/tools/vote?proposalId=456&vote=No&accountId=dele
           "methodName": "vote",
           "gas": "300000000000000",
           "deposit": "0",
-          "args": {
-            "proposal_id": 456,
-            "vote": "No",
-            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
-            "v_account": "delegate.near"
-          }
+                      "args": {
+              "proposal_id": 456,
+              "vote": 1,
+              "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+              "v_account": "delegate.near"
+            }
         }
       }
     ]
   },
   "vote": {
     "proposalId": 456,
-    "vote": "No",
+    "vote": 1,
     "votingPower": "500000000000000000000000"
   }
 }
 
 # Vote "Abstain" on proposal 789
-curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId=user.near&snapshotBlockHeight=12345680"
+curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId=user.near"
 
 # Expected response:
 {
@@ -325,18 +324,18 @@ curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId
           "methodName": "vote",
           "gas": "300000000000000",
           "deposit": "0",
-          "args": {
-            "proposal_id": 789,
-            "vote": "Abstain",
-            "voting_power": "2500000000000000000000000"
-          }
+                      "args": {
+              "proposal_id": 789,
+              "vote": 2,
+              "voting_power": "2500000000000000000000000"
+            }
         }
       }
     ]
   },
   "vote": {
     "proposalId": 789,
-    "vote": "Abstain",
+    "vote": 2,
     "votingPower": "2500000000000000000000000"
   }
 }
@@ -411,7 +410,423 @@ curl "http://localhost:3000/api/tools/get-venear-balance?accountId=delegate.near
 }
 ```
 
-### 10. Search Proposals
+### 10. Get Account Balance
+
+```bash
+# Get NEAR account balance for a specific account
+curl "http://localhost:3000/api/tools/get-account-balance?accountId=user.near"
+
+# Expected response:
+{
+  "accountId": "user.near",
+  "balance": {
+    "raw": "5000000000000000000000000",
+    "nears": "5.000000"
+  },
+  "metadata": {
+    "description": "NEAR account balance information",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+
+# Get account balance for account with no balance
+curl "http://localhost:3000/api/tools/get-account-balance?accountId=newuser.near"
+
+# Expected response:
+{
+  "accountId": "newuser.near",
+  "balance": {
+    "raw": "0",
+    "nears": "0.000000"
+  },
+  "metadata": {
+    "description": "NEAR account balance information",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+
+# Test error handling - missing accountId
+curl "http://localhost:3000/api/tools/get-account-balance"
+
+# Expected response:
+{
+  "error": "accountId is required"
+}
+
+# Test error handling - invalid accountId
+curl "http://localhost:3000/api/tools/get-account-balance?accountId="
+
+# Expected response:
+{
+  "error": "Invalid account ID"
+}
+```
+
+### 11. Get veNEAR Balance
+
+```bash
+# Get comprehensive veNEAR balance for a specific account
+curl "http://localhost:3000/api/tools/get-venear-balance?accountId=user.near"
+
+# Expected response:
+{
+  "accountId": "user.near",
+  "tokenBalance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000",
+    "method": "ft_balance_of",
+    "description": "Standard fungible token balance"
+  },
+  "detailedBalance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000",
+    "lockedBalance": {
+      "raw": "500000000000000000000000",
+      "nears": "0.500000"
+    },
+    "votingPower": {
+      "raw": "1000000000000000000000000",
+      "nears": "1.000000"
+    },
+    "delegationPower": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "totalPower": {
+      "raw": "1000000000000000000000000",
+      "nears": "1.000000"
+    },
+    "unlockTime": "2025-01-01T00:00:00Z",
+    "method": "get_accounts",
+    "description": "Detailed balance with voting and delegation power"
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "hasDetailedData": true,
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+
+# Get veNEAR balance for account with no detailed data
+curl "http://localhost:3000/api/tools/get-venear-balance?accountId=newuser.near"
+
+# Expected response:
+{
+  "accountId": "newuser.near",
+  "tokenBalance": {
+    "raw": "0",
+    "nears": "0.000000",
+    "method": "ft_balance_of",
+    "description": "Standard fungible token balance"
+  },
+  "detailedBalance": null,
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "hasDetailedData": false,
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+### 12. Get Account State
+
+```bash
+# Get comprehensive account state for a user
+curl "http://localhost:3000/api/tools/lookup-state?accountId=user.near"
+
+# Expected response:
+{
+  "accountId": "user.near",
+  "balance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "lockedBalance": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "unlockTime": "2024-12-31T23:59:59Z",
+  "votingPower": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "delegationPower": {
+    "raw": "200000000000000000000000",
+    "nears": "0.200000"
+  },
+  "totalPower": {
+    "raw": "1200000000000000000000000",
+    "nears": "1.200000"
+  },
+  "delegation": {
+    "isDelegator": false,
+    "isDelegate": true,
+    "delegatedTo": null,
+    "delegatorsCount": 5,
+    "totalDelegatedPower": {
+      "raw": "3000000000000000000000000",
+      "nears": "3.000000"
+    }
+  },
+  "voting": {
+    "lastVote": {
+      "proposal_id": 123,
+      "vote": "Yes",
+      "timestamp": "2024-01-01T00:00:00Z"
+    },
+    "statistics": {
+      "total_votes": 15,
+      "yes_votes": 10,
+      "no_votes": 3,
+      "abstain_votes": 2,
+      "participation_rate": 75.5
+    }
+  },
+  "lockup": {
+    "isLockupDeployed": true,
+    "lockupId": "lockup.user.near",
+    "lockupBalance": {
+      "raw": "2000000000000000000000000",
+      "nears": "2.000000"
+    },
+    "lockupInfoReady": true,
+    "lockedAmount": {
+      "raw": "1500000000000000000000000",
+      "nears": "1.500000"
+    },
+    "lockupLiquidOwnersBalance": {
+      "raw": "500000000000000000000000",
+      "nears": "0.500000"
+    },
+    "lockupLiquidAmount": {
+      "raw": "300000000000000000000000",
+      "nears": "0.300000"
+    },
+    "withdrawableAmount": {
+      "raw": "200000000000000000000000",
+      "nears": "0.200000"
+    },
+    "lockupPendingAmount": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupUnlockTimestampNs": "1704067200000000000",
+    "untilUnlock": "2024-12-31T23:59:59Z",
+    "registrationCost": {
+      "raw": "100000000000000000000000",
+      "nears": "0.100000"
+    },
+    "lockupCost": {
+      "raw": "50000000000000000000000",
+      "nears": "0.050000"
+    },
+    "stakingPool": "staking.pool.near",
+    "knownDepositedBalance": {
+      "raw": "1800000000000000000000000",
+      "nears": "1.800000"
+    }
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "votingContract": "voting.contract.near",
+    "token": "veNEAR",
+    "description": "Comprehensive account state for House of Stake governance",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+
+# Get account state for a delegator
+curl "http://localhost:3000/api/tools/lookup-state?accountId=delegator.near"
+
+# Expected response:
+{
+  "accountId": "delegator.near",
+  "balance": {
+    "raw": "2000000000000000000000000",
+    "nears": "2.000000"
+  },
+  "lockedBalance": null,
+  "unlockTime": null,
+  "votingPower": {
+    "raw": "2000000000000000000000000",
+    "nears": "2.000000"
+  },
+  "delegationPower": null,
+  "totalPower": {
+    "raw": "2000000000000000000000000",
+    "nears": "2.000000"
+  },
+  "delegation": {
+    "isDelegator": true,
+    "isDelegate": false,
+    "delegatedTo": "delegate.near",
+    "delegatorsCount": 0,
+    "totalDelegatedPower": {
+      "raw": "0",
+      "nears": "0.000000"
+    }
+  },
+  "voting": {
+    "lastVote": null,
+    "statistics": {
+      "total_votes": 0,
+      "yes_votes": 0,
+      "no_votes": 0,
+      "abstain_votes": 0,
+      "participation_rate": 0
+    }
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "votingContract": "voting.contract.near",
+    "token": "veNEAR",
+    "description": "Comprehensive account state for House of Stake governance",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+
+# Get account state for a new user
+curl "http://localhost:3000/api/tools/lookup-state?accountId=newuser.near"
+
+# Expected response:
+{
+  "accountId": "newuser.near",
+  "balance": {
+    "raw": "0",
+    "nears": "0.000000"
+  },
+  "lockedBalance": null,
+  "unlockTime": null,
+  "votingPower": null,
+  "delegationPower": null,
+  "totalPower": null,
+  "delegation": {
+    "isDelegator": false,
+    "isDelegate": false,
+    "delegatedTo": null,
+    "delegatorsCount": 0,
+    "totalDelegatedPower": {
+      "raw": "0",
+      "nears": "0.000000"
+    }
+  },
+  "voting": {
+    "lastVote": null,
+    "statistics": {
+      "total_votes": 0,
+      "yes_votes": 0,
+      "no_votes": 0,
+      "abstain_votes": 0,
+      "participation_rate": 0
+    }
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "votingContract": "voting.contract.near",
+    "token": "veNEAR",
+    "description": "Comprehensive account state for House of Stake governance",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+
+# Get account state for account without lockup
+curl "http://localhost:3000/api/tools/lookup-state?accountId=nolockup.near"
+
+# Expected response:
+{
+  "accountId": "nolockup.near",
+  "balance": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "lockedBalance": null,
+  "unlockTime": null,
+  "votingPower": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "delegationPower": null,
+  "totalPower": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "delegation": {
+    "isDelegator": false,
+    "isDelegate": false,
+    "delegatedTo": null,
+    "delegatorsCount": 0,
+    "totalDelegatedPower": {
+      "raw": "0",
+      "nears": "0.000000"
+    }
+  },
+  "voting": {
+    "lastVote": null,
+    "statistics": {
+      "total_votes": 0,
+      "yes_votes": 0,
+      "no_votes": 0,
+      "abstain_votes": 0,
+      "participation_rate": 0
+    }
+  },
+  "lockup": {
+    "isLockupDeployed": false,
+    "lockupId": null,
+    "lockupBalance": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupInfoReady": false,
+    "lockedAmount": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupLiquidOwnersBalance": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupLiquidAmount": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "withdrawableAmount": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupPendingAmount": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupUnlockTimestampNs": null,
+    "untilUnlock": null,
+    "registrationCost": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupCost": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "stakingPool": null,
+    "knownDepositedBalance": {
+      "raw": "0",
+      "nears": "0.000000"
+    }
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "votingContract": "voting.contract.near",
+    "token": "veNEAR",
+    "description": "Comprehensive account state for House of Stake governance",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+### 11. Search Proposals
 
 ```bash
 # Basic search by query
@@ -717,11 +1132,11 @@ curl "http://localhost:3000/api/tools/fetch-recent-proposals?count=100"
 }
 
 # Invalid vote choice
-curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Maybe&votingPower=1"
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Maybe&accountId=voter.near"
 
 # Expected response:
 {
-  "error": "vote must be one of: Yes, No, Abstain"
+  "error": "Invalid vote option \"Maybe\". Available options: 0: \"Yes\", 1: \"No\", 2: \"Abstain\""
 }
 
 # Invalid proposal ID for vote
@@ -878,13 +1293,12 @@ async function createProposal(title, description, link, votingOptions) {
 }
 
 // Vote on a proposal
-async function voteOnProposal(proposalId, vote, accountId, snapshotBlockHeight) {
+async function voteOnProposal(proposalId, vote, accountId) {
   try {
     const params = new URLSearchParams({
       proposalId: proposalId.toString(),
       vote,
-      accountId,
-      snapshotBlockHeight: snapshotBlockHeight.toString()
+      accountId
     });
     
     const response = await axios.get(`/api/tools/vote?${params.toString()}`);

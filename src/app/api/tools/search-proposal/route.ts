@@ -185,7 +185,6 @@ async function semanticSearch(proposals: Proposal[], query: string, limit: numbe
     
     // Perform similarity search
     const results = await vectorStore.similaritySearch(query, limit);
-    console.log(results.length);
     // Convert back to proposals and maintain order
     const proposalMap = new Map(proposals.map(p => [p.id, p]));
     const semanticResults: Proposal[] = [];
