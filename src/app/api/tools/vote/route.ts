@@ -98,7 +98,6 @@ async function getProof(accountId: string, snapshotBlockHeight?: number): Promis
       method_name: "get_proof",
       args_base64: Buffer.from(JSON.stringify({ 
         account_id: accountId,
-        block_height: snapshotBlockHeight
       })).toString("base64"),
       blockId: snapshotBlockHeight,
     },
