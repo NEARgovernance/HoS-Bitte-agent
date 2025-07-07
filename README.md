@@ -305,16 +305,14 @@ Gets veNEAR balance and voting power information for a specific account.
 ```
 
 ### 10. Search Proposals
-**GET** `/api/tools/search-proposal?q={query}&status={status}&sort={sort}&limit={limit}&searchType={type}`
+**GET** `/api/tools/search-proposal?q={query}&limit={limit}`
 
-Searches through all governance proposals using AI-powered semantic search, traditional keyword search, or hybrid search. Supports full-text search across titles, descriptions, and status with vector embeddings for better relevance.
+Searches through all governance proposals using AI-powered semantic search with vector embeddings for better relevance. Supports full-text search across titles and descriptions.
 
 **Parameters:**
 - `q` (optional): Search query to find proposals by title, description, or ID
-- `status` (optional): Filter by proposal status (e.g., "active", "completed", "pending")
-- `sort` (optional): Sort order for results - "relevance", "newest", "oldest", "id" (default: relevance)
 - `limit` (optional): Maximum number of proposals to return (1-100, default: 50)
-- `searchType` (optional): Search type - "semantic" (AI-powered), "traditional" (keyword-based), "hybrid" (combines both, default)
+
 
 **Response:**
 ```json
@@ -324,25 +322,22 @@ Searches through all governance proposals using AI-powered semantic search, trad
       "id": 123,
       "title": "Treasury Funding Proposal",
       "description": "This proposal requests funding for community initiatives...",
-      "status": "active"
+      "status": "active",
+      "link": "https://example.com/proposal/123",
+      "creation_time_ns": "1704067200000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704153600000000000",
+      "voting_duration_ns": "604800000000000"
     }
   ],
   "search": {
     "query": "treasury funding",
-    "status": "active",
-    "sortBy": "relevance",
-    "searchType": "hybrid",
     "totalFound": 5,
     "limit": 50
   },
   "statistics": {
     "totalFound": 5,
-    "limit": 50,
-    "statusCounts": {
-      "active": 3,
-      "completed": 2
-    },
-
+    "limit": 50
   },
   "metadata": {
     "contract": "voting.contract.near",
@@ -353,14 +348,7 @@ Searches through all governance proposals using AI-powered semantic search, trad
 
 ### Search proposals
 ```bash
-# Hybrid search (default)
-curl "http://localhost:3000/api/tools/search-proposal?q=treasury&status=active&sort=relevance&limit=20"
-
-# Semantic search only
-curl "http://localhost:3000/api/tools/search-proposal?q=treasury&searchType=semantic&limit=20"
-
-# Traditional keyword search only
-curl "http://localhost:3000/api/tools/search-proposal?q=treasury&searchType=traditional&limit=20"
+curl "http://localhost:3000/api/tools/search-proposal?q=treasury&limit=20"
 ```
 
 ## JavaScript Usage Examples
@@ -368,37 +356,18 @@ curl "http://localhost:3000/api/tools/search-proposal?q=treasury&searchType=trad
 ### Search Proposals
 
 ```javascript
-// Basic search by query (hybrid by default)
+// Search proposals using semantic search
 const searchProposals = async (query) => {
   const response = await fetch(`/api/tools/search-proposal?q=${encodeURIComponent(query)}`);
   const data = await response.json();
   console.log('Search results:', data.proposals);
   console.log('Total found:', data.search.totalFound);
-  console.log('Search type used:', data.search.searchType);
-};
-
-// Semantic search only
-const semanticSearch = async (query) => {
-  const response = await fetch(`/api/tools/search-proposal?q=${encodeURIComponent(query)}&searchType=semantic`);
-  const data = await response.json();
-  console.log('Semantic search results:', data.proposals);
-  console.log('Search type:', data.search.searchType);
-};
-
-// Traditional keyword search only
-const traditionalSearch = async (query) => {
-  const response = await fetch(`/api/tools/search-proposal?q=${encodeURIComponent(query)}&searchType=traditional`);
-  const data = await response.json();
-  console.log('Traditional search results:', data.proposals);
-  console.log('Search type:', data.search.searchType);
 };
 
 // Advanced search with filters
 const advancedSearch = async () => {
   const params = new URLSearchParams({
     q: 'treasury funding',
-    status: 'active',
-    sort: 'relevance',
     limit: '25'
   });
   
@@ -406,14 +375,11 @@ const advancedSearch = async () => {
   const data = await response.json();
   
   console.log(`Found ${data.search.totalFound} proposals`);
-  console.log('Status breakdown:', data.statistics.statusCounts);
-
   
   // Process search results
   data.proposals.forEach(proposal => {
     console.log(`Proposal ${proposal.id}: ${proposal.title}`);
     console.log(`Status: ${proposal.status}`);
-
   });
 };
 
@@ -465,7 +431,7 @@ The API uses centralized configuration from `@/app/config`:
 
 - `NEAR_RPC_URL`: NEAR RPC endpoint (defaults to testnet)
 - `VOTING_CONTRACT`: NEAR voting contract address
-- `OPENAI_API_KEY`: OpenAI API key for semantic search embeddings (required for semantic and hybrid search)
+- `OPENAI_API_KEY`: OpenAI API key for semantic search embeddings (required)
 
 ## Usage Examples
 

@@ -952,25 +952,8 @@ export async function GET() {
                             },
                             description: "Search query to find proposals by title, description, or ID"
                         },
-                        {
-                            name: "status",
-                            in: "query",
-                            required: false,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "Filter by proposal status (e.g., 'active', 'completed', 'pending')"
-                        },
-                        {
-                            name: "sort",
-                            in: "query",
-                            required: false,
-                            schema: {
-                                type: "string",
-                                enum: ["relevance", "newest", "oldest", "id"]
-                            },
-                            description: "Sort order for results (default: relevance)"
-                        },
+
+
                         {
                             name: "limit",
                             in: "query",
@@ -982,16 +965,7 @@ export async function GET() {
                             },
                             description: "Maximum number of proposals to return (1-100, default: 50)"
                         },
-                        {
-                            name: "searchType",
-                            in: "query",
-                            required: false,
-                            schema: {
-                                type: "string",
-                                enum: ["semantic", "traditional", "hybrid"]
-                            },
-                            description: "Search type: semantic (AI-powered), traditional (keyword-based), or hybrid (combines both, default)"
-                        }
+
                     ],
                     responses: {
                         "200": {
@@ -1009,7 +983,12 @@ export async function GET() {
                                                         id: { type: "number" },
                                                         title: { type: "string" },
                                                         description: { type: "string" },
-                                                        status: { type: "string" }
+                                                        status: { type: "string", nullable: true },
+                                                        link: { type: "string", nullable: true },
+                                                        creation_time_ns: { type: "string", nullable: true },
+                                                        reviewer_id: { type: "string", nullable: true },
+                                                        voting_start_time_ns: { type: "string", nullable: true },
+                                                        voting_duration_ns: { type: "string", nullable: true }
                                                     }
                                                 }
                                             },
@@ -1017,9 +996,6 @@ export async function GET() {
                                                 type: "object",
                                                 properties: {
                                                     query: { type: "string", nullable: true },
-                                                    status: { type: "string", nullable: true },
-                                                    sortBy: { type: "string" },
-                                                    searchType: { type: "string" },
                                                     totalFound: { type: "number" },
                                                     limit: { type: "number" }
                                                 }

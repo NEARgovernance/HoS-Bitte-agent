@@ -11,11 +11,11 @@ interface Proposal {
   title: string;
   description: string;
   link?: string;
-  deadline?: string;
-  voting_power?: string;
   status?: string;
-  snapshot_block?: number;
-  total_voting_power?: string;
+  creation_time_ns?: string;
+  reviewer_id?: string;
+  voting_start_time_ns?: string;
+  voting_duration_ns?: string;
 }
 
 // Global vector store and embeddings instance
@@ -36,17 +36,17 @@ async function initializeVectorStore(proposals: Proposal[]): Promise<MemoryVecto
       const content = `Title: ${proposal.title}\nDescription: ${proposal.description}\nStatus: ${proposal.status || 'unknown'}\nID: ${proposal.id}`;
       return new Document({
         pageContent: content,
-        metadata: {
-          id: proposal.id,
-          title: proposal.title,
-          description: proposal.description,
-          status: proposal.status,
-          link: proposal.link,
-          deadline: proposal.deadline,
-          voting_power: proposal.voting_power,
-          snapshot_block: proposal.snapshot_block,
-          total_voting_power: proposal.total_voting_power,
-        },
+        metadata:{
+            id: proposal.id,
+            title: proposal.title,
+            description: proposal.description,
+            status: proposal.status,
+            link: proposal.link,
+            creation_time_ns: proposal.creation_time_ns,
+            reviewer_id: proposal.reviewer_id,
+            voting_start_time_ns: proposal.voting_start_time_ns,
+            voting_duration_ns: proposal.voting_duration_ns,
+          },
       });
     });
 
@@ -185,7 +185,7 @@ async function semanticSearch(proposals: Proposal[], query: string, limit: numbe
     
     // Perform similarity search
     const results = await vectorStore.similaritySearch(query, limit);
-    
+    console.log(results.length);
     // Convert back to proposals and maintain order
     const proposalMap = new Map(proposals.map(p => [p.id, p]));
     const semanticResults: Proposal[] = [];
@@ -200,168 +200,22 @@ async function semanticSearch(proposals: Proposal[], query: string, limit: numbe
     return semanticResults;
   } catch (error) {
     console.error('Semantic search error:', error);
-    // Fallback to traditional search
-    return traditionalSearch(proposals, query);
+    // Return empty array if semantic search fails
+    return [];
   }
 }
 
-// Traditional keyword-based search
-function traditionalSearch(proposals: Proposal[], query: string): Proposal[] {
-  if (!query || query.trim().length === 0) {
-    return proposals;
-  }
 
-  const searchQuery = query.toLowerCase().trim();
-  const searchTerms = searchQuery.split(' ').filter(term => term.length > 0);
 
-  return proposals.filter(proposal => {
-    // Search in title
-    const titleMatch = searchTerms.some(term => 
-      proposal.title.toLowerCase().includes(term)
-    );
 
-    // Search in description
-    const descriptionMatch = searchTerms.some(term => 
-      proposal.description.toLowerCase().includes(term)
-    );
 
-    // Search in status
-    const statusMatch = searchTerms.some(term => {
-      if (proposal.status) {
-        return proposal.status.toLowerCase().includes(term);
-      }
-      return false;
-    });
 
-    // Search in proposal ID
-    const idMatch = searchTerms.some(term => {
-      const proposalId = proposal.id.toString();
-      return proposalId.includes(term);
-    });
-
-    return titleMatch || descriptionMatch || statusMatch || idMatch;
-  });
-}
-
-// Hybrid search combining semantic and traditional search
-async function hybridSearch(proposals: Proposal[], query: string, limit: number = 10): Promise<Proposal[]> {
-  if (!query || query.trim().length === 0) {
-    return proposals;
-  }
-
-  try {
-    // Get semantic search results
-    const semanticResults = await semanticSearch(proposals, query, Math.ceil(limit * 0.7));
-    
-    // Get traditional search results
-    const traditionalResults = traditionalSearch(proposals, query);
-    
-    // Combine and deduplicate results
-    const combined = new Map<number, Proposal>();
-    
-    // Add semantic results first (higher priority)
-    semanticResults.forEach(proposal => {
-      combined.set(proposal.id, proposal);
-    });
-    
-    // Add traditional results if we haven't reached the limit
-    for (const proposal of traditionalResults) {
-      if (combined.size >= limit) break;
-      if (!combined.has(proposal.id)) {
-        combined.set(proposal.id, proposal);
-      }
-    }
-    
-    return Array.from(combined.values());
-  } catch (error) {
-    console.error('Hybrid search error:', error);
-    // Fallback to traditional search
-    return traditionalSearch(proposals, query);
-  }
-}
-
-// Filter proposals by status
-function filterByStatus(proposals: Proposal[], status: string): Proposal[] {
-  if (!status) {
-    return proposals;
-  }
-
-  const statusLower = status.toLowerCase();
-  return proposals.filter(proposal => {
-    const proposalStatus = proposal.status?.toLowerCase() || '';
-    return proposalStatus.includes(statusLower) || statusLower.includes(proposalStatus);
-  });
-}
-
-// Sort proposals by relevance and recency
-function sortProposals(proposals: Proposal[], query: string, sortBy: string = 'relevance'): Proposal[] {
-  if (sortBy === 'id' || sortBy === 'newest') {
-    return proposals.sort((a, b) => b.id - a.id);
-  }
-
-  if (sortBy === 'oldest') {
-    return proposals.sort((a, b) => a.id - b.id);
-  }
-
-  if (sortBy === 'relevance' && query) {
-    // Sort by relevance score
-    return proposals.sort((a, b) => {
-      const queryLower = query.toLowerCase();
-      
-      // Calculate relevance scores
-      const aScore = calculateRelevanceScore(a, queryLower);
-      const bScore = calculateRelevanceScore(b, queryLower);
-      
-      return bScore - aScore;
-    });
-  }
-
-  // Default: sort by ID (newest first)
-  return proposals.sort((a, b) => b.id - a.id);
-}
-
-// Calculate relevance score for a proposal
-function calculateRelevanceScore(proposal: Proposal, query: string): number {
-  let score = 0;
-  const queryTerms = query.split(' ').filter(term => term.length > 0);
-
-  // Title matches get highest weight
-  queryTerms.forEach(term => {
-    if (proposal.title.toLowerCase().includes(term)) {
-      score += 10;
-    }
-  });
-
-  // Description matches get medium weight
-  queryTerms.forEach(term => {
-    if (proposal.description.toLowerCase().includes(term)) {
-      score += 5;
-    }
-  });
-
-  // Status matches get lower weight
-  queryTerms.forEach(term => {
-    if (proposal.status && proposal.status.toLowerCase().includes(term)) {
-      score += 3;
-    }
-  });
-
-  // Exact ID match gets high weight
-  if (proposal.id.toString() === query) {
-    score += 15;
-  }
-
-  return score;
-}
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
-    const status = searchParams.get('status');
-    const sortBy = searchParams.get('sort') || 'relevance';
     const limit = searchParams.get('limit');
-    const searchType = searchParams.get('searchType') || 'hybrid'; // 'semantic', 'traditional', 'hybrid'
 
     // Validate limit parameter
     let limitValue = 50; // default
@@ -376,21 +230,9 @@ export async function GET(request: Request) {
       }
     }
 
-    // Validate sort parameter
-    const validSortOptions = ['relevance', 'newest', 'oldest', 'id'];
-    if (!validSortOptions.includes(sortBy)) {
-      return NextResponse.json({ 
-        error: 'sort must be one of: relevance, newest, oldest, id' 
-      }, { status: 400 });
-    }
 
-    // Validate search type parameter
-    const validSearchTypes = ['semantic', 'traditional', 'hybrid'];
-    if (!validSearchTypes.includes(searchType)) {
-      return NextResponse.json({ 
-        error: 'searchType must be one of: semantic, traditional, hybrid' 
-      }, { status: 400 });
-    }
+
+
 
     if (!VOTING_CONTRACT) {
       return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
@@ -408,27 +250,12 @@ export async function GET(request: Request) {
 
     // Apply search filter
     if (query.trim()) {
-      switch (searchType) {
-        case 'semantic':
-          proposals = await semanticSearch(proposals, query, limitValue);
-          break;
-        case 'traditional':
-          proposals = traditionalSearch(proposals, query);
-          break;
-        case 'hybrid':
-        default:
-          proposals = await hybridSearch(proposals, query, limitValue);
-          break;
-      }
+      proposals = await semanticSearch(proposals, query, limitValue);
     }
 
-    // Apply status filter
-    if (status) {
-      proposals = filterByStatus(proposals, status);
-    }
 
-    // Sort proposals
-    proposals = sortProposals(proposals, query, sortBy);
+
+
 
     // Apply limit
     const totalFound = proposals.length;
@@ -447,9 +274,6 @@ export async function GET(request: Request) {
       proposals,
       search: {
         query: query || null,
-        status: status || null,
-        sortBy,
-        searchType,
         totalFound,
         limit: limitValue
       },

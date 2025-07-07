@@ -424,30 +424,34 @@ curl "http://localhost:3000/api/tools/search-proposal?q=treasury"
       "id": 123,
       "title": "Treasury Funding Proposal",
       "description": "This proposal requests funding for community initiatives...",
-      "status": "active"
+      "status": "active",
+      "link": "https://example.com/proposal/123",
+      "creation_time_ns": "1704067200000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704153600000000000",
+      "voting_duration_ns": "604800000000000"
     },
     {
       "id": 124,
       "title": "Budget Allocation for Q4",
       "description": "Proposal to allocate treasury funds for Q4 projects...",
-      "status": "pending"
+      "status": "pending",
+      "link": "https://example.com/proposal/124",
+      "creation_time_ns": "1703980800000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704067200000000000",
+      "voting_duration_ns": "604800000000000"
     }
   ],
   "search": {
     "query": "treasury",
-    "status": null,
     "sortBy": "relevance",
     "totalFound": 2,
     "limit": 50
   },
   "statistics": {
     "totalFound": 2,
-    "limit": 50,
-    "statusCounts": {
-      "active": 1,
-      "pending": 1
-    },
-
+    "limit": 50
   },
   "metadata": {
     "contract": "voting.contract.near",
@@ -455,8 +459,8 @@ curl "http://localhost:3000/api/tools/search-proposal?q=treasury"
   }
 }
 
-# Search with status filter
-curl "http://localhost:3000/api/tools/search-proposal?q=security&status=active&sort=newest"
+# Search with filters
+curl "http://localhost:3000/api/tools/search-proposal?q=security"
 
 # Expected response:
 {
@@ -465,23 +469,22 @@ curl "http://localhost:3000/api/tools/search-proposal?q=security&status=active&s
       "id": 125,
       "title": "Security Upgrade Implementation",
       "description": "Proposal to implement critical security upgrades...",
-      "status": "active"
+      "status": "active",
+      "link": "https://example.com/proposal/125",
+      "creation_time_ns": "1703894400000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1703980800000000000",
+      "voting_duration_ns": "604800000000000"
     }
   ],
   "search": {
     "query": "security",
-    "status": "active",
-    "sortBy": "newest",
     "totalFound": 1,
     "limit": 50
   },
   "statistics": {
     "totalFound": 1,
-    "limit": 50,
-    "statusCounts": {
-      "active": 1
-    },
-
+    "limit": 50
   },
   "metadata": {
     "contract": "voting.contract.near",
@@ -499,23 +502,23 @@ curl "http://localhost:3000/api/tools/search-proposal?q=123"
       "id": 123,
       "title": "Treasury Funding Proposal",
       "description": "This proposal requests funding for community initiatives...",
-      "status": "active"
+      "status": "active",
+      "link": "https://example.com/proposal/123",
+      "creation_time_ns": "1704067200000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704153600000000000",
+      "voting_duration_ns": "604800000000000"
     }
   ],
   "search": {
     "query": "123",
-    "status": null,
     "sortBy": "relevance",
     "totalFound": 1,
     "limit": 50
   },
   "statistics": {
     "totalFound": 1,
-    "limit": 50,
-    "statusCounts": {
-      "active": 1
-    },
-    "uniqueTags": ["treasury", "funding", "community"]
+    "limit": 50
   },
   "metadata": {
     "contract": "voting.contract.near",
@@ -524,7 +527,7 @@ curl "http://localhost:3000/api/tools/search-proposal?q=123"
 }
 
 # Search with multiple terms and sorting
-curl "http://localhost:3000/api/tools/search-proposal?q=governance policy&sort=oldest&limit=10"
+curl "http://localhost:3000/api/tools/search-proposal?q=governance policy&limit=10"
 
 # Expected response:
 {
@@ -534,31 +537,32 @@ curl "http://localhost:3000/api/tools/search-proposal?q=governance policy&sort=o
       "title": "Governance Policy Update",
       "description": "Proposal to update governance policies and procedures...",
       "status": "completed",
-      "tags": ["governance", "policy", "update"]
+      "link": "https://example.com/proposal/100",
+      "creation_time_ns": "1703808000000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1703894400000000000",
+      "voting_duration_ns": "604800000000000"
     },
     {
       "id": 127,
       "title": "New Governance Framework",
       "description": "Proposal for implementing new governance framework...",
       "status": "active",
-      "tags": ["governance", "framework", "policy"]
+      "link": "https://example.com/proposal/127",
+      "creation_time_ns": "1703721600000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1703808000000000000",
+      "voting_duration_ns": "604800000000000"
     }
   ],
   "search": {
     "query": "governance policy",
-    "status": null,
-    "sortBy": "oldest",
     "totalFound": 2,
     "limit": 10
   },
   "statistics": {
     "totalFound": 2,
-    "limit": 10,
-    "statusCounts": {
-      "completed": 1,
-      "active": 1
-    },
-    "uniqueTags": ["governance", "policy", "framework", "update"]
+    "limit": 10
   },
   "metadata": {
     "contract": "voting.contract.near",
@@ -567,82 +571,9 @@ curl "http://localhost:3000/api/tools/search-proposal?q=governance policy&sort=o
 }
 
 # Search without query (get all proposals)
-curl "http://localhost:3000/api/tools/search-proposal?sort=newest&limit=5"
+curl "http://localhost:3000/api/tools/search-proposal?limit=5"
 
-# Semantic search only
-curl "http://localhost:3000/api/tools/search-proposal?q=treasury funding&searchType=semantic&limit=10"
 
-# Expected response:
-{
-  "proposals": [
-    {
-      "id": 123,
-      "title": "Treasury Funding Proposal",
-      "description": "This proposal requests funding for community initiatives...",
-      "status": "active"
-    },
-    {
-      "id": 124,
-      "title": "Budget Allocation for Q4",
-      "description": "Proposal to allocate treasury funds for Q4 projects...",
-      "status": "pending"
-    }
-  ],
-  "search": {
-    "query": "treasury funding",
-    "status": null,
-    "sortBy": "relevance",
-    "searchType": "semantic",
-    "totalFound": 2,
-    "limit": 10
-  },
-  "statistics": {
-    "totalFound": 2,
-    "limit": 10,
-    "statusCounts": {
-      "active": 1,
-      "pending": 1
-    }
-  },
-  "metadata": {
-    "contract": "voting.contract.near",
-    "description": "Search results for House of Stake governance proposals"
-  }
-}
-
-# Traditional keyword search only
-curl "http://localhost:3000/api/tools/search-proposal?q=security upgrade&searchType=traditional&limit=10"
-
-# Expected response:
-{
-  "proposals": [
-    {
-      "id": 125,
-      "title": "Security Upgrade Implementation",
-      "description": "Proposal to implement critical security upgrades...",
-      "status": "active"
-    }
-  ],
-  "search": {
-    "query": "security upgrade",
-    "status": null,
-    "sortBy": "relevance",
-    "searchType": "traditional",
-    "totalFound": 1,
-    "limit": 10
-  },
-  "statistics": {
-    "totalFound": 1,
-    "limit": 10,
-    "statusCounts": {
-      "active": 1
-    }
-  },
-  "metadata": {
-    "contract": "voting.contract.near",
-    "description": "Search results for House of Stake governance proposals"
-  }
-}
 
 # Expected response:
 {
@@ -651,29 +582,33 @@ curl "http://localhost:3000/api/tools/search-proposal?q=security upgrade&searchT
       "id": 130,
       "title": "Latest Proposal",
       "description": "Most recent governance proposal...",
-      "status": "active"
+      "status": "active",
+      "link": "https://example.com/proposal/130",
+      "creation_time_ns": "1704153600000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704240000000000000",
+      "voting_duration_ns": "604800000000000"
     },
     {
       "id": 129,
       "title": "Second Latest Proposal",
       "description": "Second most recent proposal...",
-      "status": "active"
+      "status": "active",
+      "link": "https://example.com/proposal/129",
+      "creation_time_ns": "1704067200000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704153600000000000",
+      "voting_duration_ns": "604800000000000"
     }
   ],
   "search": {
     "query": null,
-    "status": null,
-    "sortBy": "newest",
     "totalFound": 5,
     "limit": 5
   },
   "statistics": {
     "totalFound": 5,
-    "limit": 5,
-    "statusCounts": {
-      "active": 5
-    },
-    "uniqueTags": ["governance", "funding", "technical"]
+    "limit": 5
   },
   "metadata": {
     "contract": "voting.contract.near",
