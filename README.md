@@ -1,13 +1,168 @@
-# Governance Bot API Tools
+# NEAR Governance Bot API
 
-This directory contains API endpoints for the NEAR governance bot functionality. These endpoints provide access to proposal data and event handling capabilities.
+A comprehensive API for NEAR governance bot functionality, providing endpoints for proposal management, voting, account state queries, and blockchain interactions. Built for House of Stake (HoS) governance system.
+
+## Features
+
+- **Proposal Management**: Fetch, search, and create governance proposals
+- **Voting System**: Vote on proposals with automatic merkle proof generation
+- **Account State**: Comprehensive account balance and voting power queries
+- **Delegation Tracking**: Monitor delegators and delegation statistics
+- **AI-Powered Search**: Semantic search through proposals using OpenAI
+- **Transaction Generation**: Create NEAR transaction payloads for governance actions
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ and pnpm
+- NEAR account with access to governance contracts
+- OpenAI API key (for semantic search functionality)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd HoS-Bittie-agent-1
+
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# Start development server
+pnpm dev
+```
+
+### Development
+
+```bash
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server
+pnpm start
+
+# Run tests
+pnpm test
+```
 
 ## Environment Variables
 
-The following environment variables are required:
+This project requires several environment variables to be configured. Create a `.env` file in the root directory with the following variables:
+
+### Required Environment Variables
 
 - `VOTING_CONTRACT`: The NEAR contract address for the voting system
-- `NEAR_RPC_URL`: (Optional) NEAR RPC endpoint (defaults to testnet)
+  - Example: `voting.contract.near`
+  - Used by: All governance-related endpoints
+
+- `VENEAR_CONTRACT_ID`: The veNEAR contract address for voting power and delegation
+  - Example: `venear.near`
+  - Used by: Vote endpoint, balance endpoints
+
+- `ACCOUNT_ID`: Your NEAR account ID for the AI plugin configuration
+  - Example: `your-account.near`
+  - Used by: AI plugin metadata
+
+- `PLUGIN_URL`: The base URL for the AI plugin (used in OpenAPI spec)
+  - Example: `http://localhost:3000` (development)
+  - Example: `https://your-domain.com` (production)
+  - Used by: AI plugin OpenAPI specification
+
+### Optional Environment Variables
+
+- `NEAR_RPC_URL`: NEAR RPC endpoint (defaults to testnet if not provided)
+  - Example: `https://rpc.testnet.near.org` (testnet)
+  - Example: `https://rpc.mainnet.near.org` (mainnet)
+  - Used by: All blockchain interaction endpoints
+
+- `OPENAI_API_KEY`: OpenAI API key for semantic search functionality
+  - Required for: `/api/tools/search-proposal` endpoint
+  - Used by: AI-powered proposal search
+
+### Example `.env` File
+
+```bash
+# Required
+VOTING_CONTRACT=voting.contract.near
+VENEAR_CONTRACT_ID=venear.near
+ACCOUNT_ID=your-account.near
+PLUGIN_URL=http://localhost:3000
+
+# Optional
+NEAR_RPC_URL=https://rpc.testnet.near.org
+OPENAI_API_KEY=sk-your-openai-api-key-here
+```
+
+### Environment Setup
+
+1. **Copy the example**: Create a `.env` file in the project root
+2. **Fill in your values**: Replace the placeholder values with your actual contract addresses and account IDs
+3. **Restart the server**: After updating environment variables, restart your development server
+4. **Verify configuration**: Test an endpoint to ensure all variables are properly set
+
+### Network Configuration
+
+- **Testnet**: Use testnet contract addresses and `https://rpc.testnet.near.org`
+- **Mainnet**: Use mainnet contract addresses and `https://rpc.mainnet.near.org`
+
+### Security Notes
+
+- Never commit your `.env` file to version control
+- Keep your API keys secure and rotate them regularly
+- Use different accounts for development and production
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── ai-plugin/          # OpenAPI specification
+│   │   └── tools/              # API endpoints
+│   │       ├── get-proposal/           # Get proposal details
+│   │       ├── get-recent-proposals/   # Fetch recent proposals
+│   │       ├── get-recent-active-proposals/ # Fetch active proposals
+│   │       ├── get-votes/              # Get proposal votes
+│   │       ├── get-delegators/         # Get account delegators
+│   │       ├── create-proposal/        # Create proposal transaction
+│   │       ├── vote/                   # Vote on proposal
+│   │       ├── get-account-balance/    # Get NEAR balance
+│   │       ├── get-venear-balance/     # Get veNEAR balance
+│   │       ├── get-account-state/      # Get comprehensive account state
+│   │       ├── lookup-state/           # Alias for get-account-state
+│   │       └── search-proposal/        # AI-powered proposal search
+│   ├── config.ts               # Configuration and constants
+│   ├── layout.tsx              # App layout
+│   └── page.tsx                # Home page
+├── public/                     # Static assets
+└── package.json                # Dependencies and scripts
+```
+
+## Architecture
+
+- **Next.js 15**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **NEAR Protocol**: Blockchain integration via RPC calls
+- **OpenAI**: AI-powered semantic search
+- **OpenAPI 3.0**: Standard API specification for AI assistants
+
+## API Documentation
+
+The API follows OpenAPI 3.0 specification and is designed to work with AI assistants. Access the full specification at:
+
+```
+GET /api/ai-plugin
+```
+
+This endpoint returns the complete OpenAPI specification that can be consumed by AI assistants and other tools.
 
 ## API Endpoints
 
@@ -84,33 +239,7 @@ Fetches the most recent proposals that have been approved for voting.
 }
 ```
 
-### 4. Create NEAR Transaction
-**GET** `/api/tools/create-near-transaction?receiverId={address}&amount={amount}`
-
-Creates a NEAR transaction payload for transferring tokens.
-
-**Parameters:**
-- `receiverId` (required): The NEAR account ID to send tokens to
-- `amount` (required): The amount of NEAR to send
-
-**Response:**
-```json
-{
-  "transactionPayload": {
-    "receiverId": "user.near",
-    "actions": [
-      {
-        "type": "Transfer",
-        "params": {
-          "deposit": "1000000000000000000000000"
-        }
-      }
-    ]
-  }
-}
-```
-
-### 5. Get Votes for Proposal
+### 4. Get Votes for Proposal
 **GET** `/api/tools/get-votes?proposalId={id}`
 
 Gets all votes for a specific proposal to track decision split.
@@ -148,7 +277,7 @@ Gets all votes for a specific proposal to track decision split.
 }
 ```
 
-### 6. Get Delegators for Account
+### 5. Get Delegators for Account
 **GET** `/api/tools/get-delegators?accountId={account}`
 
 Gets all delegators for a specific account to provide voter-delegate context.
@@ -181,7 +310,7 @@ Gets all delegators for a specific account to provide voter-delegate context.
 }
 ```
 
-### 7. Create Proposal Transaction
+### 6. Create Proposal Transaction
 **GET** `/api/tools/create-proposal?title={title}&description={description}&link={link}&votingOptions={options}`
 
 Creates a NEAR transaction payload for creating a new governance proposal.
@@ -219,7 +348,7 @@ Creates a NEAR transaction payload for creating a new governance proposal.
 }
 ```
 
-### 8. Vote on Proposal
+### 7. Vote on Proposal
 **GET** `/api/tools/vote?proposalId={id}&vote={choice}&accountId={account}`
 
 Creates a NEAR transaction payload for voting on a governance proposal. The endpoint automatically fetches the required merkle proof and vAccount from the veNEAR contract.
@@ -261,7 +390,7 @@ Creates a NEAR transaction payload for voting on a governance proposal. The endp
 }
 ```
 
-### 9. Get veNEAR Balance
+### 8. Get veNEAR Balance
 **GET** `/api/tools/get-venear-balance?accountId={account}`
 
 Gets veNEAR balance and voting power information for a specific account.
@@ -302,7 +431,7 @@ Gets veNEAR balance and voting power information for a specific account.
 }
 ```
 
-### 9.5. Get Account Balance
+### 9. Get Account Balance
 **GET** `/api/tools/get-account-balance?accountId={account}`
 
 Gets the NEAR account balance for a given account ID.
@@ -325,7 +454,7 @@ Gets the NEAR account balance for a given account ID.
 }
 ```
 
-### 9.6. Get veNEAR Balance
+### 10. Get veNEAR Balance
 **GET** `/api/tools/get-venear-balance?accountId={account}`
 
 Gets comprehensive veNEAR balance information including both token balance (using `ft_balance_of`) and detailed balance information (using `get_accounts`).
@@ -789,4 +918,120 @@ curl "http://localhost:3000/api/tools/get-proposal?proposalId=123"
 curl "http://localhost:3000/api/tools/fetch-recent-active-proposals?count=10"
 ``` 
 
- 
+## Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+```
+
+### Test Examples
+
+See `test-api.md` for comprehensive API testing examples including:
+
+- **Success cases**: All endpoints with valid parameters
+- **Error cases**: Missing parameters, invalid inputs, network errors
+- **Edge cases**: Boundary conditions and unusual inputs
+- **JavaScript examples**: Using fetch API and axios
+
+### Manual Testing
+
+```bash
+# Start the development server
+pnpm dev
+
+# Test the OpenAPI specification
+curl http://localhost:3000/api/ai-plugin
+
+# Test a simple endpoint
+curl "http://localhost:3000/api/tools/get-account-balance?accountId=test.near"
+```
+
+## Contributing
+
+### Development Workflow
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/new-endpoint`
+3. **Make your changes**: Follow the existing code patterns
+4. **Add tests**: Include tests for new functionality
+5. **Update documentation**: Update README.md and test-api.md
+6. **Submit a pull request**: Include a clear description of changes
+
+### Code Style
+
+- Use TypeScript for type safety
+- Follow existing naming conventions
+- Add proper error handling
+- Include JSDoc comments for complex functions
+- Update OpenAPI specification for new endpoints
+
+### Testing Guidelines
+
+- Test all endpoints with valid and invalid inputs
+- Include error handling tests
+- Test edge cases and boundary conditions
+- Verify OpenAPI specification accuracy
+- Test with both testnet and mainnet configurations
+
+## Troubleshooting
+
+### Common Issues
+
+**Environment Variables Not Set**
+```
+Error: VOTING_CONTRACT environment variable not set
+```
+Solution: Check your `.env` file and ensure all required variables are set.
+
+**RPC Connection Issues**
+```
+Error: RPC request failed: 500
+```
+Solution: Verify your `NEAR_RPC_URL` and network connectivity.
+
+**OpenAI API Errors**
+```
+Error: OpenAI API key not configured
+```
+Solution: Set your `OPENAI_API_KEY` in the `.env` file.
+
+**Build Errors**
+```
+Error: TypeScript compilation failed
+```
+Solution: Run `pnpm install` and check for missing dependencies.
+
+### Debug Mode
+
+Enable debug logging by setting:
+```bash
+DEBUG=* pnpm dev
+```
+
+### Network Configuration
+
+- **Testnet**: Use testnet contract addresses and RPC endpoint
+- **Mainnet**: Use mainnet contract addresses and RPC endpoint
+- **Local**: Use local NEAR node for development
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support and questions:
+
+- Create an issue on GitHub
+- Check the troubleshooting section
+- Review the test examples in `test-api.md`
+- Consult the NEAR documentation for blockchain-specific questions

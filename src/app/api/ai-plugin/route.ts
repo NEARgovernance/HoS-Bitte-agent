@@ -261,109 +261,6 @@ export async function GET() {
                     }
                 }
             },
-            "/api/tools/create-near-transaction": {
-                get: {
-                    operationId: "createNearTransaction",
-                    summary: "Create a NEAR transaction payload",
-                    description: "Generates a NEAR transaction payload for transferring tokens to be used directly in the generate-tx tool",
-                    parameters: [
-                        {
-                            name: "receiverId",
-                            in: "query",
-                        required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID of the receiver"
-                        },
-                        {
-                            name: "amount",
-                            in: "query",
-                            required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The amount of NEAR tokens to transfer"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                            transactionPayload: {
-                                                type: "object",
-                                                properties: {
-                                                    receiverId: {
-                                            type: "string",
-                                                        description: "The receiver's NEAR account ID"
-                                        },
-                                                    actions: {
-                                                        type: "array",
-                                                        items: {
-                                            type: "object",
-                                            properties: {
-                                                                type: {
-                                                                    type: "string",
-                                                                    description: "The type of action (e.g., 'Transfer')"
-                                                                },
-                                                                params: {
-                                                                    type: "object",
-                                                                    properties: {
-                                                                        deposit: {
-                                                                            type: "string",
-                                                                            description: "The amount to transfer in yoctoNEAR"
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: {
-                                                type: "string",
-                                                description: "Error message"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Error response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: {
-                                                type: "string",
-                                                description: "Error message"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "/api/tools/get-votes": {
                 get: {
                     summary: "Get votes for a proposal",
@@ -979,6 +876,233 @@ export async function GET() {
                         },
                         "400": {
                             description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" },
+                                            details: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-account-state": {
+                get: {
+                    summary: "Get comprehensive account state",
+                    description: "Gets comprehensive account state including veNEAR balance, voting power, delegation status, and governance statistics",
+                    operationId: "get-account-state",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The NEAR account ID to get state for"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            accountId: { type: "string" },
+                                            accountBalance: {
+                                                type: "object",
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            veNearTokenBalance: {
+                                                type: "object",
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            balance: {
+                                                type: "object",
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            lockedBalance: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            unlockTime: { type: "string", nullable: true },
+                                            votingPower: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            delegationPower: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            totalPower: {
+                                                type: "object",
+                                                nullable: true,
+                                                properties: {
+                                                    raw: { type: "string" },
+                                                    nears: { type: "string" }
+                                                }
+                                            },
+                                            delegation: {
+                                                type: "object",
+                                                properties: {
+                                                    isDelegator: { type: "boolean" },
+                                                    isDelegate: { type: "boolean" },
+                                                    delegatedTo: { type: "string", nullable: true },
+                                                    delegatorsCount: { type: "number" },
+                                                    totalDelegatedPower: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            lockup: {
+                                                type: "object",
+                                                properties: {
+                                                    isLockupDeployed: { type: "boolean" },
+                                                    lockupId: { type: "string", nullable: true },
+                                                    lockupBalance: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    lockupInfoReady: { type: "boolean" },
+                                                    lockedAmount: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    lockupLiquidOwnersBalance: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    lockupLiquidAmount: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    withdrawableAmount: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    lockupPendingAmount: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    lockupUnlockTimestampNs: { type: "string", nullable: true },
+                                                    untilUnlock: { type: "string", nullable: true },
+                                                    registrationCost: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    lockupCost: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    },
+                                                    stakingPool: { type: "string", nullable: true },
+                                                    knownDepositedBalance: {
+                                                        type: "object",
+                                                        properties: {
+                                                            raw: { type: "string" },
+                                                            nears: { type: "string" }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            metadata: {
+                                                type: "object",
+                                                properties: {
+                                                    contract: { type: "string" },
+                                                    votingContract: { type: "string" },
+                                                    token: { type: "string" },
+                                                    description: { type: "string" },
+                                                    timestamp: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            description: "Account not found",
                             content: {
                                 "application/json": {
                                     schema: {
