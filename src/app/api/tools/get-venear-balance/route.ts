@@ -59,8 +59,18 @@ async function fetchVeNEARTokenBalance(accountId: string): Promise<{ balance: st
   }
 }
 
+// Define detailed balance interface
+interface DetailedBalance {
+  balance?: string;
+  locked_balance?: string;
+  voting_power?: string;
+  delegation_power?: string;
+  total_power?: string;
+  unlock_time?: string;
+}
+
 // Fetch detailed veNEAR balance information using get_accounts
-async function fetchVeNEARDetailedBalance(accountId: string): Promise<any | NextResponse> {
+async function fetchVeNEARDetailedBalance(accountId: string): Promise<DetailedBalance | null | NextResponse> {
   if (!VENEAR_CONTRACT_ID) {
     return NextResponse.json({ error: 'VENEAR_CONTRACT_ID environment variable not set' }, { status: 500 });
   }

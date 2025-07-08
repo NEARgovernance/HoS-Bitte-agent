@@ -3,7 +3,6 @@ import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 import { OpenAIEmbeddings } from '@langchain/openai';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { Document } from "@langchain/core/documents";
-import { generateText } from "ai";
 
 // Define proposal type
 interface Proposal {
