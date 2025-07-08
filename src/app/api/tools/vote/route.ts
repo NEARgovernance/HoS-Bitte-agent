@@ -258,7 +258,7 @@ export async function GET(request: Request) {
           params: {
             methodName: "vote",
             gas: gasResult, // 200 Tgas
-            deposit: parseNearAmount("0"), // No deposit required for voting
+            deposit: parseNearAmount("0.00125"), // No deposit required for voting
             args: {
               proposal_id: id,
               vote: voteIndex,
