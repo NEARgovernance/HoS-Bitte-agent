@@ -220,15 +220,14 @@ Creates a NEAR transaction payload for creating a new governance proposal.
 ```
 
 ### 8. Vote on Proposal
-**GET** `/api/tools/vote?proposalId={id}&vote={choice}&accountId={account}&snapshotBlockHeight={block}`
+**GET** `/api/tools/vote?proposalId={id}&vote={choice}&accountId={account}`
 
 Creates a NEAR transaction payload for voting on a governance proposal. The endpoint automatically fetches the required merkle proof and vAccount from the veNEAR contract.
 
 **Parameters:**
 - `proposalId` (required): The ID of the proposal to vote on
-- `vote` (required): The vote choice ("Yes", "No", or "Abstain")
+- `vote` (required): The voting option text (e.g., "Yes", "No", "Lebron James", etc.)
 - `accountId` (required): The NEAR account ID of the voter
-- `snapshotBlockHeight` (required): The snapshot block height for the proposal
 
 **Response:**
 ```json
@@ -244,7 +243,7 @@ Creates a NEAR transaction payload for voting on a governance proposal. The endp
           "deposit": "0",
           "args": {
             "proposal_id": 123,
-            "vote": "Yes",
+            "vote": 0,
             "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
             "v_account": "voter.near"
           }
@@ -254,13 +253,504 @@ Creates a NEAR transaction payload for voting on a governance proposal. The endp
   },
   "vote": {
     "proposalId": 123,
-    "vote": "Yes",
+    "vote": 0,
     "accountId": "voter.near",
-    "snapshotBlockHeight": 12345678,
     "merkleProof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
     "vAccount": "voter.near"
   }
 }
+```
+
+### 9. Get veNEAR Balance
+**GET** `/api/tools/get-venear-balance?accountId={account}`
+
+Gets veNEAR balance and voting power information for a specific account.
+
+**Parameters:**
+- `accountId` (required): The NEAR account ID to get veNEAR balance for
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "balance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "lockedBalance": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "unlockTime": "2024-12-31T23:59:59Z",
+  "votingPower": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "delegationPower": {
+    "raw": "200000000000000000000000",
+    "nears": "0.200000"
+  },
+  "totalPower": {
+    "raw": "1200000000000000000000000",
+    "nears": "1.200000"
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "description": "Voting power and delegation information for House of Stake governance"
+  }
+}
+```
+
+### 9.5. Get Account Balance
+**GET** `/api/tools/get-account-balance?accountId={account}`
+
+Gets the NEAR account balance for a given account ID.
+
+**Parameters:**
+- `accountId` (required): The NEAR account ID to get balance for
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "balance": {
+    "raw": "5000000000000000000000000",
+    "nears": "5.000000"
+  },
+  "metadata": {
+    "description": "NEAR account balance information",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+### 9.6. Get veNEAR Balance
+**GET** `/api/tools/get-venear-balance?accountId={account}`
+
+Gets comprehensive veNEAR balance information including both token balance (using `ft_balance_of`) and detailed balance information (using `get_accounts`).
+
+**Parameters:**
+- `accountId` (required): The NEAR account ID to get veNEAR balance for
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "tokenBalance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000",
+    "method": "ft_balance_of",
+    "description": "Standard fungible token balance"
+  },
+  "detailedBalance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000",
+    "lockedBalance": {
+      "raw": "500000000000000000000000",
+      "nears": "0.500000"
+    },
+    "votingPower": {
+      "raw": "1000000000000000000000000",
+      "nears": "1.000000"
+    },
+    "delegationPower": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "totalPower": {
+      "raw": "1000000000000000000000000",
+      "nears": "1.000000"
+    },
+    "unlockTime": "2025-01-01T00:00:00Z",
+    "method": "get_accounts",
+    "description": "Detailed balance with voting and delegation power"
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "token": "veNEAR",
+    "hasDetailedData": true,
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+### 11. Get Account State
+**GET** `/api/tools/lookup-state?accountId={account}`
+
+Gets comprehensive account state including veNEAR balance, voting power, delegation status, and governance statistics.
+
+**Parameters:**
+- `accountId` (required): The NEAR account ID to get state for
+
+**Response:**
+```json
+{
+  "accountId": "user.near",
+  "accountBalance": {
+    "raw": "5000000000000000000000000",
+    "nears": "5.000000"
+  },
+  "balance": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "lockedBalance": {
+    "raw": "500000000000000000000000",
+    "nears": "0.500000"
+  },
+  "unlockTime": "2024-12-31T23:59:59Z",
+  "votingPower": {
+    "raw": "1000000000000000000000000",
+    "nears": "1.000000"
+  },
+  "delegationPower": {
+    "raw": "200000000000000000000000",
+    "nears": "0.200000"
+  },
+  "totalPower": {
+    "raw": "1200000000000000000000000",
+    "nears": "1.200000"
+  },
+  "delegation": {
+    "isDelegator": false,
+    "isDelegate": true,
+    "delegatedTo": null,
+    "delegatorsCount": 5,
+    "totalDelegatedPower": {
+      "raw": "3000000000000000000000000",
+      "nears": "3.000000"
+    }
+  },
+  "voting": {
+    "lastVote": {
+      "proposal_id": 123,
+      "vote": "Yes",
+      "timestamp": "2024-01-01T00:00:00Z"
+    },
+    "statistics": {
+      "total_votes": 15,
+      "yes_votes": 10,
+      "no_votes": 3,
+      "abstain_votes": 2,
+      "participation_rate": 75.5
+    }
+  },
+  "lockup": {
+    "isLockupDeployed": true,
+    "lockupId": "lockup.user.near",
+    "lockupBalance": {
+      "raw": "2000000000000000000000000",
+      "nears": "2.000000"
+    },
+    "lockupInfoReady": true,
+    "lockedAmount": {
+      "raw": "1500000000000000000000000",
+      "nears": "1.500000"
+    },
+    "lockupLiquidOwnersBalance": {
+      "raw": "500000000000000000000000",
+      "nears": "0.500000"
+    },
+    "lockupLiquidAmount": {
+      "raw": "300000000000000000000000",
+      "nears": "0.300000"
+    },
+    "withdrawableAmount": {
+      "raw": "200000000000000000000000",
+      "nears": "0.200000"
+    },
+    "lockupPendingAmount": {
+      "raw": "0",
+      "nears": "0.000000"
+    },
+    "lockupUnlockTimestampNs": "1704067200000000000",
+    "untilUnlock": "2024-12-31T23:59:59Z",
+    "registrationCost": {
+      "raw": "100000000000000000000000",
+      "nears": "0.100000"
+    },
+    "lockupCost": {
+      "raw": "50000000000000000000000",
+      "nears": "0.050000"
+    },
+    "stakingPool": "staking.pool.near",
+    "knownDepositedBalance": {
+      "raw": "1800000000000000000000000",
+      "nears": "1.800000"
+    }
+  },
+  "metadata": {
+    "contract": "venear.near",
+    "votingContract": "voting.contract.near",
+    "token": "veNEAR",
+    "description": "Comprehensive account state for House of Stake governance",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+### 12. Search Proposals
+**GET** `/api/tools/search-proposal?q={query}&limit={limit}`
+
+Searches through all governance proposals using AI-powered semantic search with vector embeddings for better relevance. Supports full-text search across titles and descriptions.
+
+**Parameters:**
+- `q` (optional): Search query to find proposals by title, description, or ID
+- `limit` (optional): Maximum number of proposals to return (1-100, default: 50)
+
+
+**Response:**
+```json
+{
+  "proposals": [
+    {
+      "id": 123,
+      "title": "Treasury Funding Proposal",
+      "description": "This proposal requests funding for community initiatives...",
+      "status": "active",
+      "link": "https://example.com/proposal/123",
+      "creation_time_ns": "1704067200000000000",
+      "reviewer_id": "reviewer.near",
+      "voting_start_time_ns": "1704153600000000000",
+      "voting_duration_ns": "604800000000000"
+    }
+  ],
+  "search": {
+    "query": "treasury funding",
+    "totalFound": 5,
+    "limit": 50
+  },
+  "statistics": {
+    "totalFound": 5,
+    "limit": 50
+  },
+  "metadata": {
+    "contract": "voting.contract.near",
+    "description": "Search results for House of Stake governance proposals"
+  }
+}
+```
+
+### Get account balance
+```bash
+curl "http://localhost:3000/api/tools/get-account-balance?accountId=user.near"
+```
+
+### Get veNEAR balance
+```bash
+curl "http://localhost:3000/api/tools/get-venear-balance?accountId=user.near"
+```
+
+### Get account state
+```bash
+curl "http://localhost:3000/api/tools/lookup-state?accountId=user.near"
+```
+
+### Search proposals
+```bash
+curl "http://localhost:3000/api/tools/search-proposal?q=treasury&limit=20"
+```
+
+## JavaScript Usage Examples
+
+### Get veNEAR Balance
+
+```javascript
+// Get comprehensive veNEAR balance
+const getVeNEARBalance = async (accountId) => {
+  const response = await fetch(`/api/tools/get-venear-balance?accountId=${accountId}`);
+  const data = await response.json();
+  console.log('veNEAR token balance:', data.tokenBalance.nears, 'NEAR');
+  if (data.detailedBalance) {
+    console.log('veNEAR voting power:', data.detailedBalance.votingPower.nears, 'NEAR');
+    console.log('veNEAR locked balance:', data.detailedBalance.lockedBalance.nears, 'NEAR');
+  }
+  return data;
+};
+
+// Get veNEAR balance with error handling
+const getVeNEARBalanceWithErrorHandling = async (accountId) => {
+  try {
+    const response = await fetch(`/api/tools/get-venear-balance?accountId=${accountId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+    
+  } catch (error) {
+    console.error('Error fetching veNEAR balance:', error);
+    return null;
+  }
+};
+
+// Compare token balance with detailed balance
+const compareVeNEARBalances = async (accountId) => {
+  const balanceData = await getVeNEARBalanceWithErrorHandling(accountId);
+  
+  if (balanceData) {
+    console.log('veNEAR token balance (ft_balance_of):', balanceData.tokenBalance.nears, 'NEAR');
+    if (balanceData.detailedBalance) {
+      console.log('veNEAR detailed balance (get_accounts):', balanceData.detailedBalance.nears, 'NEAR');
+      console.log('Difference:', (parseFloat(balanceData.tokenBalance.nears) - parseFloat(balanceData.detailedBalance.nears)).toFixed(6), 'NEAR');
+      console.log('Voting power:', balanceData.detailedBalance.votingPower.nears, 'NEAR');
+      console.log('Delegation power:', balanceData.detailedBalance.delegationPower.nears, 'NEAR');
+    } else {
+      console.log('No detailed balance data available');
+    }
+  }
+};
+```
+
+### Get Account State
+
+```javascript
+// Get comprehensive account state
+const getAccountState = async (accountId) => {
+  const response = await fetch(`/api/tools/get-account-state?accountId=${accountId}`);
+  const data = await response.json();
+  console.log('Account state:', data);
+  console.log('Voting power:', data.votingPower.nears, 'NEAR');
+  console.log('Delegation status:', data.delegation.isDelegate ? 'Delegate' : 'Voter');
+  console.log('Total votes cast:', data.voting.statistics.total_votes);
+};
+
+// Get account state with error handling
+const getAccountStateWithErrorHandling = async (accountId) => {
+  try {
+    const response = await fetch(`/api/tools/get-account-state?accountId=${accountId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+    
+  } catch (error) {
+    console.error('Error fetching account state:', error);
+    return null;
+  }
+};
+
+// Check delegation status
+const checkDelegationStatus = async (accountId) => {
+  const data = await getAccountStateWithErrorHandling(accountId);
+  if (data) {
+    if (data.delegation.isDelegator) {
+      console.log(`Account is delegating to: ${data.delegation.delegatedTo}`);
+    } else if (data.delegation.isDelegate) {
+      console.log(`Account is a delegate with ${data.delegation.delegatorsCount} delegators`);
+      console.log(`Total delegated power: ${data.delegation.totalDelegatedPower.nears} NEAR`);
+    } else {
+      console.log('Account is voting directly');
+    }
+  }
+};
+
+// Get voting statistics
+const getVotingStats = async (accountId) => {
+  const data = await getAccountStateWithErrorHandling(accountId);
+  if (data) {
+    const stats = data.voting.statistics;
+    console.log(`Voting participation: ${stats.participation_rate}%`);
+    console.log(`Votes cast: ${stats.total_votes}`);
+    console.log(`Yes votes: ${stats.yes_votes}`);
+    console.log(`No votes: ${stats.no_votes}`);
+    console.log(`Abstain votes: ${stats.abstain_votes}`);
+  }
+};
+
+// Get lockup information
+const getLockupInfo = async (accountId) => {
+  const data = await getAccountStateWithErrorHandling(accountId);
+  if (data) {
+    const lockup = data.lockup;
+    console.log(`Lockup deployed: ${lockup.isLockupDeployed}`);
+    console.log(`Lockup ID: ${lockup.lockupId}`);
+    console.log(`Lockup balance: ${lockup.lockupBalance.nears} NEAR`);
+    console.log(`Locked amount: ${lockup.lockedAmount.nears} NEAR`);
+    console.log(`Withdrawable amount: ${lockup.withdrawableAmount.nears} NEAR`);
+    console.log(`Staking pool: ${lockup.stakingPool}`);
+    console.log(`Until unlock: ${lockup.untilUnlock}`);
+  }
+};
+
+// Check lockup status
+const checkLockupStatus = async (accountId) => {
+  const data = await getAccountStateWithErrorHandling(accountId);
+  if (data) {
+    const lockup = data.lockup;
+    if (lockup.isLockupDeployed) {
+      console.log('Account has lockup deployed');
+      console.log(`Total lockup balance: ${lockup.lockupBalance.nears} NEAR`);
+      console.log(`Locked for voting: ${lockup.lockedAmount.nears} NEAR`);
+      console.log(`Available for withdrawal: ${lockup.withdrawableAmount.nears} NEAR`);
+      console.log(`Liquid balance: ${lockup.lockupLiquidAmount.nears} NEAR`);
+    } else {
+      console.log('Account does not have lockup deployed');
+    }
+  }
+};
+```
+
+### Search Proposals
+
+```javascript
+// Search proposals using semantic search
+const searchProposals = async (query) => {
+  const response = await fetch(`/api/tools/search-proposal?q=${encodeURIComponent(query)}`);
+  const data = await response.json();
+  console.log('Search results:', data.proposals);
+  console.log('Total found:', data.search.totalFound);
+};
+
+// Advanced search with filters
+const advancedSearch = async () => {
+  const params = new URLSearchParams({
+    q: 'treasury funding',
+    limit: '25'
+  });
+  
+  const response = await fetch(`/api/tools/search-proposal?${params}`);
+  const data = await response.json();
+  
+  console.log(`Found ${data.search.totalFound} proposals`);
+  
+  // Process search results
+  data.proposals.forEach(proposal => {
+    console.log(`Proposal ${proposal.id}: ${proposal.title}`);
+    console.log(`Status: ${proposal.status}`);
+  });
+};
+
+// Search by proposal ID
+const searchById = async (id) => {
+  const response = await fetch(`/api/tools/search-proposal?q=${id}`);
+  const data = await response.json();
+  return data.proposals[0]; // Should return the specific proposal
+};
+
+// Search with error handling
+const searchWithErrorHandling = async (query) => {
+  try {
+    const response = await fetch(`/api/tools/search-proposal?q=${encodeURIComponent(query)}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+    
+  } catch (error) {
+    console.error('Error searching proposals:', error);
+    return null;
+  }
+};
 ```
 
 ## Error Handling
@@ -285,6 +775,7 @@ The API uses centralized configuration from `@/app/config`:
 
 - `NEAR_RPC_URL`: NEAR RPC endpoint (defaults to testnet)
 - `VOTING_CONTRACT`: NEAR voting contract address
+- `OPENAI_API_KEY`: OpenAI API key for semantic search embeddings (required)
 
 ## Usage Examples
 
@@ -297,3 +788,5 @@ curl "http://localhost:3000/api/tools/get-proposal?proposalId=123"
 ```bash
 curl "http://localhost:3000/api/tools/fetch-recent-active-proposals?count=10"
 ``` 
+
+ 
