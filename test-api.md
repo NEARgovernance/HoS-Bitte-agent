@@ -95,47 +95,7 @@ curl "http://localhost:3000/api/tools/fetch-recent-active-proposals?count=3"
 }
 ```
 
-### 4. Create NEAR Transaction
-
-```bash
-# Create a transaction to send 1 NEAR
-curl "http://localhost:3000/api/tools/create-near-transaction?receiverId=user.near&amount=1"
-
-# Expected response:
-{
-  "transactionPayload": {
-    "receiverId": "user.near",
-    "actions": [
-      {
-        "type": "Transfer",
-        "params": {
-          "deposit": "1000000000000000000000000"
-        }
-      }
-    ]
-  }
-}
-
-# Create a transaction to send 0.5 NEAR
-curl "http://localhost:3000/api/tools/create-near-transaction?receiverId=user.near&amount=0.5"
-
-# Expected response:
-{
-  "transactionPayload": {
-    "receiverId": "user.near",
-    "actions": [
-      {
-        "type": "Transfer",
-        "params": {
-          "deposit": "500000000000000000000000"
-        }
-      }
-    ]
-  }
-}
-```
-
-### 5. Get Votes for Proposal
+### 4. Get Votes for Proposal
 
 ```bash
 # Get votes for a specific proposal
@@ -176,7 +136,7 @@ curl "http://localhost:3000/api/tools/get-votes?proposalId=123"
 }
 ```
 
-### 6. Get Delegators for Account
+### 5. Get Delegators for Account
 
 ```bash
 # Get delegators for a specific account
@@ -211,7 +171,7 @@ curl "http://localhost:3000/api/tools/get-delegators?accountId=delegate.near"
 }
 ```
 
-### 7. Create Proposal Transaction
+### 6. Create Proposal Transaction
 
 ```bash
 # Create a new proposal transaction
@@ -243,7 +203,7 @@ curl "http://localhost:3000/api/tools/create-proposal?title=Add%20New%20Feature%
 }
 ```
 
-### 8. Vote on Proposal
+### 7. Vote on Proposal
 
 ```bash
 # Vote "Yes" on proposal 123
@@ -341,7 +301,7 @@ curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId
 }
 ```
 
-### 9. Get veNEAR Balance
+### 8. Get veNEAR Balance
 
 ```bash
 # Get veNEAR balance for a specific account
@@ -410,7 +370,7 @@ curl "http://localhost:3000/api/tools/get-venear-balance?accountId=delegate.near
 }
 ```
 
-### 10. Get Account Balance
+### 9. Get Account Balance
 
 ```bash
 # Get NEAR account balance for a specific account
@@ -462,7 +422,7 @@ curl "http://localhost:3000/api/tools/get-account-balance?accountId="
 }
 ```
 
-### 11. Get veNEAR Balance
+### 10. Get veNEAR Balance
 
 ```bash
 # Get comprehensive veNEAR balance for a specific account
@@ -530,7 +490,7 @@ curl "http://localhost:3000/api/tools/get-venear-balance?accountId=newuser.near"
 }
 ```
 
-### 12. Get Account State
+### 11. Get Account State
 
 ```bash
 # Get comprehensive account state for a user
@@ -826,7 +786,7 @@ curl "http://localhost:3000/api/tools/lookup-state?accountId=nolockup.near"
 }
 ```
 
-### 11. Search Proposals
+### 12. Search Proposals
 
 ```bash
 # Basic search by query
@@ -1046,13 +1006,7 @@ curl "http://localhost:3000/api/tools/get-proposal"
   "error": "proposalId is required"
 }
 
-# Missing receiverId
-curl "http://localhost:3000/api/tools/create-near-transaction?amount=1"
 
-# Expected response:
-{
-  "error": "receiverId and amount are required parameters"
-}
 
 # Missing proposalId for votes
 curl "http://localhost:3000/api/tools/get-votes"
