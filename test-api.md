@@ -206,7 +206,7 @@ curl "http://localhost:3000/api/tools/create-proposal?title=Add%20New%20Feature%
 ### 7. Vote on Proposal
 
 ```bash
-# Vote "Yes" on proposal 123
+# Vote "Yes" on proposal 123 (with veNEAR balance check)
 curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=voter.near"
 
 # Expected response:
@@ -218,28 +218,28 @@ curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=Yes&accountId=vot
         "type": "FunctionCall",
         "params": {
           "methodName": "vote",
-          "gas": "300000000000000",
-          "deposit": "0",
-                      "args": {
-              "proposal_id": 123,
-              "vote": 0,
-              "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
-              "v_account": "voter.near"
-            }
+          "gas": "200000000000000",
+          "deposit": "1250000000000000000000",
+          "args": {
+            "proposal_id": 123,
+            "vote": 0,
+            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+            "v_account": "voter.near"
+          }
         }
       }
     ]
   },
-  "vote": {
+  "votingInfo": {
+    "accountId": "voter.near",
+    "votingPower": "1000000000000000000000000",
     "proposalId": 123,
     "vote": 0,
-    "accountId": "voter.near",
-    "merkleProof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
-    "vAccount": "voter.near"
+    "voteOption": "Yes"
   }
 }
 
-# Vote "No" on proposal 456
+# Vote "No" on proposal 456 (with veNEAR balance check)
 curl "http://localhost:3000/api/tools/vote?proposalId=456&vote=No&accountId=delegate.near"
 
 # Expected response:
@@ -251,53 +251,41 @@ curl "http://localhost:3000/api/tools/vote?proposalId=456&vote=No&accountId=dele
         "type": "FunctionCall",
         "params": {
           "methodName": "vote",
-          "gas": "300000000000000",
-          "deposit": "0",
-                      "args": {
-              "proposal_id": 456,
-              "vote": 1,
-              "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
-              "v_account": "delegate.near"
-            }
+          "gas": "200000000000000",
+          "deposit": "1250000000000000000000",
+          "args": {
+            "proposal_id": 456,
+            "vote": 1,
+            "merkle_proof": "eyJwcm9vZiI6InNvbWUtbWVya2xlLXByb29mLWRhdGEifQ==",
+            "v_account": "delegate.near"
+          }
         }
       }
     ]
   },
-  "vote": {
+  "votingInfo": {
+    "accountId": "delegate.near",
+    "votingPower": "5000000000000000000000000",
     "proposalId": 456,
     "vote": 1,
-    "votingPower": "500000000000000000000000"
+    "voteOption": "No"
   }
 }
 
-# Vote "Abstain" on proposal 789
-curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Abstain&accountId=user.near"
+# Error case: Account with no voting power
+curl "http://localhost:3000/api/tools/vote?proposalId=789&vote=Yes&accountId=novotingpower.near"
 
-# Expected response:
+# Expected error response:
 {
-  "transactionPayload": {
-    "receiverId": "voting.contract.near",
-    "actions": [
-      {
-        "type": "FunctionCall",
-        "params": {
-          "methodName": "vote",
-          "gas": "300000000000000",
-          "deposit": "0",
-                      "args": {
-              "proposal_id": 789,
-              "vote": 2,
-              "voting_power": "2500000000000000000000000"
-            }
-        }
-      }
-    ]
-  },
-  "vote": {
-    "proposalId": 789,
-    "vote": 2,
-    "votingPower": "2500000000000000000000000"
-  }
+  "error": "Account novotingpower.near has no voting power. Current voting power: 0"
+}
+
+# Error case: Invalid voting option
+curl "http://localhost:3000/api/tools/vote?proposalId=123&vote=InvalidOption&accountId=voter.near"
+
+# Expected error response:
+{
+  "error": "Invalid vote option \"InvalidOption\". Available options: 0: \"Yes\", 1: \"No\", 2: \"Abstain\""
 }
 ```
 

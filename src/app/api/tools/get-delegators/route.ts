@@ -47,9 +47,9 @@ async function fetchDelegators(accountId: string): Promise<Delegator[] | NextRes
     return NextResponse.json({ error: `RPC error: ${json.error.message}` }, { status: 500 });
   }
 
-  if (!json.result || !json.result.result || json.result.result.length === 0) {
-    return NextResponse.json({ error: `No delegators found for account ${accountId}` }, { status: 404 });
-  }
+      if (!json.result || !json.result.result || json.result.result.length === 0) {
+      return NextResponse.json({ error: `No delegators found for account ${accountId}` }, { status: 400 });
+    }
 
   // Convert byte array to string, then parse JSON
   const bytes = json.result.result;

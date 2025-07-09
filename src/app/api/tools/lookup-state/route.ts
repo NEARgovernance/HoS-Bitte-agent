@@ -92,7 +92,7 @@ async function fetchVeNEARBalance(accountId: string): Promise<AccountState | Nex
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `No veNEAR balance found for account ${accountId}` }, { status: 404 });
+      return NextResponse.json({ error: `No veNEAR balance found for account ${accountId}` }, { status: 400 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -229,7 +229,7 @@ async function fetchAccountBalance(accountId: string): Promise<{ accountBalance:
     }
 
     if (!json.result) {
-      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 404 });
+      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 400 });
     }
 
     return { accountBalance: json.result.amount || '0' };

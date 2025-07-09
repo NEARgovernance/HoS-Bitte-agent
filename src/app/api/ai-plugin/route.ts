@@ -569,7 +569,7 @@ export async function GET() {
             "/api/tools/vote": {
                 get: {
                     summary: "Create a vote transaction",
-                    description: "Creates a NEAR transaction payload for voting on a governance proposal",
+                    description: "Creates a NEAR transaction payload for voting on a governance proposal. Validates that the account has sufficient veNEAR voting power before allowing the vote.",
                     operationId: "vote",
                     parameters: [
                         {
@@ -655,14 +655,14 @@ export async function GET() {
                                                     }
                                                 }
                                             },
-                                            vote: {
+                                            votingInfo: {
                                                 type: "object",
                                                 properties: {
-                                                    proposalId: { type: "number" },
-                                                    vote: { type: "string" },
                                                     accountId: { type: "string" },
-                                                    merkleProof: { type: "string" },
-                                                    vAccount: { type: "string" }
+                                                    votingPower: { type: "string" },
+                                                    proposalId: { type: "number" },
+                                                    vote: { type: "number" },
+                                                    voteOption: { type: "string" }
                                                 }
                                             }
                                         }
