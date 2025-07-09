@@ -95,10 +95,8 @@ async function checkVeNearBalance(accountId: string): Promise<{ hasVotingPower: 
       request_type: "call_function",
       finality: "final",
       account_id: VENEAR_CONTRACT_ID,
-      method_name: "get_accounts",
-      args_base64: Buffer.from(JSON.stringify({ 
-        account_id: accountId,
-      })).toString("base64"),
+      method_name: "ft_balance_of",
+      args_base64: Buffer.from(JSON.stringify({ account_id: accountId })).toString("base64"),
     },
   };
 
@@ -120,19 +118,15 @@ async function checkVeNearBalance(accountId: string): Promise<{ hasVotingPower: 
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `No veNEAR account found for ${accountId}` }, { status: 400 });
+      return NextResponse.json({ error: `No veNEAR balance found for ${accountId}` }, { status: 400 });
     }
 
     // Convert byte array to string, then parse JSON
     const bytes = json.result.result;
     const raw = Buffer.from(bytes).toString("utf-8");
-    const accountData = JSON.parse(raw);
+    const balance = JSON.parse(raw);
 
-    if (!accountData || !accountData.voting_power) {
-      return NextResponse.json({ error: `No voting power found for account ${accountId}` }, { status: 400 });
-    }
-
-    const votingPower = accountData.voting_power;
+    const votingPower = balance || '0';
     const hasVotingPower = BigInt(votingPower) > BigInt(0);
 
     return {
