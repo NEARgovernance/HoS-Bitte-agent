@@ -139,6 +139,65 @@ async function checkVeNearBalance(accountId: string): Promise<{ hasVotingPower: 
   }
 }
 
+// Check if user has already voted on the proposal
+async function checkExistingVote(accountId: string, proposalId: number): Promise<{ hasVoted: boolean; existingVote?: any } | NextResponse> {
+  if (!VOTING_CONTRACT) {
+    return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
+  }
+
+  const payload = {
+    jsonrpc: "2.0",
+    id: "1",
+    method: "query",
+    params: {
+      request_type: "call_function",
+      finality: "final",
+      account_id: VOTING_CONTRACT,
+      method_name: "get_vote",
+      args_base64: Buffer.from(JSON.stringify({ 
+        account_id: accountId,
+        proposal_id: proposalId,
+      })).toString("base64"),
+    },
+  };
+
+  try {
+    const res = await fetch(NEAR_RPC_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    
+    if (!res.ok) {
+      return NextResponse.json({ error: `RPC request failed: ${res.status}` }, { status: 500 });
+    }
+
+    const json = await res.json();
+
+    if (json.error) {
+      return NextResponse.json({ error: `RPC error: ${json.error.message}` }, { status: 500 });
+    }
+
+    // If no result or empty result, user hasn't voted
+    if (!json.result || !json.result.result || json.result.result.length === 0) {
+      return { hasVoted: false };
+    }
+
+    // Convert byte array to string, then parse JSON
+    const bytes = json.result.result;
+    const raw = Buffer.from(bytes).toString("utf-8");
+    const existingVote = JSON.parse(raw);
+
+    return {
+      hasVoted: true,
+      existingVote
+    };
+  } catch (error) {
+    console.error('Error checking existing vote:', error);
+    return NextResponse.json({ error: 'Failed to check existing vote' }, { status: 500 });
+  }
+}
+
 // Fetch merkle proof and vAccount from veNEAR contract
 async function getProof(accountId: string, snapshotBlockHeight?: number): Promise<{ merkleProof: string; vAccount: string } | NextResponse> {
   if (!VENEAR_CONTRACT_ID) {
@@ -157,7 +216,6 @@ async function getProof(accountId: string, snapshotBlockHeight?: number): Promis
       args_base64: Buffer.from(JSON.stringify({ 
         account_id: accountId,
       })).toString("base64"),
-      blockId: snapshotBlockHeight,
     },
   };
 
@@ -307,6 +365,19 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
+    // Check if user has already voted on this proposal
+    const existingVoteResult = await checkExistingVote(accountId, id);
+    if (existingVoteResult instanceof NextResponse) {
+      return existingVoteResult;
+    }
+    const { hasVoted, existingVote } = existingVoteResult;
+
+    if (hasVoted) {
+      return NextResponse.json({ 
+        error: `Account ${accountId} has already voted on proposal ${id}. Existing vote: ${JSON.stringify(existingVote)}` 
+      }, { status: 400 });
+    }
+
     // Fetch merkle proof and vAccount
     const proofResult = await getProof(accountId, snapshotBlockHeight);
     if (proofResult instanceof NextResponse) {
@@ -348,7 +419,9 @@ export async function GET(request: Request) {
         votingPower,
         proposalId: id,
         vote: voteIndex,
-        voteOption: vote
+        voteOption: vote,
+        hasVoted: false,
+        existingVote: null
       }
     });
 

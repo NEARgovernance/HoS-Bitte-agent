@@ -41,14 +41,14 @@ Access the OpenAPI specification at `GET /api/ai-plugin`
 - **GET** `/api/tools/get-proposal?proposalId={id}` - Get proposal details
 - **GET** `/api/tools/get-recent-proposals?count={number}` - Fetch recent proposals
 - **GET** `/api/tools/get-recent-active-proposals?count={number}` - Fetch active proposals
-- **GET** `/api/tools/get-votes?proposalId={id}` - Get proposal votes
+
 - **GET** `/api/tools/get-delegators?accountId={account}` - Get account delegators
 - **GET** `/api/tools/create-proposal?title={title}&description={description}&votingOptions={options}` - Create proposal transaction
 - **GET** `/api/tools/vote?proposalId={id}&vote={choice}&accountId={account}` - Vote on proposal
 - **GET** `/api/tools/get-account-balance?accountId={account}` - Get NEAR balance
 - **GET** `/api/tools/get-venear-balance?accountId={account}` - Get veNEAR balance
 - **GET** `/api/tools/get-account-state?accountId={account}` - Get comprehensive account state
-- **GET** `/api/tools/lookup-state?accountId={account}` - Alias for get-account-state
+
 - **GET** `/api/tools/search-proposal?q={query}&limit={number}` - Search proposals
 
 ## Examples
