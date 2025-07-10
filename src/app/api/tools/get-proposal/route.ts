@@ -54,9 +54,9 @@ async function fetchProposal(proposalId: string): Promise<Proposal | NextRespons
     return NextResponse.json({ error: `RPC error: ${json.error.message}` }, { status: 500 });
   }
 
-  if (!json.result || !json.result.result || json.result.result.length === 0) {
-    return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 404 });
-  }
+      if (!json.result || !json.result.result || json.result.result.length === 0) {
+      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+    }
 
   // Convert byte array to string, then parse JSON
   const bytes = json.result.result;

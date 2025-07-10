@@ -45,7 +45,6 @@ export async function GET(request: Request) {
         }),
       }
     );
-
     if (!totalRes.ok) {
       return NextResponse.json({ error: `Failed to get active proposal count: ${totalRes.status}` }, { status: 500 });
     }

@@ -92,7 +92,7 @@ async function fetchVeNEARBalance(accountId: string): Promise<AccountState | Nex
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `No veNEAR balance found for account ${accountId}` }, { status: 404 });
+      return NextResponse.json({ error: `No veNEAR balance found for account ${accountId}` }, { status: 400 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -229,7 +229,7 @@ async function fetchAccountBalance(accountId: string): Promise<{ accountBalance:
     }
 
     if (!json.result) {
-      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 404 });
+      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 400 });
     }
 
     return { accountBalance: json.result.amount || '0' };
@@ -240,21 +240,38 @@ async function fetchAccountBalance(accountId: string): Promise<{ accountBalance:
 }
 
 // Define lockup info interface
+// LockupInfo contains comprehensive information about a user's lockup contract and staking status
+// This includes deployment status, balances, timestamps, costs, and staking pool information
 interface LockupInfo {
+  /** Whether the lockup contract has been deployed for this account */
   isLockupDeployed: boolean;
+  /** The lockup account ID (e.g., "lockup.user.near") or null if not deployed */
   lockupId: string | null;
+  /** Total balance in the lockup contract (in yoctoNEAR) */
   lockupBalance: string;
+  /** Whether all lockup information has been successfully fetched */
   lockupInfoReady: boolean;
+  /** Amount of NEAR locked in the lockup contract (in yoctoNEAR) */
   lockedAmount: string;
+  /** Liquid balance owned by the main account in the lockup contract (in yoctoNEAR) */
   lockupLiquidOwnersBalance: string;
+  /** Liquid amount available in the lockup contract (in yoctoNEAR) */
   lockupLiquidAmount: string;
+  /** Amount that can be withdrawn from the lockup contract (in yoctoNEAR) */
   withdrawableAmount: string;
+  /** Pending amount in the lockup contract (in yoctoNEAR) */
   lockupPendingAmount: string;
+  /** Unlock timestamp in nanoseconds (when locked funds become available) */
   lockupUnlockTimestampNs: string | null;
+  /** Human-readable unlock time (ISO string) */
   untilUnlock: string | null;
+  /** Cost to register with the veNEAR contract (in yoctoNEAR) */
   registrationCost: string;
+  /** Cost to deploy the lockup contract (in yoctoNEAR) */
   lockupCost: string;
+  /** Staking pool account ID where funds are staked, or null if not staked */
   stakingPool: string | null;
+  /** Known deposited balance in the staking pool (in yoctoNEAR) */
   knownDepositedBalance: string;
 }
 

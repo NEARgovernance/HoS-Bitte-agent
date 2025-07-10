@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     }
 
     if (!json.result) {
-      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 404 });
+      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 400 });
     }
 
     const accountBalance = json.result.amount || '0';
