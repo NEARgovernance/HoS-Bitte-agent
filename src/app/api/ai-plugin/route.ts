@@ -1166,8 +1166,8 @@ export async function GET() {
                             }
                         }
                     }
-                                    }
-                },
+                }
+            },
             "/api/tools/approve-proposal": {
                 get: {
                     summary: "Approve a governance proposal",
@@ -1271,7 +1271,6 @@ export async function GET() {
                                         type: "object",
                                         properties: {
                                             error: { type: "string" }
-                                            }
                                         }
                                     }
                                 }
@@ -1279,8 +1278,10 @@ export async function GET() {
                         }
                     }
                 }
+            }
         }
     }
+}
 }
     return NextResponse.json(pluginData);
 }
