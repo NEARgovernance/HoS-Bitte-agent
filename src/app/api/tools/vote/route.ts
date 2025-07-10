@@ -139,8 +139,12 @@ async function checkVeNearBalance(accountId: string): Promise<{ hasVotingPower: 
   }
 }
 
+// Minimal type for existingVote
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// type ExistingVote = any;
+
 // Check if user has already voted on the proposal
-async function checkExistingVote(accountId: string, proposalId: number): Promise<{ hasVoted: boolean; existingVote?: any } | NextResponse> {
+async function checkExistingVote(accountId: string, proposalId: number): Promise<{ hasVoted: boolean; existingVote?: unknown } | NextResponse> {
   if (!VOTING_CONTRACT) {
     return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
   }
@@ -199,7 +203,7 @@ async function checkExistingVote(accountId: string, proposalId: number): Promise
 }
 
 // Fetch merkle proof and vAccount from veNEAR contract
-async function getProof(accountId: string, snapshotBlockHeight?: number): Promise<{ merkleProof: string; vAccount: string } | NextResponse> {
+async function getProof(accountId: string): Promise<{ merkleProof: string; vAccount: string } | NextResponse> {
   if (!VENEAR_CONTRACT_ID) {
     return NextResponse.json({ error: 'VENEAR_CONTRACT_ID environment variable not set' }, { status: 500 });
   }
@@ -335,9 +339,6 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
-    const snapshotBlockHeight =
-      proposal?.snapshot_and_state?.snapshot?.block_height;
-
     // Find the index of the voting option
     const voteIndex = proposal.voting_options.findIndex((option: string) => option === vote);
     if (voteIndex === -1) {
@@ -379,7 +380,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch merkle proof and vAccount
-    const proofResult = await getProof(accountId, snapshotBlockHeight);
+    const proofResult = await getProof(accountId);
     if (proofResult instanceof NextResponse) {
       return proofResult;
     }
