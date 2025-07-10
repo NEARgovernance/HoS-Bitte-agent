@@ -349,7 +349,7 @@ export async function GET() {
                         {
                             name: "title",
                             in: "query",
-                            required: true,
+                        required: true,
                             schema: {
                                 type: "string"
                             },
@@ -386,16 +386,16 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
                                                     receiverId: {
-                                                        type: "string",
+                                            type: "string",
                                                         description: "The voting contract account ID"
                                                     },
                                                     actions: {
@@ -426,10 +426,10 @@ export async function GET() {
                                                                             type: "object",
                                                                             properties: {
                                                                                 metadata: {
-                                                                                    type: "object",
-                                                                                    properties: {
-                                                                                        title: { type: "string" },
-                                                                                        description: { type: "string" },
+                                            type: "object",
+                                            properties: {
+                                                title: { type: "string" },
+                                                description: { type: "string" },
                                                                                         link: { type: "string" },
                                                                                         voting_options: {
                                                                                             type: "array",
@@ -475,12 +475,12 @@ export async function GET() {
                                             details: { type: "string" }
                                         }
                                     }
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-            },
+                    },
             "/api/tools/vote": {
                 get: {
                     summary: "Create a vote transaction",
@@ -717,7 +717,7 @@ export async function GET() {
                         {
                             name: "accountId",
                             in: "query",
-                            required: true,
+                        required: true,
                             schema: {
                                 type: "string"
                             },
@@ -727,11 +727,11 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             accountId: { type: "string" },
                                             tokenBalance: {
                                                 type: "object",
@@ -743,9 +743,9 @@ export async function GET() {
                                                 }
                                             },
                                             detailedBalance: {
-                                                type: "object",
+                                            type: "object",
                                                 nullable: true,
-                                                properties: {
+                                            properties: {
                                                     raw: { type: "string" },
                                                     nears: { type: "string" },
                                                     lockedBalance: {
@@ -791,10 +791,10 @@ export async function GET() {
                                                 }
                                             }
                                         }
-                                    }
                                 }
                             }
-                        },
+                        }
+                    },
                         "400": {
                             description: "Bad request",
                             content: {
@@ -1166,11 +1166,121 @@ export async function GET() {
                             }
                         }
                     }
+                                    }
+                },
+            "/api/tools/approve-proposal": {
+                get: {
+                    summary: "Approve a governance proposal",
+                    description: "Approves a governance proposal by authorized users (owner, guardian, or reviewer). Only proposals with status 'Created' can be approved.",
+                    operationId: "approve-proposal",
+                    parameters: [
+                        {
+                            name: "proposalId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The ID of the proposal to approve"
+                        },
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The NEAR account ID of the approver"
+                        },
+
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful approval transaction payload",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                                                                        transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string" },
+                                                                        gas: { type: "string" },
+                                                                        deposit: { type: "string" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                proposal_id: { type: "number" },
+                                                                                voting_start_time_sec: { type: "null" }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "403": {
+                            description: "Forbidden - insufficient permissions",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Server error",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            error: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-            }
         }
     }
-}
 }
     return NextResponse.json(pluginData);
 }
