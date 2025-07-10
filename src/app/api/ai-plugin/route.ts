@@ -253,13 +253,13 @@ export async function GET() {
                                         properties: {
                                             error: { type: "string" },
                                             details: { type: "string" }
-                                        }
                                     }
                                 }
                             }
                         }
                     }
-                },
+                }
+            },
             "/api/tools/get-delegators": {
                 get: {
                     summary: "Get delegators for an account",
@@ -386,11 +386,11 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Successful response",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
@@ -475,12 +475,12 @@ export async function GET() {
                                             details: { type: "string" }
                                         }
                                     }
-                                        }
-                                    }
                                 }
                             }
                         }
-                    },
+                    }
+                }
+            },
             "/api/tools/vote": {
                 get: {
                     summary: "Create a vote transaction",
@@ -490,7 +490,7 @@ export async function GET() {
                         {
                             name: "proposalId",
                             in: "query",
-                            required: true,
+                        required: true,
                             schema: {
                                 type: "string"
                             },
@@ -518,23 +518,23 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
                                                     receiverId: {
-                                                        type: "string",
+                                            type: "string",
                                                         description: "The voting contract account ID"
-                                                    },
+                                        },
                                                     actions: {
                                                         type: "array",
                                                         items: {
-                                                            type: "object",
-                                                            properties: {
+                                            type: "object",
+                                            properties: {
                                                                 type: {
                                                                     type: "string",
                                                                     description: "The type of action (FunctionCall)"
@@ -547,7 +547,7 @@ export async function GET() {
                                                                             description: "The contract method to call (vote)"
                                                                         },
                                                                         gas: {
-                                                                            type: "string",
+                                            type: "string",
                                                                             description: "Gas limit in gas units (200 Tgas = 200000000000000)"
                                                                         },
                                                                         deposit: {
@@ -564,12 +564,12 @@ export async function GET() {
                                                                         }
                                                                     }
                                                                 }
-                                                            }
-                                                        }
-                                                    }
-                                                    }
-                                                }
-                                            },
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                                             votingInfo: {
                                                 type: "object",
                                                 properties: {
@@ -717,7 +717,7 @@ export async function GET() {
                         {
                             name: "accountId",
                             in: "query",
-                        required: true,
+                            required: true,
                             schema: {
                                 type: "string"
                             },
@@ -858,15 +858,15 @@ export async function GET() {
                                                 }
                                             },
                                             veNearTokenBalance: {
-                                                type: "object",
-                                                properties: {
+                                                            type: "object",
+                                                            properties: {
                                                     raw: { type: "string" },
                                                     nears: { type: "string" }
                                                 }
                                             },
                                             balance: {
-                                                type: "object",
-                                                properties: {
+                                                                    type: "object",
+                                                                    properties: {
                                                     raw: { type: "string" },
                                                     nears: { type: "string" }
                                                 }
@@ -1044,12 +1044,12 @@ export async function GET() {
                                         properties: {
                                             error: { type: "string" },
                                             details: { type: "string" }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
                 },
             "/api/tools/search-proposal": {
                 get: {
@@ -1166,8 +1166,8 @@ export async function GET() {
                             }
                         }
                     }
-                }
-            },
+                                    }
+                },
             "/api/tools/approve-proposal": {
                 get: {
                     summary: "Approve a governance proposal",
@@ -1271,6 +1271,7 @@ export async function GET() {
                                         type: "object",
                                         properties: {
                                             error: { type: "string" }
+                                            }
                                         }
                                     }
                                 }
@@ -1278,10 +1279,8 @@ export async function GET() {
                         }
                     }
                 }
-            }
         }
     }
-}
-}
+}}
     return NextResponse.json(pluginData);
 }
