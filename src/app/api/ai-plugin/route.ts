@@ -26,6 +26,7 @@ export async function GET() {
         paths: {
             "/api/tools/approve-proposal": {
                 get: {
+                    operationId: "approveProposal",
                     summary: "Approve a governance proposal",
                     description: "Generate a NEAR transaction payload to approve a governance proposal. Requires appropriate permissions (owner, guardian, or reviewer role).",
                     parameters: [
@@ -110,6 +111,7 @@ export async function GET() {
             },
             "/api/tools/create-proposal": {
                 get: {
+                    operationId: "createProposal",
                     summary: "Create a new governance proposal",
                     description: "Generate a NEAR transaction payload to create a new governance proposal",
                     parameters: [
@@ -216,6 +218,7 @@ export async function GET() {
             },
             "/api/tools/get-account-balance": {
                 get: {
+                    operationId: "getAccountBalance",
                     summary: "Get NEAR account balance",
                     description: "Fetch the NEAR balance for a specific account",
                     parameters: [
@@ -268,6 +271,7 @@ export async function GET() {
             },
             "/api/tools/get-account-state": {
                 get: {
+                    operationId: "getAccountState",
                     summary: "Get comprehensive account state",
                     description: "Fetch detailed account state including veNEAR balance, delegation info, and lockup details",
                     parameters: [
@@ -355,6 +359,7 @@ export async function GET() {
             },
             "/api/tools/get-delegators": {
                 get: {
+                    operationId: "getDelegators",
                     summary: "Get delegators for an account",
                     description: "Fetch all delegators for a specific delegate account",
                     parameters: [
@@ -412,6 +417,7 @@ export async function GET() {
             },
             "/api/tools/get-proposal": {
                 get: {
+                    operationId: "getProposal",
                     summary: "Get a specific proposal",
                     description: "Fetch details of a specific governance proposal by ID",
                     parameters: [
@@ -463,6 +469,7 @@ export async function GET() {
             },
             "/api/tools/get-recent-active-proposals": {
                 get: {
+                    operationId: "getRecentActiveProposals",
                     summary: "Get recent active proposals",
                     description: "Fetch recent proposals that are currently active for voting",
                     parameters: [
@@ -521,6 +528,7 @@ export async function GET() {
             },
             "/api/tools/get-recent-proposals": {
                 get: {
+                    operationId: "getRecentProposals",
                     summary: "Get recent proposals",
                     description: "Fetch recent governance proposals (all statuses)",
                     parameters: [
@@ -579,6 +587,7 @@ export async function GET() {
             },
             "/api/tools/get-venear-balance": {
                 get: {
+                    operationId: "getVeNearBalance",
                     summary: "Get veNEAR balance",
                     description: "Fetch veNEAR token balance and detailed balance information for an account",
                     parameters: [
@@ -674,6 +683,7 @@ export async function GET() {
             },
             "/api/tools/search-proposal": {
                 get: {
+                    operationId: "searchProposal",
                     summary: "Search proposals",
                     description: "Search governance proposals using semantic search with vector embeddings",
                     parameters: [
@@ -743,6 +753,7 @@ export async function GET() {
             },
             "/api/tools/vote": {
                 get: {
+                    operationId: "vote",
                     summary: "Vote on a proposal",
                     description: "Generate a NEAR transaction payload to vote on a governance proposal",
                     parameters: [
