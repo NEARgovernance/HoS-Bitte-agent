@@ -77,8 +77,12 @@ export async function GET() {
                                                                             type: "object",
                                                                             properties: {
                                                                                 proposal_id: { type: "integer" },
-                                                                                voting_start_time_sec: { type: "null" }
-                                                                            }
+                                                                                voting_start_time_sec: {
+                                                                                    type: "integer",
+                                                                                    nullable: true
+                                                                                }
+                                                                            },
+                                                                            required: ["proposal_id", "voting_start_time_sec"]
                                                                         }
                                                                     }
                                                                 }
@@ -183,9 +187,11 @@ export async function GET() {
                                                                                             type: "array",
                                                                                             items: { type: "string" }
                                                                                         }
-                                                                                    }
+                                                                                    },
+                                                                                    required: ["title", "description", "voting_options"]
                                                                                 }
-                                                                            }
+                                                                            },
+                                                                            required: ["metadata"]
                                                                         }
                                                                     }
                                                                 }
@@ -799,7 +805,8 @@ export async function GET() {
                                                                                 vote: { type: "integer" },
                                                                                 merkle_proof: { type: "string" },
                                                                                 v_account: { type: "string" }
-                                                                            }
+                                                                            },
+                                                                            required: ["proposal_id", "vote", "merkle_proof", "v_account"]
                                                                         }
                                                                     }
                                                                 }
