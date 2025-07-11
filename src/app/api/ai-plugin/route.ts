@@ -24,368 +24,34 @@ export async function GET() {
             },
         },
         paths: {
-            "/api/tools/get-proposal": {
+            "/api/tools/approve-proposal": {
                 get: {
-                    summary: "Get proposal details",
-                    description: "Gets detailed information about a specific governance proposal",
-                    operationId: "get-proposal",
+                    summary: "Approve a governance proposal",
+                    description: "Generate a NEAR transaction payload to approve a governance proposal. Requires appropriate permissions (owner, guardian, or reviewer role).",
                     parameters: [
                         {
                             name: "proposalId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string"
-                            },
-                            description: "The ID of the proposal to fetch"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            proposal: {
-                                                type: "object",
-                                                description: "The proposal details",
-                                                properties: {
-                                                    id: { type: "number" },
-                                                    title: { type: "string" },
-                                                    description: { type: "string" },
-                                                    link: { type: "string" },
-                                                    deadline: { type: "string" },
-                                                    voting_power: { type: "string" }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "404": {
-                            description: "Proposal not found",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "/api/tools/get-recent-proposals": {
-                get: {
-                    summary: "Fetch recent proposals",
-                    description: "Fetches the most recent governance proposals from the voting contract",
-                    operationId: "get-recent-proposals",
-                    parameters: [
-                        {
-                            name: "count",
-                            in: "query",
-                            required: false,
-                            schema: {
                                 type: "integer",
-                                minimum: 1,
-                                maximum: 50
-                            },
-                            description: "Number of proposals to fetch (1-50, default: 5)"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            proposals: {
-                                                type: "array",
-                                                items: {
-                                                    type: "object",
-                                                    properties: {
-                                                        id: { type: "number" },
-                                                        title: { type: "string" },
-                                                        description: { type: "string" },
-                                                        status: { type: "string" }
-                                                    }
-                                                }
-                                            },
-                                            totalCount: { type: "number" },
-                                            fromIndex: { type: "number" },
-                                            limit: { type: "number" }
-                                        }
-                                    }
-                                }
+                                minimum: 0,
+                                description: "The ID of the proposal to approve"
                             }
                         },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "/api/tools/get-recent-active-proposals": {
-                get: {
-                    summary: "Fetch recent active proposals",
-                    description: "Fetches the most recent proposals that have been approved for voting",
-                    operationId: "get-recent-active-proposals",
-                    parameters: [
-                        {
-                            name: "count",
-                            in: "query",
-                            required: false,
-                            schema: {
-                                type: "integer",
-                                minimum: 1,
-                                maximum: 50
-                            },
-                            description: "Number of proposals to fetch (1-50, default: 5)"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            proposals: {
-                                                type: "array",
-                                                items: {
-                                                    type: "object",
-                                                    properties: {
-                                                        id: { type: "number" },
-                                                        title: { type: "string" },
-                                                        description: { type: "string" },
-                                                        snapshot_block: { type: "number" },
-                                                        total_voting_power: { type: "string" }
-                                                    }
-                                                }
-                                            },
-                                            totalCount: { type: "number" },
-                                            fromIndex: { type: "number" },
-                                            limit: { type: "number" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "/api/tools/get-delegators": {
-                get: {
-                    summary: "Get delegators for an account",
-                    description: "Fetches all delegators for a specific account to provide voter-delegate context",
-                    operationId: "get-delegators",
-                    parameters: [
                         {
                             name: "accountId",
                             in: "query",
-                        required: true,
+                            required: true,
                             schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID to get delegators for"
+                                type: "string",
+                                description: "The account ID requesting approval"
+                            }
                         }
                     ],
                     responses: {
                         "200": {
-                            description: "Successful response",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                            accountId: { type: "string" },
-                                            delegators: {
-                                                type: "array",
-                                                items: {
-                                                    type: "object",
-                                                    properties: {
-                                                        delegator: { type: "string" },
-                                                        delegated_power: { type: "string" },
-                                                        delegation_date: { type: "string" }
-                                                    }
-                                                }
-                                            },
-                                            delegationStats: {
-                                            type: "object",
-                                            properties: {
-                                                    accountId: { type: "string" },
-                                                    totalDelegators: { type: "number" },
-                                                    totalDelegatedPower: { type: "string" },
-                                                    averageDelegation: { type: "string" }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-            "/api/tools/create-proposal": {
-                get: {
-                    summary: "Create a proposal transaction",
-                    description: "Creates a NEAR transaction payload for creating a new governance proposal",
-                    operationId: "create-proposal",
-                    parameters: [
-                        {
-                            name: "title",
-                            in: "query",
-                        required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The title of the proposal"
-                        },
-                        {
-                            name: "description",
-                            in: "query",
-                            required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The description of the proposal"
-                        },
-                        {
-                            name: "link",
-                            in: "query",
-                            required: false,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "Optional link to additional information"
-                        },
-                        {
-                            name: "votingOptions",
-                            in: "query",
-                            required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "Comma-separated list of voting options (e.g., 'Yes,No,Abstain')"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
+                            description: "Approval transaction payload generated successfully",
                             content: {
                                 "application/json": {
                                     schema: {
@@ -394,42 +60,124 @@ export async function GET() {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
-                                                    receiverId: {
-                                            type: "string",
-                                                        description: "The voting contract account ID"
-                                                    },
+                                                    receiverId: { type: "string" },
                                                     actions: {
                                                         type: "array",
                                                         items: {
                                                             type: "object",
                                                             properties: {
-                                                                type: {
-                                                                    type: "string",
-                                                                    description: "The type of action (FunctionCall)"
-                                                                },
+                                                                type: { type: "string" },
                                                                 params: {
                                                                     type: "object",
                                                                     properties: {
-                                                                        methodName: {
-                                                                            type: "string",
-                                                                            description: "The contract method to call (create_proposal)"
-                                                                        },
-                                                                        gas: {
-                                                                            type: "string",
-                                                                            description: "Gas limit in gas units"
-                                                                        },
-                                                                        deposit: {
-                                                                            type: "string",
-                                                                            description: "Deposit amount in yoctoNEAR"
-                                                                        },
+                                                                        methodName: { type: "string" },
+                                                                        gas: { type: "string" },
+                                                                        deposit: { type: "string" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                proposal_id: { type: "integer" },
+                                                                                voting_start_time_sec: { type: "null" }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters or proposal cannot be approved"
+                        },
+                        "403": {
+                            description: "Forbidden - insufficient permissions"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/create-proposal": {
+                get: {
+                    summary: "Create a new governance proposal",
+                    description: "Generate a NEAR transaction payload to create a new governance proposal",
+                    parameters: [
+                        {
+                            name: "title",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "The title of the proposal"
+                            }
+                        },
+                        {
+                            name: "description",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "The description of the proposal"
+                            }
+                        },
+                        {
+                            name: "link",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "string",
+                                description: "Optional link to additional information"
+                            }
+                        },
+                        {
+                            name: "votingOptions",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "Comma-separated list of voting options"
+                            }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Proposal creation transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string" },
+                                                                        gas: { type: "string" },
+                                                                        deposit: { type: "string" },
                                                                         args: {
                                                                             type: "object",
                                                                             properties: {
                                                                                 metadata: {
-                                            type: "object",
-                                            properties: {
-                                                title: { type: "string" },
-                                                description: { type: "string" },
+                                                                                    type: "object",
+                                                                                    properties: {
+                                                                                        title: { type: "string" },
+                                                                                        description: { type: "string" },
                                                                                         link: { type: "string" },
                                                                                         voting_options: {
                                                                                             type: "array",
@@ -452,194 +200,32 @@ export async function GET() {
                             }
                         },
                         "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Bad request - missing required parameters"
                         },
                         "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Internal server error"
                         }
                     }
                 }
             },
-            "/api/tools/vote": {
-                get: {
-                    summary: "Create a vote transaction",
-                    description: "Creates a NEAR transaction payload for voting on a governance proposal. Validates that the account has sufficient veNEAR voting power and hasn't already voted before allowing the vote.",
-                    operationId: "vote",
-                    parameters: [
-                        {
-                            name: "proposalId",
-                            in: "query",
-                        required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The ID of the proposal to vote on"
-                        },
-                        {
-                            name: "vote",
-                            in: "query",
-                            required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The voting option text (e.g., 'Yes', 'No', 'Lebron James', etc.)"
-                        },
-                        {
-                            name: "accountId",
-                            in: "query",
-                            required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID of the voter"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                            transactionPayload: {
-                                                type: "object",
-                                                properties: {
-                                                    receiverId: {
-                                            type: "string",
-                                                        description: "The voting contract account ID"
-                                        },
-                                                    actions: {
-                                                        type: "array",
-                                                        items: {
-                                            type: "object",
-                                            properties: {
-                                                                type: {
-                                                                    type: "string",
-                                                                    description: "The type of action (FunctionCall)"
-                                                                },
-                                                                params: {
-                                                                    type: "object",
-                                                                    properties: {
-                                                                        methodName: {
-                                                                            type: "string",
-                                                                            description: "The contract method to call (vote)"
-                                                                        },
-                                                                        gas: {
-                                            type: "string",
-                                                                            description: "Gas limit in gas units (200 Tgas = 200000000000000)"
-                                                                        },
-                                                                        deposit: {
-                                                                            type: "string",
-                                                                            description: "Deposit amount in yoctoNEAR"
-                                                                        },
-                                                                        args: {
-                                                                            type: "object",
-                                                                            properties: {
-                                                                                proposal_id: { type: "number" },
-                                                                                vote: { type: "string" },
-                                                                                merkle_proof: { type: "string" },
-                                                                                v_account: { type: "string" }
-                                                                        }
-                                                                    }
-                                                                }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                                            votingInfo: {
-                                                type: "object",
-                                                properties: {
-                                                    accountId: { type: "string" },
-                                                    votingPower: { type: "string" },
-                                                    proposalId: { type: "number" },
-                                                    vote: { type: "number" },
-                                                    voteOption: { type: "string" },
-                                                    hasVoted: { type: "boolean" },
-                                                    existingVote: { 
-                                                        type: "object",
-                                                        nullable: true,
-                                                        description: "Existing vote data if user has already voted"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-
             "/api/tools/get-account-balance": {
                 get: {
                     summary: "Get NEAR account balance",
-                    description: "Gets the NEAR account balance for a given account ID",
-                    operationId: "get-account-balance",
+                    description: "Fetch the NEAR balance for a specific account",
                     parameters: [
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID to get balance for"
+                                type: "string",
+                                description: "The NEAR account ID"
+                            }
                         }
                     ],
                     responses: {
                         "200": {
-                            description: "Successful response",
+                            description: "Account balance retrieved successfully",
                             content: {
                                 "application/json": {
                                     schema: {
@@ -666,72 +252,348 @@ export async function GET() {
                             }
                         },
                         "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "404": {
-                            description: "Account not found",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Bad request - invalid account ID"
                         },
                         "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Internal server error"
                         }
                     }
                 }
             },
-            "/api/tools/get-venear-balance": {
+            "/api/tools/get-account-state": {
                 get: {
-                    summary: "Get comprehensive veNEAR balance",
-                    description: "Gets both token balance (ft_balance_of) and detailed balance information (get_accounts) for veNEAR",
-                    operationId: "get-venear-balance",
+                    summary: "Get comprehensive account state",
+                    description: "Fetch detailed account state including veNEAR balance, delegation info, and lockup details",
                     parameters: [
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID to get veNEAR balance for"
+                                type: "string",
+                                description: "The NEAR account ID"
+                            }
                         }
                     ],
                     responses: {
                         "200": {
-                            description: "Successful response",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
+                            description: "Account state retrieved successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            accountId: { type: "string" },
+                                            balance: { type: "string" },
+                                            locked_balance: { type: "string" },
+                                            unlock_time: { type: "string" },
+                                            voting_power: { type: "string" },
+                                            delegation_power: { type: "string" },
+                                            total_power: { type: "string" },
+                                            is_delegator: { type: "boolean" },
+                                            is_delegate: { type: "boolean" },
+                                            delegated_to: { type: "string" },
+                                            delegators_count: { type: "integer" },
+                                            total_delegated_power: { type: "string" },
+                                            last_vote: {
+                                                type: "object",
+                                                properties: {
+                                                    proposal_id: { type: "integer" },
+                                                    vote: { type: "string" },
+                                                    timestamp: { type: "string" }
+                                                }
+                                            },
+                                            governance_stats: {
+                                                type: "object",
+                                                properties: {
+                                                    total_votes: { type: "integer" },
+                                                    yes_votes: { type: "integer" },
+                                                    no_votes: { type: "integer" },
+                                                    abstain_votes: { type: "integer" },
+                                                    participation_rate: { type: "number" }
+                                                }
+                                            },
+                                            lockupInfo: {
+                                                type: "object",
+                                                properties: {
+                                                    isLockupDeployed: { type: "boolean" },
+                                                    lockupId: { type: "string" },
+                                                    lockupBalance: { type: "string" },
+                                                    lockupInfoReady: { type: "boolean" },
+                                                    lockedAmount: { type: "string" },
+                                                    lockupLiquidOwnersBalance: { type: "string" },
+                                                    lockupLiquidAmount: { type: "string" },
+                                                    withdrawableAmount: { type: "string" },
+                                                    lockupPendingAmount: { type: "string" },
+                                                    lockupUnlockTimestampNs: { type: "string" },
+                                                    untilUnlock: { type: "string" },
+                                                    registrationCost: { type: "string" },
+                                                    lockupCost: { type: "string" },
+                                                    stakingPool: { type: "string" },
+                                                    knownDepositedBalance: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid account ID or no veNEAR balance found"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-delegators": {
+                get: {
+                    summary: "Get delegators for an account",
+                    description: "Fetch all delegators for a specific delegate account",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "The delegate account ID"
+                            }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Delegators retrieved successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            accountId: { type: "string" },
+                                            delegators: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        delegator: { type: "string" },
+                                                        delegated_power: { type: "string" },
+                                                        delegation_date: { type: "string" }
+                                                    }
+                                                }
+                                            },
+                                            delegationStats: {
+                                                type: "object",
+                                                properties: {
+                                                    totalDelegators: { type: "integer" },
+                                                    totalDelegatedPower: { type: "string" },
+                                                    averageDelegation: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid account ID or no delegators found"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-proposal": {
+                get: {
+                    summary: "Get a specific proposal",
+                    description: "Fetch details of a specific governance proposal by ID",
+                    parameters: [
+                        {
+                            name: "proposalId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "The proposal ID"
+                            }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Proposal retrieved successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            proposal: {
+                                                type: "object",
+                                                properties: {
+                                                    id: { type: "integer" },
+                                                    title: { type: "string" },
+                                                    description: { type: "string" },
+                                                    link: { type: "string" },
+                                                    deadline: { type: "string" },
+                                                    voting_power: { type: "string" },
+                                                    status: { type: "string" },
+                                                    snapshot_block: { type: "integer" },
+                                                    total_voting_power: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid proposal ID or proposal does not exist"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-recent-active-proposals": {
+                get: {
+                    summary: "Get recent active proposals",
+                    description: "Fetch recent proposals that are currently active for voting",
+                    parameters: [
+                        {
+                            name: "count",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "integer",
+                                minimum: 1,
+                                maximum: 50,
+                                default: 5,
+                                description: "Number of proposals to fetch (1-50)"
+                            }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Active proposals retrieved successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            proposals: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        id: { type: "integer" },
+                                                        title: { type: "string" },
+                                                        description: { type: "string" },
+                                                        snapshot_block: { type: "integer" },
+                                                        total_voting_power: { type: "string" },
+                                                        link: { type: "string" },
+                                                        deadline: { type: "string" }
+                                                    }
+                                                }
+                                            },
+                                            totalCount: { type: "integer" },
+                                            fromIndex: { type: "integer" },
+                                            limit: { type: "integer" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid count parameter"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-recent-proposals": {
+                get: {
+                    summary: "Get recent proposals",
+                    description: "Fetch recent governance proposals (all statuses)",
+                    parameters: [
+                        {
+                            name: "count",
+                            in: "query",
+                            required: false,
+                            schema: {
+                                type: "integer",
+                                minimum: 1,
+                                maximum: 50,
+                                default: 5,
+                                description: "Number of proposals to fetch (1-50)"
+                            }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Proposals retrieved successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            proposals: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        id: { type: "integer" },
+                                                        title: { type: "string" },
+                                                        description: { type: "string" },
+                                                        status: { type: "string" },
+                                                        link: { type: "string" },
+                                                        deadline: { type: "string" },
+                                                        voting_power: { type: "string" }
+                                                    }
+                                                }
+                                            },
+                                            totalCount: { type: "integer" },
+                                            fromIndex: { type: "integer" },
+                                            limit: { type: "integer" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid count parameter"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/get-venear-balance": {
+                get: {
+                    summary: "Get veNEAR balance",
+                    description: "Fetch veNEAR token balance and detailed balance information for an account",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "The NEAR account ID"
+                            }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "veNEAR balance retrieved successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
                                             accountId: { type: "string" },
                                             tokenBalance: {
                                                 type: "object",
@@ -743,9 +605,9 @@ export async function GET() {
                                                 }
                                             },
                                             detailedBalance: {
-                                            type: "object",
+                                                type: "object",
                                                 nullable: true,
-                                            properties: {
+                                                properties: {
                                                     raw: { type: "string" },
                                                     nears: { type: "string" },
                                                     lockedBalance: {
@@ -791,283 +653,33 @@ export async function GET() {
                                                 }
                                             }
                                         }
-                                }
-                            }
-                        }
-                    },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
                                     }
                                 }
                             }
                         },
+                        "400": {
+                            description: "Bad request - invalid account ID"
+                        },
                         "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Internal server error"
                         }
                     }
                 }
             },
-            "/api/tools/get-account-state": {
-                get: {
-                    summary: "Get comprehensive account state",
-                    description: "Gets comprehensive account state including veNEAR balance, voting power, delegation status, and detailed lockup information (deployment status, balances, timestamps, costs, staking pool data, and governance statistics)",
-                    operationId: "get-account-state",
-                    parameters: [
-                        {
-                            name: "accountId",
-                            in: "query",
-                            required: true,
-                            schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID to get state for"
-                        }
-                    ],
-                    responses: {
-                        "200": {
-                            description: "Successful response",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            accountId: { type: "string" },
-                                            accountBalance: {
-                                                type: "object",
-                                                properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            veNearTokenBalance: {
-                                                            type: "object",
-                                                            properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            balance: {
-                                                                    type: "object",
-                                                                    properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            lockedBalance: {
-                                                type: "object",
-                                                nullable: true,
-                                                properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            unlockTime: { type: "string", nullable: true },
-                                            votingPower: {
-                                                type: "object",
-                                                nullable: true,
-                                                properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            delegationPower: {
-                                                type: "object",
-                                                nullable: true,
-                                                properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            totalPower: {
-                                                type: "object",
-                                                nullable: true,
-                                                properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
-                                                }
-                                            },
-                                            delegation: {
-                                                type: "object",
-                                                properties: {
-                                                    isDelegator: { type: "boolean" },
-                                                    isDelegate: { type: "boolean" },
-                                                    delegatedTo: { type: "string", nullable: true },
-                                                    delegatorsCount: { type: "number" },
-                                                    totalDelegatedPower: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            lockup: {
-                                                type: "object",
-                                                properties: {
-                                                    isLockupDeployed: { type: "boolean" },
-                                                    lockupId: { type: "string", nullable: true },
-                                                    lockupBalance: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    lockupInfoReady: { type: "boolean" },
-                                                    lockedAmount: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    lockupLiquidOwnersBalance: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    lockupLiquidAmount: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    withdrawableAmount: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    lockupPendingAmount: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    lockupUnlockTimestampNs: { type: "string", nullable: true },
-                                                    untilUnlock: { type: "string", nullable: true },
-                                                    registrationCost: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    lockupCost: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    },
-                                                    stakingPool: { type: "string", nullable: true },
-                                                    knownDepositedBalance: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            metadata: {
-                                                type: "object",
-                                                properties: {
-                                                    contract: { type: "string" },
-                                                    votingContract: { type: "string" },
-                                                    token: { type: "string" },
-                                                    description: { type: "string" },
-                                                    timestamp: { type: "string" }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "404": {
-                            description: "Account not found",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                },
             "/api/tools/search-proposal": {
                 get: {
-                    summary: "Search proposals by query and filters",
-                    description: "Searches through all governance proposals using text queries, status filters, and sorting options",
-                    operationId: "search-proposal",
+                    summary: "Search proposals",
+                    description: "Search governance proposals using semantic search with vector embeddings",
                     parameters: [
                         {
                             name: "q",
                             in: "query",
                             required: false,
                             schema: {
-                                type: "string"
-                            },
-                            description: "Search query to find proposals by title, description, or ID"
+                                type: "string",
+                                description: "Search query for semantic search"
+                            }
                         },
-
-
                         {
                             name: "limit",
                             in: "query",
@@ -1075,15 +687,15 @@ export async function GET() {
                             schema: {
                                 type: "integer",
                                 minimum: 1,
-                                maximum: 100
-                            },
-                            description: "Maximum number of proposals to return (1-100, default: 50)"
-                        },
-
+                                maximum: 100,
+                                default: 50,
+                                description: "Maximum number of results to return (1-100)"
+                            }
+                        }
                     ],
                     responses: {
                         "200": {
-                            description: "Successful search response",
+                            description: "Search results retrieved successfully",
                             content: {
                                 "application/json": {
                                     schema: {
@@ -1094,115 +706,77 @@ export async function GET() {
                                                 items: {
                                                     type: "object",
                                                     properties: {
-                                                        id: { type: "number" },
+                                                        id: { type: "integer" },
                                                         title: { type: "string" },
                                                         description: { type: "string" },
-                                                        status: { type: "string", nullable: true },
-                                                        link: { type: "string", nullable: true },
-                                                        creation_time_ns: { type: "string", nullable: true },
-                                                        reviewer_id: { type: "string", nullable: true },
-                                                        voting_start_time_ns: { type: "string", nullable: true },
-                                                        voting_duration_ns: { type: "string", nullable: true }
+                                                        link: { type: "string" },
+                                                        status: { type: "string" },
+                                                        creation_time_ns: { type: "string" },
+                                                        reviewer_id: { type: "string" },
+                                                        voting_start_time_ns: { type: "string" },
+                                                        voting_duration_ns: { type: "string" }
                                                     }
                                                 }
                                             },
-                                            search: {
-                                                type: "object",
-                                                properties: {
-                                                    query: { type: "string", nullable: true },
-                                                    totalFound: { type: "number" },
-                                                    limit: { type: "number" }
-                                                }
-                                            },
-                                            statistics: {
-                                                type: "object",
-                                                properties: {
-                                                    totalFound: { type: "number" },
-                                                    limit: { type: "number" },
-                                                    statusCounts: {
-                                                        type: "object",
-                                                        additionalProperties: { type: "number" }
-                                                    },
-
-                                                }
-                                            },
-                                            metadata: {
-                                                type: "object",
-                                                properties: {
-                                                    contract: { type: "string" },
-                                                    description: { type: "string" }
-                                                }
-                                            }
+                                            query: { type: "string" },
+                                            limit: { type: "integer" },
+                                            totalFound: { type: "integer" }
                                         }
                                     }
                                 }
                             }
                         },
                         "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Bad request - invalid limit parameter"
                         },
                         "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" },
-                                            details: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Internal server error"
                         }
                     }
-                                    }
-                },
-            "/api/tools/approve-proposal": {
+                }
+            },
+            "/api/tools/vote": {
                 get: {
-                    summary: "Approve a governance proposal",
-                    description: "Approves a governance proposal by authorized users (owner, guardian, or reviewer). Only proposals with status 'Created' can be approved.",
-                    operationId: "approve-proposal",
+                    summary: "Vote on a proposal",
+                    description: "Generate a NEAR transaction payload to vote on a governance proposal",
                     parameters: [
                         {
                             name: "proposalId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string"
-                            },
-                            description: "The ID of the proposal to approve"
+                                type: "string",
+                                description: "The proposal ID to vote on"
+                            }
                         },
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string"
-                            },
-                            description: "The NEAR account ID of the approver"
+                                type: "string",
+                                description: "The account ID voting on the proposal"
+                            }
                         },
-
+                        {
+                            name: "vote",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string",
+                                description: "The voting option text (e.g., 'Yes', 'No', 'Abstain')"
+                            }
+                        }
                     ],
                     responses: {
                         "200": {
-                            description: "Successful approval transaction payload",
+                            description: "Vote transaction payload generated successfully",
                             content: {
                                 "application/json": {
                                     schema: {
                                         type: "object",
                                         properties: {
-                                                                                        transactionPayload: {
+                                            transactionPayload: {
                                                 type: "object",
                                                 properties: {
                                                     receiverId: { type: "string" },
@@ -1221,8 +795,10 @@ export async function GET() {
                                                                         args: {
                                                                             type: "object",
                                                                             properties: {
-                                                                                proposal_id: { type: "number" },
-                                                                                voting_start_time_sec: { type: "null" }
+                                                                                proposal_id: { type: "integer" },
+                                                                                vote: { type: "integer" },
+                                                                                merkle_proof: { type: "string" },
+                                                                                v_account: { type: "string" }
                                                                             }
                                                                         }
                                                                     }
@@ -1238,49 +814,15 @@ export async function GET() {
                             }
                         },
                         "400": {
-                            description: "Bad request",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "403": {
-                            description: "Forbidden - insufficient permissions",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Bad request - invalid parameters, proposal not active, or user already voted"
                         },
                         "500": {
-                            description: "Server error",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
-                                            error: { type: "string" }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            description: "Internal server error"
                         }
                     }
                 }
+            }
         }
-    }
-}}
+    };
     return NextResponse.json(pluginData);
 }
