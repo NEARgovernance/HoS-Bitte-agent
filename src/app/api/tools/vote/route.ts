@@ -139,12 +139,16 @@ async function checkVeNearBalance(accountId: string): Promise<{ hasVotingPower: 
   }
 }
 
-// Minimal type for existingVote
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// type ExistingVote = any;
+// Define existing vote interface
+interface ExistingVote {
+  proposal_id: number;
+  vote: string | number;
+  timestamp?: string;
+  voting_power?: string;
+}
 
 // Check if user has already voted on the proposal
-async function checkExistingVote(accountId: string, proposalId: number): Promise<{ hasVoted: boolean; existingVote?: unknown } | NextResponse> {
+async function checkExistingVote(accountId: string, proposalId: number): Promise<{ hasVoted: boolean; existingVote?: ExistingVote } | NextResponse> {
   if (!VOTING_CONTRACT) {
     return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
   }
@@ -338,6 +342,7 @@ export async function GET(request: Request) {
         error: 'Proposal does not have valid voting options' 
       }, { status: 400 });
     }
+
 
     // Find the index of the voting option
     const voteIndex = proposal.voting_options.findIndex((option: string) => option === vote);
