@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
-import { parseNearAmount } from "near-api-js/lib/utils/format";
 
 // Convert Tgas to gas units (1 Tgas = 10^12 gas)
 function tgasToGas(tgas: string): string | NextResponse {
