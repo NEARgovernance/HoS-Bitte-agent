@@ -878,17 +878,147 @@ export async function GET() {
                                                                             description: "Empty arguments object"
                                                                         }
                                                                     }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         },
-                                            
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/delete-lockup": {
+                get: {
+                    operationId: "deleteLockup",
+                    summary: "Delete lockup contract",
+                    description: "Generates a NEAR transaction payload for deleting lockup contract when locked amount is zero",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Lockup deletion transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (delete_lockup)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (200 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters, no lockup found, or locked amount is not zero"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/lock-near": {
+                get: {
+                    operationId: "lockNear",
+                    summary: "Lock NEAR tokens",
+                    description: "Generates a NEAR transaction payload for locking NEAR tokens in the lockup contract",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Lock NEAR transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (lock_near)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters, no lockup found, or insufficient liquid balance"
                         },
                         "500": {
                             description: "Internal server error"

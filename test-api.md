@@ -653,7 +653,132 @@ curl "http://localhost:3000/api/tools/search-proposal?limit=5"
     "description": "Search results for House of Stake governance proposals"
   }
 }
+
+### 12. Deploy Lockup Contract
+
+```bash
+# Deploy a new lockup contract
+curl "http://localhost:3000/api/tools/deploy-lockup"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "venear.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "deploy_lockup",
+          "gas": "100000000000000",
+          "deposit": "500000000000000000000000",
+          "args": {}
+        }
+      }
+    ]
+  }
+}
 ```
+
+### 13. Delete Lockup Contract
+
+```bash
+# Delete lockup contract when locked amount is zero
+curl "http://localhost:3000/api/tools/delete-lockup?accountId=user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "delete_lockup",
+          "gas": "200000000000000",
+          "deposit": "1",
+          "args": {}
+        }
+      }
+    ]
+  }
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/delete-lockup?accountId=nolockup.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: Locked amount is not zero
+curl "http://localhost:3000/api/tools/delete-lockup?accountId=lockeduser.near"
+
+# Expected error response:
+{
+  "error": "Cannot delete lockup: locked amount is not zero",
+  "lockedAmount": "1000000000000000000000000"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/delete-lockup"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+```
+
+### 14. Lock NEAR Tokens
+
+```bash
+# Lock NEAR tokens in lockup contract
+curl "http://localhost:3000/api/tools/lock-near?accountId=user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "lock_near",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {}
+        }
+      }
+    ]
+  },
+  "liquidBalance": "5000000000000000000000000"
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/lock-near?accountId=nolockup.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: Insufficient liquid balance (less than 1 NEAR)
+curl "http://localhost:3000/api/tools/lock-near?accountId=lowbalance.near"
+
+# Expected error response:
+{
+  "error": "Insufficient liquid balance to lock NEAR",
+  "liquidAmount": "500000000000000000000000",
+  "minimumRequired": "1000000000000000000000000"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/lock-near"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
 
 
 ## Error Testing
@@ -918,6 +1043,39 @@ async function getVeNEARBalance(accountId) {
     return response.data;
   } catch (error) {
     console.error('Error fetching veNEAR balance:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Deploy lockup contract transaction
+async function deployLockup() {
+  try {
+    const response = await axios.get('/api/tools/deploy-lockup');
+    return response.data;
+  } catch (error) {
+    console.error('Error deploying lockup:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Delete lockup contract transaction
+async function deleteLockup(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/delete-lockup?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting lockup:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Lock NEAR tokens in lockup contract
+async function lockNear(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/lock-near?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error locking NEAR:', error.response?.data?.error || error.message);
     throw error;
   }
 }
