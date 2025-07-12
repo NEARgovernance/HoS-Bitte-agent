@@ -231,7 +231,7 @@ export async function GET(request: Request) {
           params: {
             methodName: "approve_proposal",
             gas: gasResult, // 150 Tgas
-            deposit: parseNearAmount("0.0125"), // Small deposit for approval
+            deposit: parseNearAmount("0.125"), // Small deposit for approval
             args: {
               proposal_id: id,
               voting_start_time_sec: null
