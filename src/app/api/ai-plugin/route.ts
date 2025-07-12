@@ -28,7 +28,7 @@ export async function GET() {
                 get: {
                     operationId: "approveProposal",
                     summary: "Approve a governance proposal",
-                    description: "Generate a NEAR transaction payload to approve a governance proposal. Requires appropriate permissions (owner, guardian, or reviewer role).",
+                    description: "Generates a NEAR transaction payload for approving governance proposal",
                     parameters: [
                         {
                             name: "proposalId",
@@ -36,18 +36,18 @@ export async function GET() {
                             required: true,
                             schema: {
                                 type: "integer",
-                                minimum: 0,
-                                description: "The ID of the proposal to approve"
-                            }
+                                minimum: 0
+                            },
+                            description: "The ID of the proposal to approve"
                         },
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The account ID requesting approval"
-                            }
+                                type: "string"
+                            },
+                            description: "The user's account ID"
                         }
                     ],
                     responses: {
@@ -61,26 +61,27 @@ export async function GET() {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
-                                                    receiverId: { type: "string" },
+                                                    receiverId: { type: "string", description: "Contract account ID to receive the transaction" },
                                                     actions: {
                                                         type: "array",
                                                         items: {
                                                             type: "object",
                                                             properties: {
-                                                                type: { type: "string" },
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
                                                                 params: {
                                                                     type: "object",
                                                                     properties: {
-                                                                        methodName: { type: "string" },
-                                                                        gas: { type: "string" },
-                                                                        deposit: { type: "string" },
+                                                                        methodName: { type: "string", description: "Contract method to call" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount" },
                                                                         args: {
                                                                             type: "object",
                                                                             properties: {
-                                                                                proposal_id: { type: "integer" },
+                                                                                proposal_id: { type: "integer", description: "ID of the proposal to approve" },
                                                                                 voting_start_time_sec: {
                                                                                     type: "integer",
-                                                                                    nullable: true
+                                                                                    nullable: true,
+                                                                                    description: "Voting start time in seconds (null for immediate start)"
                                                                                 }
                                                                             },
                                                                             required: ["proposal_id", "voting_start_time_sec"]
@@ -113,43 +114,43 @@ export async function GET() {
                 get: {
                     operationId: "createProposal",
                     summary: "Create a new governance proposal",
-                    description: "Generate a NEAR transaction payload to create a new governance proposal",
+                    description: "Generates a NEAR transaction payload for creating governance proposal",
                     parameters: [
                         {
                             name: "title",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The title of the proposal"
-                            }
+                                type: "string"
+                            },
+                            description: "The title of the proposal"
                         },
                         {
                             name: "description",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The description of the proposal"
-                            }
+                                type: "string"
+                            },
+                            description: "The description of the proposal"
                         },
                         {
                             name: "link",
                             in: "query",
                             required: false,
                             schema: {
-                                type: "string",
-                                description: "Optional link to additional information"
-                            }
+                                type: "string"
+                            },
+                            description: "Optional link to additional information"
                         },
                         {
                             name: "votingOptions",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "Comma-separated list of voting options"
-                            }
+                                type: "string"
+                            },
+                            description: "Comma-separated list of voting options"
                         }
                     ],
                     responses: {
@@ -163,31 +164,32 @@ export async function GET() {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
-                                                    receiverId: { type: "string" },
+                                                    receiverId: { type: "string", description: "Contract account ID to receive the transaction" },
                                                     actions: {
                                                         type: "array",
                                                         items: {
                                                             type: "object",
                                                             properties: {
-                                                                type: { type: "string" },
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
                                                                 params: {
                                                                     type: "object",
                                                                     properties: {
-                                                                        methodName: { type: "string" },
-                                                                        gas: { type: "string" },
-                                                                        deposit: { type: "string" },
+                                                                        methodName: { type: "string", description: "Contract method to call" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount" },
                                                                         args: {
                                                                             type: "object",
                                                                             properties: {
                                                                                 metadata: {
                                                                                     type: "object",
                                                                                     properties: {
-                                                                                        title: { type: "string" },
-                                                                                        description: { type: "string" },
-                                                                                        link: { type: "string" },
+                                                                                        title: { type: "string", description: "Proposal title" },
+                                                                                        description: { type: "string", description: "Proposal description" },
+                                                                                        link: { type: "string", description: "Optional link to additional information" },
                                                                                         voting_options: {
                                                                                             type: "array",
-                                                                                            items: { type: "string" }
+                                                                                            items: { type: "string", description: "Voting option text" },
+                                                                                            description: "List of voting options for the proposal"
                                                                                         }
                                                                                     },
                                                                                     required: ["title", "description", "voting_options"]
@@ -220,16 +222,16 @@ export async function GET() {
                 get: {
                     operationId: "getAccountBalance",
                     summary: "Get NEAR account balance",
-                    description: "Fetch the NEAR balance for a specific account",
+                    description: "Returns NEAR balance for user account ID",
                     parameters: [
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The NEAR account ID"
-                            }
+                                type: "string"
+                            },
+                            description: "The user's account ID"
                         }
                     ],
                     responses: {
@@ -240,19 +242,19 @@ export async function GET() {
                                     schema: {
                                         type: "object",
                                         properties: {
-                                            accountId: { type: "string" },
+                                            accountId: { type: "string", description: "The user's account ID" },
                                             balance: {
                                                 type: "object",
                                                 properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" }
+                                                    raw: { type: "string", description: "Balance in yoctoNEAR (smallest unit)" },
+                                                    nears: { type: "string", description: "Balance in NEAR units" }
                                                 }
                                             },
                                             metadata: {
                                                 type: "object",
                                                 properties: {
-                                                    description: { type: "string" },
-                                                    timestamp: { type: "string" }
+                                                    description: { type: "string", description: "Description of the balance data" },
+                                                    timestamp: { type: "string", description: "ISO timestamp of when the data was fetched" }
                                                 }
                                             }
                                         }
@@ -273,16 +275,16 @@ export async function GET() {
                 get: {
                     operationId: "getAccountState",
                     summary: "Get comprehensive account state",
-                    description: "Fetch detailed account state including veNEAR balance, delegation info, and lockup details",
+                    description: "Returns detailed account state with veNEAR balance and delegation info",
                     parameters: [
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The NEAR account ID"
-                            }
+                                type: "string"
+                            },
+                            description: "The user's account ID"
                         }
                     ],
                     responses: {
@@ -293,54 +295,54 @@ export async function GET() {
                                     schema: {
                                         type: "object",
                                         properties: {
-                                            accountId: { type: "string" },
-                                            balance: { type: "string" },
-                                            locked_balance: { type: "string" },
-                                            unlock_time: { type: "string" },
-                                            voting_power: { type: "string" },
-                                            delegation_power: { type: "string" },
-                                            total_power: { type: "string" },
-                                            is_delegator: { type: "boolean" },
-                                            is_delegate: { type: "boolean" },
-                                            delegated_to: { type: "string" },
-                                            delegators_count: { type: "integer" },
-                                            total_delegated_power: { type: "string" },
+                                            accountId: { type: "string", description: "The user's account ID" },
+                                            balance: { type: "string", description: "Total veNEAR balance in yoctoNEAR" },
+                                            locked_balance: { type: "string", description: "Locked veNEAR balance in yoctoNEAR" },
+                                            unlock_time: { type: "string", description: "Timestamp when locked balance becomes available" },
+                                            voting_power: { type: "string", description: "Voting power derived from veNEAR balance" },
+                                            delegation_power: { type: "string", description: "Power available for delegation" },
+                                            total_power: { type: "string", description: "Total power (voting + delegation)" },
+                                            is_delegator: { type: "boolean", description: "Whether the account is a delegator" },
+                                            is_delegate: { type: "boolean", description: "Whether the account is a delegate" },
+                                            delegated_to: { type: "string", description: "Account ID this user delegates to" },
+                                            delegators_count: { type: "integer", description: "Number of delegators for this account" },
+                                            total_delegated_power: { type: "string", description: "Total power delegated to this account" },
                                             last_vote: {
                                                 type: "object",
                                                 properties: {
-                                                    proposal_id: { type: "integer" },
-                                                    vote: { type: "string" },
-                                                    timestamp: { type: "string" }
+                                                    proposal_id: { type: "integer", description: "ID of the last proposal voted on" },
+                                                    vote: { type: "string", description: "Vote cast on the last proposal" },
+                                                    timestamp: { type: "string", description: "Timestamp of the last vote" }
                                                 }
                                             },
                                             governance_stats: {
                                                 type: "object",
                                                 properties: {
-                                                    total_votes: { type: "integer" },
-                                                    yes_votes: { type: "integer" },
-                                                    no_votes: { type: "integer" },
-                                                    abstain_votes: { type: "integer" },
-                                                    participation_rate: { type: "number" }
+                                                    total_votes: { type: "integer", description: "Total number of votes cast" },
+                                                    yes_votes: { type: "integer", description: "Number of yes votes" },
+                                                    no_votes: { type: "integer", description: "Number of no votes" },
+                                                    abstain_votes: { type: "integer", description: "Number of abstain votes" },
+                                                    participation_rate: { type: "number", description: "Voting participation rate as percentage" }
                                                 }
                                             },
                                             lockupInfo: {
                                                 type: "object",
                                                 properties: {
-                                                    isLockupDeployed: { type: "boolean" },
-                                                    lockupId: { type: "string" },
-                                                    lockupBalance: { type: "string" },
-                                                    lockupInfoReady: { type: "boolean" },
-                                                    lockedAmount: { type: "string" },
-                                                    lockupLiquidOwnersBalance: { type: "string" },
-                                                    lockupLiquidAmount: { type: "string" },
-                                                    withdrawableAmount: { type: "string" },
-                                                    lockupPendingAmount: { type: "string" },
-                                                    lockupUnlockTimestampNs: { type: "string" },
-                                                    untilUnlock: { type: "string" },
-                                                    registrationCost: { type: "string" },
-                                                    lockupCost: { type: "string" },
-                                                    stakingPool: { type: "string" },
-                                                    knownDepositedBalance: { type: "string" }
+                                                    isLockupDeployed: { type: "boolean", description: "Whether the lockup contract is deployed" },
+                                                    lockupId: { type: "string", description: "Lockup account ID" },
+                                                    lockupBalance: { type: "string", description: "Total balance in lockup contract" },
+                                                    lockupInfoReady: { type: "boolean", description: "Whether lockup info is fully loaded" },
+                                                    lockedAmount: { type: "string", description: "Amount locked in the contract" },
+                                                    lockupLiquidOwnersBalance: { type: "string", description: "Liquid balance owned by main account" },
+                                                    lockupLiquidAmount: { type: "string", description: "Liquid amount available in lockup" },
+                                                    withdrawableAmount: { type: "string", description: "Amount that can be withdrawn" },
+                                                    lockupPendingAmount: { type: "string", description: "Pending amount in lockup" },
+                                                    lockupUnlockTimestampNs: { type: "string", description: "Unlock timestamp in nanoseconds" },
+                                                    untilUnlock: { type: "string", description: "Human-readable unlock time" },
+                                                    registrationCost: { type: "string", description: "Cost to register with veNEAR" },
+                                                    lockupCost: { type: "string", description: "Cost to deploy lockup contract" },
+                                                    stakingPool: { type: "string", description: "Staking pool account ID" },
+                                                    knownDepositedBalance: { type: "string", description: "Known deposited balance in staking pool" }
                                                 }
                                             }
                                         }
@@ -361,16 +363,16 @@ export async function GET() {
                 get: {
                     operationId: "getDelegators",
                     summary: "Get delegators for an account",
-                    description: "Fetch all delegators for a specific delegate account",
+                    description: "Returns list of delegators for delegate account ID",
                     parameters: [
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The delegate account ID"
-                            }
+                                type: "string"
+                            },
+                            description: "The delegate account ID"
                         }
                     ],
                     responses: {
@@ -381,24 +383,24 @@ export async function GET() {
                                     schema: {
                                         type: "object",
                                         properties: {
-                                            accountId: { type: "string" },
+                                            accountId: { type: "string", description: "The delegate's account ID" },
                                             delegators: {
                                                 type: "array",
                                                 items: {
                                                     type: "object",
                                                     properties: {
-                                                        delegator: { type: "string" },
-                                                        delegated_power: { type: "string" },
-                                                        delegation_date: { type: "string" }
+                                                        delegator: { type: "string", description: "Account ID of the delegator" },
+                                                        delegated_power: { type: "string", description: "Amount of power delegated" },
+                                                        delegation_date: { type: "string", description: "Date when delegation was made" }
                                                     }
                                                 }
                                             },
                                             delegationStats: {
                                                 type: "object",
                                                 properties: {
-                                                    totalDelegators: { type: "integer" },
-                                                    totalDelegatedPower: { type: "string" },
-                                                    averageDelegation: { type: "string" }
+                                                    totalDelegators: { type: "integer", description: "Total number of delegators" },
+                                                    totalDelegatedPower: { type: "string", description: "Total power delegated to this account" },
+                                                    averageDelegation: { type: "string", description: "Average delegation amount" }
                                                 }
                                             }
                                         }
@@ -419,16 +421,16 @@ export async function GET() {
                 get: {
                     operationId: "getProposal",
                     summary: "Get a specific proposal",
-                    description: "Fetch details of a specific governance proposal by ID",
+                    description: "Returns governance proposal details by proposal ID",
                     parameters: [
                         {
                             name: "proposalId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The proposal ID"
-                            }
+                                type: "string"
+                            },
+                            description: "The proposal ID"
                         }
                     ],
                     responses: {
@@ -442,15 +444,15 @@ export async function GET() {
                                             proposal: {
                                                 type: "object",
                                                 properties: {
-                                                    id: { type: "integer" },
-                                                    title: { type: "string" },
-                                                    description: { type: "string" },
-                                                    link: { type: "string" },
-                                                    deadline: { type: "string" },
-                                                    voting_power: { type: "string" },
-                                                    status: { type: "string" },
-                                                    snapshot_block: { type: "integer" },
-                                                    total_voting_power: { type: "string" }
+                                                    id: { type: "integer", description: "Unique proposal identifier" },
+                                                    title: { type: "string", description: "Proposal title" },
+                                                    description: { type: "string", description: "Detailed proposal description" },
+                                                    link: { type: "string", description: "Optional link to additional information" },
+                                                    deadline: { type: "string", description: "Voting deadline timestamp" },
+                                                    voting_power: { type: "string", description: "Voting power for this proposal" },
+                                                    status: { type: "string", description: "Current proposal status" },
+                                                    snapshot_block: { type: "integer", description: "Block number for voting snapshot" },
+                                                    total_voting_power: { type: "string", description: "Total voting power in the system" }
                                                 }
                                             }
                                         }
@@ -471,7 +473,7 @@ export async function GET() {
                 get: {
                     operationId: "getRecentActiveProposals",
                     summary: "Get recent active proposals",
-                    description: "Fetch recent proposals that are currently active for voting",
+                    description: "Returns recent proposals currently active for voting",
                     parameters: [
                         {
                             name: "count",
@@ -481,9 +483,9 @@ export async function GET() {
                                 type: "integer",
                                 minimum: 1,
                                 maximum: 50,
-                                default: 5,
-                                description: "Number of proposals to fetch (1-50)"
-                            }
+                                default: 5
+                            },
+                            description: "Number of proposals to fetch (1-50)"
                         }
                     ],
                     responses: {
@@ -499,19 +501,19 @@ export async function GET() {
                                                 items: {
                                                     type: "object",
                                                     properties: {
-                                                        id: { type: "integer" },
-                                                        title: { type: "string" },
-                                                        description: { type: "string" },
-                                                        snapshot_block: { type: "integer" },
-                                                        total_voting_power: { type: "string" },
-                                                        link: { type: "string" },
-                                                        deadline: { type: "string" }
+                                                        id: { type: "integer", description: "Unique proposal identifier" },
+                                                        title: { type: "string", description: "Proposal title" },
+                                                        description: { type: "string", description: "Detailed proposal description" },
+                                                        snapshot_block: { type: "integer", description: "Block number for voting snapshot" },
+                                                        total_voting_power: { type: "string", description: "Total voting power in the system" },
+                                                        link: { type: "string", description: "Optional link to additional information" },
+                                                        deadline: { type: "string", description: "Voting deadline timestamp" }
                                                     }
                                                 }
                                             },
-                                            totalCount: { type: "integer" },
-                                            fromIndex: { type: "integer" },
-                                            limit: { type: "integer" }
+                                            totalCount: { type: "integer", description: "Total number of active proposals" },
+                                            fromIndex: { type: "integer", description: "Starting index of the results" },
+                                            limit: { type: "integer", description: "Number of proposals returned" }
                                         }
                                     }
                                 }
@@ -530,19 +532,19 @@ export async function GET() {
                 get: {
                     operationId: "getRecentProposals",
                     summary: "Get recent proposals",
-                    description: "Fetch recent governance proposals (all statuses)",
+                    description: "Returns recent governance proposals with all statuses",
                     parameters: [
                         {
                             name: "count",
                             in: "query",
                             required: false,
-                            schema: {
+                                schema: {
                                 type: "integer",
                                 minimum: 1,
                                 maximum: 50,
-                                default: 5,
-                                description: "Number of proposals to fetch (1-50)"
-                            }
+                                default: 5
+                            },
+                            description: "Number of proposals to fetch (1-50)"
                         }
                     ],
                     responses: {
@@ -558,19 +560,19 @@ export async function GET() {
                                                 items: {
                                                     type: "object",
                                                     properties: {
-                                                        id: { type: "integer" },
-                                                        title: { type: "string" },
-                                                        description: { type: "string" },
-                                                        status: { type: "string" },
-                                                        link: { type: "string" },
-                                                        deadline: { type: "string" },
-                                                        voting_power: { type: "string" }
+                                                        id: { type: "integer", description: "Unique proposal identifier" },
+                                                        title: { type: "string", description: "Proposal title" },
+                                                        description: { type: "string", description: "Detailed proposal description" },
+                                                        status: { type: "string", description: "Current proposal status" },
+                                                        link: { type: "string", description: "Optional link to additional information" },
+                                                        deadline: { type: "string", description: "Voting deadline timestamp" },
+                                                        voting_power: { type: "string", description: "Voting power for this proposal" }
                                                     }
                                                 }
                                             },
-                                            totalCount: { type: "integer" },
-                                            fromIndex: { type: "integer" },
-                                            limit: { type: "integer" }
+                                            totalCount: { type: "integer", description: "Total number of proposals" },
+                                            fromIndex: { type: "integer", description: "Starting index of the results" },
+                                            limit: { type: "integer", description: "Number of proposals returned" }
                                         }
                                     }
                                 }
@@ -589,16 +591,16 @@ export async function GET() {
                 get: {
                     operationId: "getVeNearBalance",
                     summary: "Get veNEAR balance",
-                    description: "Fetch veNEAR token balance and detailed balance information for an account",
+                    description: "Returns veNEAR token balance for user account ID",
                     parameters: [
                         {
                             name: "accountId",
                             in: "query",
-                            required: true,
-                            schema: {
-                                type: "string",
-                                description: "The NEAR account ID"
-                            }
+                        required: true,
+                                schema: {
+                                            type: "string"
+                                },
+                            description: "The user's account ID"
                         }
                     ],
                     responses: {
@@ -609,62 +611,62 @@ export async function GET() {
                                     schema: {
                                         type: "object",
                                         properties: {
-                                            accountId: { type: "string" },
+                                            accountId: { type: "string", description: "The user's account ID" },
                                             tokenBalance: {
                                                 type: "object",
                                                 properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" },
-                                                    method: { type: "string" },
-                                                    description: { type: "string" }
+                                                    raw: { type: "string", description: "veNEAR balance in yoctoNEAR" },
+                                                    nears: { type: "string", description: "veNEAR balance in NEAR units" },
+                                                    method: { type: "string", description: "Method used to fetch balance" },
+                                                    description: { type: "string", description: "Description of the balance data" }
                                                 }
                                             },
                                             detailedBalance: {
                                                 type: "object",
                                                 nullable: true,
                                                 properties: {
-                                                    raw: { type: "string" },
-                                                    nears: { type: "string" },
+                                                    raw: { type: "string", description: "Detailed balance in yoctoNEAR" },
+                                                    nears: { type: "string", description: "Detailed balance in NEAR units" },
                                                     lockedBalance: {
                                                         type: "object",
                                                         properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
+                                                            raw: { type: "string", description: "Locked balance in yoctoNEAR" },
+                                                            nears: { type: "string", description: "Locked balance in NEAR units" }
                                                         }
                                                     },
                                                     votingPower: {
                                                         type: "object",
                                                         properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
+                                                            raw: { type: "string", description: "Voting power in yoctoNEAR" },
+                                                            nears: { type: "string", description: "Voting power in NEAR units" }
                                                         }
                                                     },
                                                     delegationPower: {
                                                         type: "object",
                                                         properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
+                                                            raw: { type: "string", description: "Delegation power in yoctoNEAR" },
+                                                            nears: { type: "string", description: "Delegation power in NEAR units" }
                                                         }
                                                     },
                                                     totalPower: {
                                                         type: "object",
                                                         properties: {
-                                                            raw: { type: "string" },
-                                                            nears: { type: "string" }
+                                                            raw: { type: "string", description: "Total power in yoctoNEAR" },
+                                                            nears: { type: "string", description: "Total power in NEAR units" }
                                                         }
                                                     },
-                                                    unlockTime: { type: "string" },
-                                                    method: { type: "string" },
-                                                    description: { type: "string" }
+                                                    unlockTime: { type: "string", description: "Timestamp when locked funds unlock" },
+                                                    method: { type: "string", description: "Method used to fetch detailed data" },
+                                                    description: { type: "string", description: "Description of the detailed balance" }
                                                 }
                                             },
                                             metadata: {
                                                 type: "object",
                                                 properties: {
-                                                    contract: { type: "string" },
-                                                    token: { type: "string" },
-                                                    hasDetailedData: { type: "boolean" },
-                                                    timestamp: { type: "string" }
+                                                    contract: { type: "string", description: "veNEAR contract address" },
+                                                    token: { type: "string", description: "Token symbol (veNEAR)" },
+                                                    hasDetailedData: { type: "boolean", description: "Whether detailed data is available" },
+                                                    timestamp: { type: "string", description: "ISO timestamp of when data was fetched" }
                                                 }
                                             }
                                         }
@@ -685,16 +687,16 @@ export async function GET() {
                 get: {
                     operationId: "searchProposal",
                     summary: "Search proposals",
-                    description: "Search governance proposals using semantic search with vector embeddings",
+                    description: "Returns governance proposals matching search query",
                     parameters: [
                         {
                             name: "q",
                             in: "query",
                             required: false,
                             schema: {
-                                type: "string",
-                                description: "Search query for semantic search"
-                            }
+                                type: "string"
+                            },
+                            description: "Search query for semantic search"
                         },
                         {
                             name: "limit",
@@ -704,9 +706,9 @@ export async function GET() {
                                 type: "integer",
                                 minimum: 1,
                                 maximum: 100,
-                                default: 50,
-                                description: "Maximum number of results to return (1-100)"
-                            }
+                                default: 50
+                            },
+                            description: "Maximum number of results to return (1-100)"
                         }
                     ],
                     responses: {
@@ -722,21 +724,21 @@ export async function GET() {
                                                 items: {
                                                     type: "object",
                                                     properties: {
-                                                        id: { type: "integer" },
-                                                        title: { type: "string" },
-                                                        description: { type: "string" },
-                                                        link: { type: "string" },
-                                                        status: { type: "string" },
-                                                        creation_time_ns: { type: "string" },
-                                                        reviewer_id: { type: "string" },
-                                                        voting_start_time_ns: { type: "string" },
-                                                        voting_duration_ns: { type: "string" }
+                                                        id: { type: "integer", description: "Unique proposal identifier" },
+                                                        title: { type: "string", description: "Proposal title" },
+                                                        description: { type: "string", description: "Detailed proposal description" },
+                                                        link: { type: "string", description: "Optional link to additional information" },
+                                                        status: { type: "string", description: "Current proposal status" },
+                                                        creation_time_ns: { type: "string", description: "Creation timestamp in nanoseconds" },
+                                                        reviewer_id: { type: "string", description: "ID of the proposal reviewer" },
+                                                        voting_start_time_ns: { type: "string", description: "Voting start time in nanoseconds" },
+                                                        voting_duration_ns: { type: "string", description: "Voting duration in nanoseconds" }
                                                     }
                                                 }
                                             },
-                                            query: { type: "string" },
-                                            limit: { type: "integer" },
-                                            totalFound: { type: "integer" }
+                                            query: { type: "string", description: "Search query used" },
+                                            limit: { type: "integer", description: "Maximum number of results returned" },
+                                            totalFound: { type: "integer", description: "Total number of proposals found" }
                                         }
                                     }
                                 }
@@ -755,34 +757,34 @@ export async function GET() {
                 get: {
                     operationId: "vote",
                     summary: "Vote on a proposal",
-                    description: "Generate a NEAR transaction payload to vote on a governance proposal",
+                    description: "Generates a NEAR transaction payload for voting on governance proposal",
                     parameters: [
                         {
                             name: "proposalId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The proposal ID to vote on"
-                            }
+                                type: "string"
+                            },
+                            description: "The proposal ID to vote on"
                         },
                         {
                             name: "accountId",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The account ID voting on the proposal"
-                            }
+                                type: "string"
+                            },
+                            description: "The user's account ID"
                         },
                         {
                             name: "vote",
                             in: "query",
                             required: true,
                             schema: {
-                                type: "string",
-                                description: "The voting option text (e.g., 'Yes', 'No', 'Abstain')"
-                            }
+                                type: "string"
+                            },
+                            description: "The voting option text (e.g., 'Yes', 'No', 'Abstain')"
                         }
                     ],
                     responses: {
@@ -796,26 +798,26 @@ export async function GET() {
                                             transactionPayload: {
                                                 type: "object",
                                                 properties: {
-                                                    receiverId: { type: "string" },
+                                                    receiverId: { type: "string", description: "Contract account ID to receive the transaction" },
                                                     actions: {
                                                         type: "array",
                                                         items: {
                                                             type: "object",
                                                             properties: {
-                                                                type: { type: "string" },
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
                                                                 params: {
                                                                     type: "object",
                                                                     properties: {
-                                                                        methodName: { type: "string" },
-                                                                        gas: { type: "string" },
-                                                                        deposit: { type: "string" },
+                                                                        methodName: { type: "string", description: "Contract method to call" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount" },
                                                                         args: {
                                                                             type: "object",
                                                                             properties: {
-                                                                                proposal_id: { type: "integer" },
-                                                                                vote: { type: "integer" },
-                                                                                merkle_proof: { type: "string" },
-                                                                                v_account: { type: "string" }
+                                                                                proposal_id: { type: "integer", description: "ID of the proposal to vote on" },
+                                                                                vote: { type: "integer", description: "Vote index (0 for first option, 1 for second, etc.)" },
+                                                                                merkle_proof: { type: "string", description: "Merkle proof for veNEAR verification" },
+                                                                                v_account: { type: "string", description: "Virtual account identifier" }
                                                                             },
                                                                             required: ["proposal_id", "vote", "merkle_proof", "v_account"]
                                                                         }
