@@ -841,6 +841,60 @@ export async function GET() {
                         }
                     }
                 }
+            },
+            "/api/tools/deploy-lockup": {
+                get: {
+                    operationId: "deployLockup",
+                    summary: "Deploy lockup contract",
+                    description: "Generates a NEAR transaction payload for deploying lockup contract",
+                    parameters: [],
+                    responses: {
+                        "200": {
+                            description: "Lockup deployment transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (dynamic cost from contract)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                                            
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
             }
         }
     };
