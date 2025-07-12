@@ -62,7 +62,7 @@ async function getLockupDeploymentCost(): Promise<{ cost: string } | NextRespons
   }
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     if (!VENEAR_CONTRACT_ID) {
       return NextResponse.json({ 
@@ -75,15 +75,7 @@ export async function GET(request: Request) {
     if (costResult instanceof NextResponse) {
       return costResult;
     }
-
     const { cost } = costResult;
-
-    // Convert Tgas to gas units (deploy lockup typically uses 100 Tgas)
-    const gasResult = tgasToGas("100");
-    if (gasResult instanceof NextResponse) {
-      return gasResult;
-    }
-
     // Create the deploy lockup transaction payload
     const transactionPayload = {
       receiverId: VENEAR_CONTRACT_ID,
@@ -92,7 +84,7 @@ export async function GET(request: Request) {
           type: "FunctionCall",
           params: {
             methodName: "deploy_lockup",
-            gas: gasResult, // 100 Tgas
+            gas: tgasToGas("100"), // 100 Tgas
             deposit: cost, // Dynamic cost from contract
             args: {}
           }
