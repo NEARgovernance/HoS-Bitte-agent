@@ -419,16 +419,7 @@ export async function GET(request: Request) {
     };
 
     return NextResponse.json({ 
-      transactionPayload,
-      votingInfo: {
-        accountId,
-        votingPower,
-        proposalId: id,
-        vote: voteIndex,
-        voteOption: vote,
-        hasVoted: false,
-        existingVote: null
-      }
+      transactionPayload
     });
 
   } catch (error) {
