@@ -50,6 +50,9 @@ Access the OpenAPI specification at `GET /api/ai-plugin`
 - **GET** `/api/tools/get-account-state?accountId={account}` - Get comprehensive account state
 
 - **GET** `/api/tools/search-proposal?q={query}&limit={number}` - Search proposals
+- **GET** `/api/tools/deploy-lockup` - Deploy lockup contract transaction
+- **GET** `/api/tools/delete-lockup?accountId={account}` - Delete lockup contract transaction (when locked amount is zero)
+- **GET** `/api/tools/lock-near?accountId={account}` - Lock NEAR tokens in lockup contract
 
 ## Examples
 
