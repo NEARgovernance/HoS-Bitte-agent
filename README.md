@@ -57,6 +57,11 @@ Access the OpenAPI specification at `GET /api/ai-plugin`
 - **GET** `/api/tools/deposit-and-stake?accountId={account}` - Deposit and stake NEAR tokens from lockup contract
 - **GET** `/api/tools/select-staking-pool?accountId={account}&stakingPoolAccountId={pool}` - Select staking pool in lockup contract
 - **GET** `/api/tools/unselect-staking-pool?accountId={account}&stakingPoolAccountId={pool}` - Unselect staking pool in lockup contract
+- **GET** `/api/tools/refresh-staking-pool-balance?accountId={account}` - Refresh staking pool balance in lockup contract
+- **GET** `/api/tools/delegate-all?receiverId={account}` - Delegate all veNEAR tokens to an account
+- **GET** `/api/tools/undelegate?accountId={account}` - Undelegate all veNEAR tokens from current delegate
+- **GET** `/api/tools/begin-unlock-near?lockupId={id}` - Begin unlock process for NEAR tokens in lockup contract
+- **GET** `/api/tools/end-unlock-near?lockupId={id}` - End unlock process for NEAR tokens in lockup contract
 
 ## Examples
 

@@ -343,13 +343,13 @@ export async function GET() {
                                                     lockupCost: { type: "string", description: "Cost to deploy lockup contract" },
                                                     stakingPool: { type: "string", description: "Staking pool account ID" },
                                                     knownDepositedBalance: { type: "string", description: "Known deposited balance in staking pool" }
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                             }
-                        },
+                        }
+                    }
+                }
+            },
                         "400": {
                             description: "Bad request - invalid account ID or no veNEAR balance found"
                         },
@@ -538,7 +538,7 @@ export async function GET() {
                             name: "count",
                             in: "query",
                             required: false,
-                                schema: {
+                            schema: {
                                 type: "integer",
                                 minimum: 1,
                                 maximum: 50,
@@ -649,8 +649,8 @@ export async function GET() {
                                                         }
                                                     },
                                                     totalPower: {
-                                                        type: "object",
-                                                        properties: {
+                                        type: "object",
+                                        properties: {
                                                             raw: { type: "string", description: "Total power in yoctoNEAR" },
                                                             nears: { type: "string", description: "Total power in NEAR units" }
                                                         }
@@ -667,13 +667,13 @@ export async function GET() {
                                                     token: { type: "string", description: "Token symbol (veNEAR)" },
                                                     hasDetailedData: { type: "boolean", description: "Whether detailed data is available" },
                                                     timestamp: { type: "string", description: "ISO timestamp of when data was fetched" }
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                             }
-                        },
+                        }
+                    }
+                }
+            },
                         "400": {
                             description: "Bad request - invalid account ID"
                         },
@@ -714,16 +714,16 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Search results retrieved successfully",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             proposals: {
                                                 type: "array",
                                                 items: {
-                                                    type: "object",
-                                                    properties: {
+                                            type: "object",
+                                            properties: {
                                                         id: { type: "integer", description: "Unique proposal identifier" },
                                                         title: { type: "string", description: "Proposal title" },
                                                         description: { type: "string", description: "Detailed proposal description" },
@@ -749,10 +749,10 @@ export async function GET() {
                         },
                         "500": {
                             description: "Internal server error"
+                                }
+                            }
                         }
-                    }
-                }
-            },
+                    },
             "/api/tools/vote": {
                 get: {
                     operationId: "vote",
@@ -944,14 +944,14 @@ export async function GET() {
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }
                             }
-                        },
+                        }
+                    }
+                }
+            },
                         "400": {
                             description: "Bad request - invalid parameters, no lockup found, or locked amount is not zero"
                         },
@@ -970,7 +970,7 @@ export async function GET() {
                         {
                             name: "accountId",
                             in: "query",
-                            required: true,
+                        required: true,
                             schema: {
                                 type: "string"
                             },
@@ -980,14 +980,14 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Lock NEAR transaction payload generated successfully",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             transactionPayload: {
-                                                type: "object",
-                                                properties: {
+                                            type: "object",
+                                            properties: {
                                                     receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
                                                     actions: {
                                                         type: "array",
@@ -1012,12 +1012,12 @@ export async function GET() {
                                                         }
                                                     }
                                                 }
-                                            }
                                         }
                                     }
                                 }
                             }
-                        },
+                        }
+                    },
                         "400": {
                             description: "Bad request - invalid parameters, no lockup found, or insufficient liquid balance"
                         },
@@ -1224,14 +1224,14 @@ export async function GET() {
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }
                             }
-                        },
+                        }
+                    }
+                }
+            },
                         "400": {
                             description: "Bad request - invalid parameters or no lockup found"
                         },
@@ -1311,6 +1311,339 @@ export async function GET() {
                         },
                         "400": {
                             description: "Bad request - invalid parameters or no lockup found"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/refresh-staking-pool-balance": {
+                get: {
+                    operationId: "refreshStakingPoolBalance",
+                    summary: "Refresh staking pool balance",
+                    description: "Generates a NEAR transaction payload for refreshing the staking pool balance in the lockup contract",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Refresh staking pool balance transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (refresh_staking_pool_balance)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters, no lockup found, or no staking pool"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/delegate-all": {
+                get: {
+                    operationId: "delegateAll",
+                    summary: "Delegate all veNEAR tokens",
+                    description: "Generates a NEAR transaction payload for delegating all veNEAR tokens to a specific account",
+                    parameters: [
+                        {
+                            name: "receiverId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The account ID to delegate all veNEAR tokens to"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Delegate all veNEAR transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "veNEAR contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (delegate_all)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                receiver_id: { type: "string", description: "Account ID to delegate all veNEAR tokens to" }
+                                                                            },
+                                                                            required: ["receiver_id"]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters or invalid receiver ID format"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/undelegate": {
+                get: {
+                    operationId: "undelegate",
+                    summary: "Undelegate all veNEAR tokens",
+                    description: "Generates a NEAR transaction payload for undelegating all veNEAR tokens from the current delegate",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID to check delegation status"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Undelegate all veNEAR transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "veNEAR contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (undelegate)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            delegationInfo: { type: "object", description: "Current delegation information" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters, account not delegating, or no delegation found"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/begin-unlock-near": {
+                get: {
+                    operationId: "beginUnlockNear",
+                    summary: "Begin unlock process for NEAR tokens",
+                    description: "Generates a NEAR transaction payload for beginning the unlock process for NEAR tokens in a lockup contract",
+                    parameters: [
+                        {
+                            name: "lockupId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The lockup contract account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Begin unlock NEAR transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (begin_unlock_near)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - lockupId is required"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/end-unlock-near": {
+                get: {
+                    operationId: "endUnlockNear",
+                    summary: "End unlock process for NEAR tokens",
+                    description: "Generates a NEAR transaction payload for completing the unlock process for NEAR tokens in a lockup contract",
+                    parameters: [
+                        {
+                            name: "lockupId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The lockup contract account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "End unlock NEAR transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (end_unlock_near)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {},
+                                                                            description: "Empty arguments object"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - lockupId is required"
                         },
                         "500": {
                             description: "Internal server error"
