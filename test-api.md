@@ -459,7 +459,7 @@ curl "http://localhost:3000/api/tools/search-proposal?q=treasury"
 {
   "proposals": [
     {
-      "id": 123,
+    "id": 123,
       "title": "Treasury Funding Proposal",
       "description": "This proposal requests funding for community initiatives...",
       "status": "active",
@@ -1000,6 +1000,262 @@ curl "http://localhost:3000/api/tools/unselect-staking-pool?accountId=user.near"
 }
 ```
 
+### 19. Refresh Staking Pool Balance
+
+```bash
+# Refresh staking pool balance in lockup contract
+curl "http://localhost:3000/api/tools/refresh-staking-pool-balance?accountId=user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "refresh_staking_pool_balance",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {}
+        }
+      }
+    ]
+  }
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/refresh-staking-pool-balance?accountId=nolockup.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: No staking pool found for lockup
+curl "http://localhost:3000/api/tools/refresh-staking-pool-balance?accountId=nopool.near"
+
+# Expected error response:
+{
+  "error": "No staking pool found for this lockup"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/refresh-staking-pool-balance"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+```
+
+### 20. Delegate All veNEAR Tokens
+
+```bash
+# Delegate all veNEAR tokens to a specific account
+curl "http://localhost:3000/api/tools/delegate-all?receiverId=delegate.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "venear.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "delegate_all",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {
+            "receiver_id": "delegate.near"
+          }
+        }
+      }
+    ]
+  }
+}
+
+# Error case: Missing receiverId parameter
+curl "http://localhost:3000/api/tools/delegate-all"
+
+# Expected error response:
+{
+  "error": "receiverId parameter is required"
+}
+
+# Error case: Invalid receiver ID format
+curl "http://localhost:3000/api/tools/delegate-all?receiverId=INVALID_ACCOUNT"
+
+# Expected error response:
+{
+  "error": "Invalid receiver ID format. Must be a valid NEAR account ID"
+}
+
+# Error case: Receiver ID too short
+curl "http://localhost:3000/api/tools/delegate-all?receiverId=a"
+
+# Expected error response:
+{
+  "error": "Invalid receiver ID format. Must be a valid NEAR account ID"
+}
+
+# Error case: Receiver ID too long
+curl "http://localhost:3000/api/tools/delegate-all?receiverId=verylongaccountidthatiswaytoolongandshouldnotbeallowedbecauseitviolatesthenearaccountidlengthlimit"
+
+# Expected error response:
+{
+  "error": "Invalid receiver ID format. Must be a valid NEAR account ID"
+}
+```
+
+### 21. Undelegate All veNEAR Tokens
+
+```bash
+# Undelegate all veNEAR tokens from current delegate
+curl "http://localhost:3000/api/tools/undelegate?accountId=user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "venear.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "undelegate",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {}
+        }
+      }
+    ]
+  },
+  "delegationInfo": {
+    "account_id": "delegate.near",
+    "amount": "1000000000000000000000000"
+  }
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/undelegate"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+
+# Error case: Account not currently delegating
+curl "http://localhost:3000/api/tools/undelegate?accountId=nodelegation.near"
+
+# Expected error response:
+{
+  "error": "Account is not currently delegating any veNEAR tokens",
+  "accountInfo": {
+    "account": {
+      "account_id": "nodelegation.near",
+      "balance": "5000000000000000000000000",
+      "delegation": null
+    }
+  }
+}
+
+### 22. Begin Unlock NEAR Tokens
+
+```bash
+# Begin unlock process for NEAR tokens in lockup contract
+curl "http://localhost:3000/api/tools/begin-unlock-near?lockupId=lockup.user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "begin_unlock_near",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {}
+        }
+      }
+    ]
+  }
+}
+
+# Error case: Missing lockupId parameter
+curl "http://localhost:3000/api/tools/begin-unlock-near"
+
+# Expected error response:
+{
+  "error": "lockupId is required"
+}
+
+# Error case: Empty lockupId
+curl "http://localhost:3000/api/tools/begin-unlock-near?lockupId="
+
+# Expected error response:
+{
+  "error": "lockupId is required"
+}
+```
+
+### 23. End Unlock NEAR Tokens
+
+```bash
+# End unlock process for NEAR tokens in lockup contract
+curl "http://localhost:3000/api/tools/end-unlock-near?lockupId=lockup.user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "end_unlock_near",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {}
+        }
+      }
+    ]
+  }
+}
+
+# Error case: Missing lockupId parameter
+curl "http://localhost:3000/api/tools/end-unlock-near"
+
+# Expected error response:
+{
+  "error": "lockupId is required"
+}
+
+# Error case: Empty lockupId
+curl "http://localhost:3000/api/tools/end-unlock-near?lockupId="
+
+# Expected error response:
+{
+  "error": "lockupId is required"
+}
+
+# Error case: No pending unlock amount
+curl "http://localhost:3000/api/tools/end-unlock-near?lockupId=lockup.nopending.near"
+
+# Expected error response:
+{
+  "error": "No pending unlock amount found"
+}
+
+# Error case: Unlock period has not ended yet
+curl "http://localhost:3000/api/tools/end-unlock-near?lockupId=lockup.locked.near"
+
+# Expected error response:
+{
+  "error": "Unlock period has not ended yet"
+}
+
 
 ## Error Testing
 
@@ -1340,6 +1596,61 @@ async function unselectStakingPool(accountId, stakingPoolAccountId) {
     return response.data;
   } catch (error) {
     console.error('Error unselecting staking pool:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Refresh staking pool balance in lockup contract
+async function refreshStakingPoolBalance(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/refresh-staking-pool-balance?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error refreshing staking pool balance:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Delegate all veNEAR tokens to a specific account
+async function delegateAll(receiverId) {
+  try {
+    const response = await axios.get(`/api/tools/delegate-all?receiverId=${receiverId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error delegating all veNEAR:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Undelegate all veNEAR tokens from current delegate
+async function undelegate(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/undelegate?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error undelegating all veNEAR:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Begin unlock process for NEAR tokens in lockup contract
+async function beginUnlockNear(lockupId) {
+  try {
+    const response = await axios.get(`/api/tools/begin-unlock-near?lockupId=${lockupId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error beginning unlock NEAR:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// End unlock process for NEAR tokens in lockup contract
+async function endUnlockNear(lockupId) {
+  try {
+    const response = await axios.get(`/api/tools/end-unlock-near?lockupId=${lockupId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error ending unlock NEAR:', error.response?.data?.error || error.message);
     throw error;
   }
 }
