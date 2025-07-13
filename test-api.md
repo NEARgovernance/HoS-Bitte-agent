@@ -779,6 +779,226 @@ curl "http://localhost:3000/api/tools/lock-near"
 {
   "error": "accountId parameter is required"
 }
+```
+
+### 15. Withdraw NEAR Tokens from Lockup
+
+```bash
+# Withdraw NEAR tokens from lockup contract
+curl "http://localhost:3000/api/tools/withdraw-lockup?accountId=user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "transfer",
+          "gas": "100000000000000",
+          "deposit": "0",
+          "args": {
+            "amount": "3000000000000000000000000",
+            "receiver_id": "user.near"
+          }
+        }
+      }
+    ]
+  }
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/withdraw-lockup?accountId=nolockup.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: Insufficient withdrawable balance (less than 1 NEAR)
+curl "http://localhost:3000/api/tools/withdraw-lockup?accountId=lowbalance.near"
+
+# Expected error response:
+{
+  "error": "Insufficient withdrawable balance",
+  "withdrawableAmount": "500000000000000000000000",
+  "liquidAmount": "1000000000000000000000000",
+  "liquidOwnersBalance": "500000000000000000000000",
+  "minimumRequired": "1000000000000000000000000"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/withdraw-lockup"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+```
+
+### 16. Deposit and Stake NEAR Tokens
+
+```bash
+# Deposit and stake NEAR tokens from lockup contract
+curl "http://localhost:3000/api/tools/deposit-and-stake?accountId=user.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "deposit_and_stake",
+          "gas": "200000000000000",
+          "deposit": "1",
+          "args": {
+            "amount": "5000000000000000000000000"
+          }
+        }
+      }
+    ]
+  }
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/deposit-and-stake?accountId=nolockup.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: No staking pool found for lockup
+curl "http://localhost:3000/api/tools/deposit-and-stake?accountId=nopool.near"
+
+# Expected error response:
+{
+  "error": "No staking pool found for this lockup"
+}
+
+# Error case: Insufficient liquid owner balance (less than 1 NEAR)
+curl "http://localhost:3000/api/tools/deposit-and-stake?accountId=lowbalance.near"
+
+# Expected error response:
+{
+  "error": "Insufficient liquid owner balance to stake",
+  "liquidOwnersBalance": "500000000000000000000000",
+  "minimumRequired": "1000000000000000000000000"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/deposit-and-stake"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+```
+
+### 17. Select Staking Pool
+
+```bash
+# Select a staking pool in lockup contract
+curl "http://localhost:3000/api/tools/select-staking-pool?accountId=user.near&stakingPoolAccountId=staking.pool.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "select_staking_pool",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {
+            "staking_pool_account_id": "staking.pool.near"
+          }
+        }
+      }
+    ]
+  }
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/select-staking-pool?accountId=nolockup.near&stakingPoolAccountId=staking.pool.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/select-staking-pool?stakingPoolAccountId=staking.pool.near"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+
+# Error case: Missing stakingPoolAccountId parameter
+curl "http://localhost:3000/api/tools/select-staking-pool?accountId=user.near"
+
+# Expected error response:
+{
+  "error": "stakingPoolAccountId parameter is required"
+}
+```
+
+### 18. Unselect Staking Pool
+
+```bash
+# Unselect a staking pool in lockup contract
+curl "http://localhost:3000/api/tools/unselect-staking-pool?accountId=user.near&stakingPoolAccountId=staking.pool.near"
+
+# Expected response:
+{
+  "transactionPayload": {
+    "receiverId": "lockup.user.near",
+    "actions": [
+      {
+        "type": "FunctionCall",
+        "params": {
+          "methodName": "unselect_staking_pool",
+          "gas": "100000000000000",
+          "deposit": "1",
+          "args": {
+            "staking_pool_account_id": "staking.pool.near"
+          }
+        }
+      }
+    ]
+  }
+}
+
+# Error case: No lockup found for account
+curl "http://localhost:3000/api/tools/unselect-staking-pool?accountId=nolockup.near&stakingPoolAccountId=staking.pool.near"
+
+# Expected error response:
+{
+  "error": "No lockup found for this account"
+}
+
+# Error case: Missing accountId parameter
+curl "http://localhost:3000/api/tools/unselect-staking-pool?stakingPoolAccountId=staking.pool.near"
+
+# Expected error response:
+{
+  "error": "accountId parameter is required"
+}
+
+# Error case: Missing stakingPoolAccountId parameter
+curl "http://localhost:3000/api/tools/unselect-staking-pool?accountId=user.near"
+
+# Expected error response:
+{
+  "error": "stakingPoolAccountId parameter is required"
+}
+```
 
 
 ## Error Testing
@@ -1076,6 +1296,50 @@ async function lockNear(accountId) {
     return response.data;
   } catch (error) {
     console.error('Error locking NEAR:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Withdraw NEAR tokens from lockup contract
+async function withdrawLockup(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/withdraw-lockup?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error withdrawing from lockup:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Deposit and stake NEAR tokens from lockup contract
+async function depositAndStake(accountId) {
+  try {
+    const response = await axios.get(`/api/tools/deposit-and-stake?accountId=${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error depositing and staking:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Select staking pool in lockup contract
+async function selectStakingPool(accountId, stakingPoolAccountId) {
+  try {
+    const response = await axios.get(`/api/tools/select-staking-pool?accountId=${accountId}&stakingPoolAccountId=${stakingPoolAccountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error selecting staking pool:', error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+
+// Unselect staking pool in lockup contract
+async function unselectStakingPool(accountId, stakingPoolAccountId) {
+  try {
+    const response = await axios.get(`/api/tools/unselect-staking-pool?accountId=${accountId}&stakingPoolAccountId=${stakingPoolAccountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error unselecting staking pool:', error.response?.data?.error || error.message);
     throw error;
   }
 }

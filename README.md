@@ -53,6 +53,10 @@ Access the OpenAPI specification at `GET /api/ai-plugin`
 - **GET** `/api/tools/deploy-lockup` - Deploy lockup contract transaction
 - **GET** `/api/tools/delete-lockup?accountId={account}` - Delete lockup contract transaction (when locked amount is zero)
 - **GET** `/api/tools/lock-near?accountId={account}` - Lock NEAR tokens in lockup contract
+- **GET** `/api/tools/withdraw-lockup?accountId={account}` - Withdraw NEAR tokens from lockup contract
+- **GET** `/api/tools/deposit-and-stake?accountId={account}` - Deposit and stake NEAR tokens from lockup contract
+- **GET** `/api/tools/select-staking-pool?accountId={account}&stakingPoolAccountId={pool}` - Select staking pool in lockup contract
+- **GET** `/api/tools/unselect-staking-pool?accountId={account}&stakingPoolAccountId={pool}` - Unselect staking pool in lockup contract
 
 ## Examples
 

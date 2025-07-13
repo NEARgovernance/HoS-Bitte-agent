@@ -1012,13 +1012,305 @@ export async function GET() {
                                                         }
                                                     }
                                                 }
-                                            }                                        }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         },
                         "400": {
                             description: "Bad request - invalid parameters, no lockup found, or insufficient liquid balance"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/withdraw-lockup": {
+                get: {
+                    operationId: "withdrawLockup",
+                    summary: "Withdraw NEAR tokens from lockup",
+                    description: "Generates a NEAR transaction payload for withdrawing NEAR tokens from the lockup contract",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Withdraw transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (transfer)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (0 for transfer)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                amount: { type: "string", description: "Amount of NEAR tokens to withdraw" },
+                                                                                receiver_id: { type: "string", description: "Account ID to receive the withdrawn tokens" }
+                                                                            },
+                                                                            required: ["amount", "receiver_id"]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters, no lockup found, or insufficient withdrawable balance"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/deposit-and-stake": {
+                get: {
+                    operationId: "depositAndStake",
+                    summary: "Deposit and stake NEAR tokens",
+                    description: "Generates a NEAR transaction payload for depositing and staking NEAR tokens from the lockup contract",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Deposit and stake transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (deposit_and_stake)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (200 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                amount: { type: "string", description: "Amount of NEAR tokens to deposit and stake" }
+                                                                            },
+                                                                            required: ["amount"]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters, no lockup found, no staking pool, or insufficient liquid owner balance"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/select-staking-pool": {
+                get: {
+                    operationId: "selectStakingPool",
+                    summary: "Select staking pool",
+                    description: "Generates a NEAR transaction payload for selecting a staking pool in the lockup contract",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        },
+                        {
+                            name: "stakingPoolAccountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The staking pool account ID to select"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Select staking pool transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (select_staking_pool)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                staking_pool_account_id: { type: "string", description: "Staking pool account ID to select" }
+                                                                            },
+                                                                            required: ["staking_pool_account_id"]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters or no lockup found"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/unselect-staking-pool": {
+                get: {
+                    operationId: "unselectStakingPool",
+                    summary: "Unselect staking pool",
+                    description: "Generates a NEAR transaction payload for unselecting a staking pool in the lockup contract",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The user's account ID"
+                        },
+                        {
+                            name: "stakingPoolAccountId",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "The staking pool account ID to unselect"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Unselect staking pool transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (FunctionCall)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        methodName: { type: "string", description: "Contract method to call (unselect_staking_pool)" },
+                                                                        gas: { type: "string", description: "Gas limit for the transaction (100 Tgas)" },
+                                                                        deposit: { type: "string", description: "NEAR deposit amount (at least 1 yoctoNEAR)" },
+                                                                        args: {
+                                                                            type: "object",
+                                                                            properties: {
+                                                                                staking_pool_account_id: { type: "string", description: "Staking pool account ID to unselect" }
+                                                                            },
+                                                                            required: ["staking_pool_account_id"]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Bad request - invalid parameters or no lockup found"
                         },
                         "500": {
                             description: "Internal server error"
