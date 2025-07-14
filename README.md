@@ -62,6 +62,7 @@ Access the OpenAPI specification at `GET /api/ai-plugin`
 - **GET** `/api/tools/undelegate?accountId={account}` - Undelegate all veNEAR tokens from current delegate
 - **GET** `/api/tools/begin-unlock-near?lockupId={id}` - Begin unlock process for NEAR tokens in lockup contract
 - **GET** `/api/tools/end-unlock-near?lockupId={id}` - End unlock process for NEAR tokens in lockup contract
+- **GET** `/api/tools/deposit-lookup?accountId={account}&amount={amount}` - Deposit NEAR into lockup contract
 
 ## Examples
 
