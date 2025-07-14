@@ -714,11 +714,11 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Search results retrieved successfully",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
                                             proposals: {
                                                 type: "array",
                                                 items: {
@@ -762,7 +762,7 @@ export async function GET() {
                         {
                             name: "proposalId",
                             in: "query",
-                            required: true,
+                        required: true,
                             schema: {
                                 type: "string"
                             },
@@ -790,14 +790,14 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Vote transaction payload generated successfully",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             transactionPayload: {
-                                                type: "object",
-                                                properties: {
+                                            type: "object",
+                                            properties: {
                                                     receiverId: { type: "string", description: "Contract account ID to receive the transaction" },
                                                     actions: {
                                                         type: "array",
@@ -827,12 +827,12 @@ export async function GET() {
                                                         }
                                                     }
                                                 }
-                                            }
                                         }
                                     }
                                 }
                             }
-                        },
+                        }
+                    },
                         "400": {
                             description: "Bad request - invalid parameters, proposal not active, or user already voted"
                         },
@@ -980,11 +980,11 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Lock NEAR transaction payload generated successfully",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
                                             transactionPayload: {
                                             type: "object",
                                             properties: {
@@ -1010,14 +1010,14 @@ export async function GET() {
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                }
                                         }
                                     }
                                 }
                             }
                         }
-                    },
+                    }
+                }
+            },
                         "400": {
                             description: "Bad request - invalid parameters, no lockup found, or insufficient liquid balance"
                         },
@@ -1036,7 +1036,7 @@ export async function GET() {
                         {
                             name: "accountId",
                             in: "query",
-                            required: true,
+                        required: true,
                             schema: {
                                 type: "string"
                             },
@@ -1046,14 +1046,14 @@ export async function GET() {
                     responses: {
                         "200": {
                             description: "Withdraw transaction payload generated successfully",
-                            content: {
-                                "application/json": {
-                                    schema: {
-                                        type: "object",
-                                        properties: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
                                             transactionPayload: {
-                                                type: "object",
-                                                properties: {
+                                            type: "object",
+                                            properties: {
                                                     receiverId: { type: "string", description: "Lockup contract account ID to receive the transaction" },
                                                     actions: {
                                                         type: "array",
@@ -1227,11 +1227,11 @@ export async function GET() {
                                         }
                                     }
                                 }
+                                        }
+                                    }
+                                }
                             }
-                        }
-                    }
-                }
-            },
+                        },
                         "400": {
                             description: "Bad request - invalid parameters or no lockup found"
                         },
@@ -1367,14 +1367,14 @@ export async function GET() {
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }
                             }
-                        },
+                        }
+                    }
+                }
+            },
                         "400": {
                             description: "Bad request - invalid parameters, no lockup found, or no staking pool"
                         },
@@ -1633,6 +1633,71 @@ export async function GET() {
                                                                     }
                                                                 }
                                                             }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+                        "400": {
+                            description: "Bad request - lockupId is required"
+                        },
+                        "500": {
+                            description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/deposit-lookup": {
+                get: {
+                    operationId: "depositLookup",
+                    summary: "Deposit NEAR into lockup contract",
+                    description: "Generates a NEAR transaction payload for depositing a specified amount of NEAR into the user's lockup contract.",
+                    parameters: [
+                        {
+                            name: "accountId",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "The user's account ID"
+                        },
+                        {
+                            name: "amount",
+                            in: "query",
+                            required: true,
+                            schema: { type: "number", minimum: 0.000000000000000001 },
+                            description: "Amount of NEAR to deposit (in NEAR, not yoctoNEAR)"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Deposit transaction payload generated successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transactionPayload: {
+                                                type: "object",
+                                                properties: {
+                                                    receiverId: { type: "string", description: "Lockup contract account ID to receive the deposit" },
+                                                    actions: {
+                                                        type: "array",
+                                                        items: {
+                                                            type: "object",
+                                                            properties: {
+                                                                type: { type: "string", description: "Action type (Transfer)" },
+                                                                params: {
+                                                                    type: "object",
+                                                                    properties: {
+                                                                        deposit: { type: "string", description: "Deposit amount in yoctoNEAR" }
+                                                                    },
+                                                                    required: ["deposit"]
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -1643,7 +1708,7 @@ export async function GET() {
                             }
                         },
                         "400": {
-                            description: "Bad request - lockupId is required"
+                            description: "Bad request - invalid parameters, no lockup found, or amount is not positive"
                         },
                         "500": {
                             description: "Internal server error"
