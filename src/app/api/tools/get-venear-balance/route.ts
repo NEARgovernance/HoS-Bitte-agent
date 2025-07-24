@@ -134,9 +134,8 @@ export async function GET(request: Request) {
     }
 
     // Fetch both token balance and detailed balance
-    const [tokenBalanceResult, detailedBalanceResult] = await Promise.all([
+    const [tokenBalanceResult] = await Promise.all([
       fetchVeNEARTokenBalance(accountId),
-      fetchVeNEARDetailedBalance(accountId)
     ]);
 
     // Handle token balance result
@@ -144,58 +143,18 @@ export async function GET(request: Request) {
       return tokenBalanceResult;
     }
 
-    // Handle detailed balance result
-    if (detailedBalanceResult instanceof NextResponse) {
-      return detailedBalanceResult;
-    }
+    
 
     const tokenBalance = tokenBalanceResult.balance;
-    const detailedBalance = detailedBalanceResult;
 
     // Calculate NEAR values
     const tokenBalanceInNEAR = yoctoToNEAR(tokenBalance);
-    const detailedBalanceInNEAR = detailedBalance ? yoctoToNEAR(detailedBalance.balance || '0') : '0';
-    const lockedBalanceInNEAR = detailedBalance ? yoctoToNEAR(detailedBalance.locked_balance || '0') : '0';
-    const votingPowerInNEAR = detailedBalance ? yoctoToNEAR(detailedBalance.voting_power || '0') : '0';
-    const delegationPowerInNEAR = detailedBalance ? yoctoToNEAR(detailedBalance.delegation_power || '0') : '0';
-    const totalPowerInNEAR = detailedBalance ? yoctoToNEAR(detailedBalance.total_power || '0') : '0';
 
     return NextResponse.json({ 
       accountId: accountId,
       tokenBalance: {
         raw: tokenBalance,
         nears: tokenBalanceInNEAR,
-        method: "ft_balance_of",
-        description: "Standard fungible token balance"
-      },
-      detailedBalance: detailedBalance ? {
-        raw: detailedBalance.balance || '0',
-        nears: detailedBalanceInNEAR,
-        lockedBalance: {
-          raw: detailedBalance.locked_balance || '0',
-          nears: lockedBalanceInNEAR
-        },
-        votingPower: {
-          raw: detailedBalance.voting_power || '0',
-          nears: votingPowerInNEAR
-        },
-        delegationPower: {
-          raw: detailedBalance.delegation_power || '0',
-          nears: delegationPowerInNEAR
-        },
-        totalPower: {
-          raw: detailedBalance.total_power || '0',
-          nears: totalPowerInNEAR
-        },
-        unlockTime: detailedBalance.unlock_time,
-        method: "get_accounts",
-        description: "Detailed balance with voting and delegation power"
-      } : null,
-      metadata: {
-        contract: VENEAR_CONTRACT_ID,
-        token: "veNEAR",
-        hasDetailedData: !!detailedBalance,
-        timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
