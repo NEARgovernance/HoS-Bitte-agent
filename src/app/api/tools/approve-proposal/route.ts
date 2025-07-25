@@ -5,7 +5,7 @@ import { VOTING_CONTRACT, NEAR_RPC_URL } from '@/app/config';
 function tgasToGas(tgas: string): string | NextResponse {
   const tgasValue = parseFloat(tgas);
   if (isNaN(tgasValue)) {
-    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 200 });
   }
   return (tgasValue * 1e12).toString();
 }
@@ -60,7 +60,7 @@ async function validateProposalForApproval(proposalId: number): Promise<{ propos
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 200 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -166,13 +166,13 @@ export async function GET(request: Request) {
     if (!proposalId) {
       return NextResponse.json({ 
         error: 'proposalId is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Validate proposal ID
@@ -180,7 +180,7 @@ export async function GET(request: Request) {
     if (isNaN(id) || id < 0) {
       return NextResponse.json({ 
         error: 'proposalId must be a valid positive number' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VOTING_CONTRACT) {
@@ -199,7 +199,7 @@ export async function GET(request: Request) {
     if (!canApprove) {
       return NextResponse.json({ 
         error: `Proposal ${id} cannot be approved. Current status: ${proposal.status}. Only proposals with status 'Pending' or 'Draft' can be approved.` 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Check approval permissions

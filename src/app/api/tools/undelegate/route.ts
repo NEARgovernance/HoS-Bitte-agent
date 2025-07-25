@@ -83,7 +83,7 @@ export async function GET(request: Request) {
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
@@ -105,7 +105,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ 
         error: 'Account is not currently delegating any veNEAR tokens',
         accountInfo
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Create the undelegate all veNEAR transaction payload

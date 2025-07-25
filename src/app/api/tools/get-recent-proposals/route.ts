@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const count = parseInt(searchParams.get('count') || '5');
 
     if (isNaN(count) || count < 1 || count > 50) {
-      return NextResponse.json({ error: 'count must be a number between 1 and 50' }, { status: 400 });
+      return NextResponse.json({ error: 'count must be a number between 1 and 50' }, { status: 200 });
     }
 
     if (!VOTING_CONTRACT) {

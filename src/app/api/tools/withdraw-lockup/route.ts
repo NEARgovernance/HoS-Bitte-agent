@@ -163,7 +163,7 @@ export async function GET(request: Request) {
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
@@ -182,7 +182,7 @@ export async function GET(request: Request) {
     if (!lockupId) {
       return NextResponse.json({ 
         error: 'No lockup found for this account' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Get liquid balance
@@ -213,7 +213,7 @@ export async function GET(request: Request) {
         liquidAmount,
         liquidOwnersBalance,
         minimumRequired: minAmount
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Create the withdraw transaction payload

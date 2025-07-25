@@ -14,11 +14,11 @@ export async function GET(request: Request) {
     const accountId = searchParams.get('accountId');
 
     if (!accountId) {
-      return NextResponse.json({ error: 'accountId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'accountId is required' }, { status: 200 });
     }
 
     if (!accountId.trim()) {
-      return NextResponse.json({ error: 'Invalid account ID' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid account ID' }, { status: 200 });
     }
 
     // Fetch NEAR account balance
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     }
 
     if (!json.result) {
-      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 400 });
+      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 200 });
     }
 
     const accountBalance = json.result.amount || '0';

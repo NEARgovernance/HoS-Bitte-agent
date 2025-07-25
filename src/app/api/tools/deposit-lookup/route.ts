@@ -13,14 +13,14 @@ export async function GET(request: NextRequest) {
     const amountStr = searchParams.get('amount');
 
     if (!accountId) {
-      return NextResponse.json({ error: 'accountId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'accountId is required' }, { status: 200 });
     }
     if (!amountStr) {
-      return NextResponse.json({ error: 'amount is required' }, { status: 400 });
+      return NextResponse.json({ error: 'amount is required' }, { status: 200 });
     }
     const amount = parseFloat(amountStr);
     if (isNaN(amount) || amount <= 0) {
-      return NextResponse.json({ error: 'amount must be a positive number' }, { status: 400 });
+      return NextResponse.json({ error: 'amount must be a positive number' }, { status: 200 });
     }
     if (!VENEAR_CONTRACT_ID) {
       return NextResponse.json({ error: 'VENEAR_CONTRACT_ID environment variable not set' }, { status: 500 });
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     const raw = Buffer.from(bytes).toString("utf-8");
     const lockupId = JSON.parse(raw);
     if (!lockupId) {
-      return NextResponse.json({ error: 'No lockupId found for this account' }, { status: 400 });
+      return NextResponse.json({ error: 'No lockupId found for this account' }, { status: 200 });
     }
 
     // Create the transfer transaction payload

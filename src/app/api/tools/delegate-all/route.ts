@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     if (!receiverId) {
       return NextResponse.json({ 
         error: 'receiverId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     if (!nearAccountIdRegex.test(receiverId) || receiverId.length < 2 || receiverId.length > 64) {
       return NextResponse.json({ 
         error: 'Invalid receiver ID format. Must be a valid NEAR account ID' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Create the delegate all veNEAR transaction payload
