@@ -60,10 +60,6 @@ export async function GET(request: Request) {
       balance: {
         raw: accountBalance,
         nears: balanceInNEAR
-      },
-      metadata: {
-        description: "NEAR account balance information",
-        timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
