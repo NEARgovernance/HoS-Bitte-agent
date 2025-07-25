@@ -232,7 +232,7 @@ export async function GET(request: Request) {
             gas: gasResult, // 150 Tgas
             deposit: "1", // Small deposit for approval
             args: {
-              proposal_id: id.toString()
+              proposal_id: id,
             }
           }
         }
