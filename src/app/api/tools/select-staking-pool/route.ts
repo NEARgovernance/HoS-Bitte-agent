@@ -68,13 +68,13 @@ export async function GET(request: Request) {
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!stakingPoolAccountId) {
       return NextResponse.json({ 
         error: 'stakingPoolAccountId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
     if (!lockupId) {
       return NextResponse.json({ 
         error: 'No lockup found for this account' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Create the select staking pool transaction payload

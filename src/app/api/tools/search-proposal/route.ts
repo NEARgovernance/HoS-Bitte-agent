@@ -224,7 +224,7 @@ export async function GET(request: Request) {
       } else {
         return NextResponse.json({ 
           error: 'limit must be a number between 1 and 100' 
-        }, { status: 400 });
+        }, { status: 200 });
       }
     }
 

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!lockupId) {
       return NextResponse.json(
         { error: "lockupId is required" },
-        { status: 400 }
+        { status: 200 }
       );
     }
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       if (lockupStateData.error) {
         return NextResponse.json(
           { error: "Failed to fetch lockup contract state" },
-          { status: 400 }
+          { status: 200 }
         );
       }
 
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       if (!pendingAmount || pendingAmount === "0") {
         return NextResponse.json(
           { error: "No pending unlock amount found" },
-          { status: 400 }
+          { status: 200 }
         );
       }
 
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
       if (unlockTimestampData.error) {
         return NextResponse.json(
           { error: "Failed to fetch unlock timestamp" },
-          { status: 400 }
+          { status: 200 }
         );
       }
 
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
       if (untilUnlock > 0) {
         return NextResponse.json(
           { error: "Unlock period has not ended yet" },
-          { status: 400 }
+          { status: 200 }
         );
       }
 

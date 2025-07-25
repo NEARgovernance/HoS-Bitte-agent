@@ -115,7 +115,7 @@ export async function GET(request: Request) {
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
@@ -134,7 +134,7 @@ export async function GET(request: Request) {
     if (!lockupId) {
       return NextResponse.json({ 
         error: 'No lockup found for this account' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Get locked amount
@@ -149,7 +149,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ 
         error: 'Cannot delete lockup: locked amount is not zero',
         lockedAmount
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Create the delete lockup transaction payload

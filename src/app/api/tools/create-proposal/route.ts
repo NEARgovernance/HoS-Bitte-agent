@@ -6,7 +6,7 @@ import { parseNearAmount } from "near-api-js/lib/utils/format";
 function tgasToGas(tgas: string): string | NextResponse {
   const tgasValue = parseFloat(tgas);
   if (isNaN(tgasValue)) {
-    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 200 });
   }
   return (tgasValue * 1e12).toString();
 }
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     if (!title || !description) {
       return NextResponse.json({ 
         error: 'title and description are required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VOTING_CONTRACT) {
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     if (!votingOptionsParam) {
       return NextResponse.json({ 
         error: 'votingOptions is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Parse voting options from comma-separated string
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     if (filteredVotingOptions.length === 0) {
       return NextResponse.json({ 
         error: 'At least one voting option is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Convert Tgas to gas units

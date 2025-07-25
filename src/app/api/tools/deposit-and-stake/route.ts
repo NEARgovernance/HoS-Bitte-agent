@@ -163,7 +163,7 @@ export async function GET(request: Request) {
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId parameter is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
@@ -182,7 +182,7 @@ export async function GET(request: Request) {
     if (!lockupId) {
       return NextResponse.json({ 
         error: 'No lockup found for this account' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Get staking pool account ID
@@ -195,7 +195,7 @@ export async function GET(request: Request) {
     if (!stakingPool) {
       return NextResponse.json({ 
         error: 'No staking pool found for this lockup' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Get liquid owner's balance
@@ -212,7 +212,7 @@ export async function GET(request: Request) {
         error: 'Insufficient liquid owner balance to stake',
         liquidOwnersBalance,
         minimumRequired: minAmount
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Create the deposit and stake transaction payload

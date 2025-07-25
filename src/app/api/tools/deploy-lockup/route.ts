@@ -5,7 +5,7 @@ import { VENEAR_CONTRACT_ID, NEAR_RPC_URL } from '@/app/config';
 function tgasToGas(tgas: string): string | NextResponse {
   const tgasValue = parseFloat(tgas);
   if (isNaN(tgasValue)) {
-    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 200 });
   }
   return (tgasValue * 1e12).toString();
 }

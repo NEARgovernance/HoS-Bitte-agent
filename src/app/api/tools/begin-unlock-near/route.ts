@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!lockupId) {
       return NextResponse.json(
         { error: "lockupId is required" },
-        { status: 400 }
+        { status: 200 }
       );
     }
 

@@ -22,7 +22,7 @@ async function fetchProposal(proposalId: string): Promise<Proposal | NextRespons
 
   const id = parseInt(proposalId);
   if (isNaN(id)) {
-    return NextResponse.json({ error: 'Invalid proposal ID' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid proposal ID' }, { status: 200 });
   }
   
   const payload = {
@@ -55,7 +55,7 @@ async function fetchProposal(proposalId: string): Promise<Proposal | NextRespons
   }
 
       if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 200 });
     }
 
   // Convert byte array to string, then parse JSON
@@ -77,7 +77,7 @@ export async function GET(request: Request) {
     const proposalId = searchParams.get('proposalId');
 
     if (!proposalId) {
-      return NextResponse.json({ error: 'proposalId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'proposalId is required' }, { status: 200 });
     }
 
     if (!VOTING_CONTRACT) {

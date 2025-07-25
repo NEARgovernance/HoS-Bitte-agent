@@ -67,7 +67,7 @@ export async function GET(request: Request) {
     const accountId = searchParams.get('accountId');
 
     if (!accountId) {
-      return NextResponse.json({ error: 'accountId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'accountId is required' }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {

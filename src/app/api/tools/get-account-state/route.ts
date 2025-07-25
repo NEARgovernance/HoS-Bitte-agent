@@ -59,7 +59,7 @@ async function fetchVeNEARBalance(accountId: string): Promise<AccountState | Nex
   }
 
   if (!accountId || accountId.trim() === '') {
-    return NextResponse.json({ error: 'Invalid account ID' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid account ID' }, { status: 200 });
   }
 
   const payload = {
@@ -92,7 +92,7 @@ async function fetchVeNEARBalance(accountId: string): Promise<AccountState | Nex
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `No veNEAR balance found for account ${accountId}` }, { status: 400 });
+      return NextResponse.json({ error: `No veNEAR balance found for account ${accountId}` }, { status: 200 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -229,7 +229,7 @@ async function fetchAccountBalance(accountId: string): Promise<{ accountBalance:
     }
 
     if (!json.result) {
-      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 400 });
+      return NextResponse.json({ error: `Account ${accountId} not found` }, { status: 200 });
     }
 
     return { accountBalance: json.result.amount || '0' };
@@ -704,7 +704,7 @@ export async function GET(request: Request) {
     const accountId = searchParams.get('accountId');
 
     if (!accountId) {
-      return NextResponse.json({ error: 'accountId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'accountId is required' }, { status: 200 });
     }
 
     if (!VENEAR_CONTRACT_ID) {
