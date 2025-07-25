@@ -63,6 +63,11 @@ async function fetchProposal(proposalId: string): Promise<Proposal | NextRespons
   const raw = Buffer.from(bytes).toString("utf-8");
   const proposal: Proposal = JSON.parse(raw);
 
+  // Check if proposal is null after parsing
+  if (!proposal || proposal === null) {
+    return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+  }
+
   return proposal;
 }
 
