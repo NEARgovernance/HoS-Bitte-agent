@@ -59,8 +59,6 @@ async function fetchVeNEARTokenBalance(accountId: string): Promise<{ balance: st
   }
 }
 
-// Fetch detailed veNEAR balance information using get_accounts
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -74,17 +72,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'VENEAR_CONTRACT_ID environment variable not set' }, { status: 500 });
     }
 
-    // Fetch both token balance and detailed balance
-    const [tokenBalanceResult] = await Promise.all([
-      fetchVeNEARTokenBalance(accountId),
-    ]);
+    // Fetch token balance
+    const tokenBalanceResult = await fetchVeNEARTokenBalance(accountId);
 
     // Handle token balance result
     if (tokenBalanceResult instanceof NextResponse) {
       return tokenBalanceResult;
     }
-
-    
 
     const tokenBalance = tokenBalanceResult.balance;
 
@@ -96,6 +90,15 @@ export async function GET(request: Request) {
       tokenBalance: {
         raw: tokenBalance,
         nears: tokenBalanceInNEAR,
+        method: "ft_balance_of",
+        description: "veNEAR token balance"
+      },
+      detailedBalance: null,
+      metadata: {
+        contract: VENEAR_CONTRACT_ID,
+        token: "veNEAR",
+        hasDetailedData: false,
+        timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
