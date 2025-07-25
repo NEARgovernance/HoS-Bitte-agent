@@ -6,7 +6,7 @@ import { parseNearAmount } from "near-api-js/lib/utils/format";
 function tgasToGas(tgas: string): string | NextResponse {
   const tgasValue = parseFloat(tgas);
   if (isNaN(tgasValue)) {
-    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid Tgas amount' }, { status: 200 });
   }
   return (tgasValue * 1e12).toString();
 }
@@ -48,7 +48,7 @@ async function validateProposalForVoting(proposalId: number): Promise<boolean | 
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 200 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -60,7 +60,7 @@ async function validateProposalForVoting(proposalId: number): Promise<boolean | 
     if ( proposal.status !== 'Voting') {
       return NextResponse.json({ 
         error: `Proposal ${proposalId} is not active for voting. Current status: ${proposal.status}` 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Check if voting deadline has passed
@@ -70,7 +70,7 @@ async function validateProposalForVoting(proposalId: number): Promise<boolean | 
       if (now > deadline) {
         return NextResponse.json({ 
           error: `Voting deadline for proposal ${proposalId} has passed` 
-        }, { status: 400 });
+        }, { status: 200 });
       }
     }
 
@@ -118,7 +118,7 @@ async function checkVeNearBalance(accountId: string): Promise<{ hasVotingPower: 
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `No veNEAR balance found for ${accountId}` }, { status: 400 });
+      return NextResponse.json({ error: `No veNEAR balance found for ${accountId}` }, { status: 200 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -245,7 +245,7 @@ async function getProof(accountId: string): Promise<{ merkleProof: string; vAcco
     }
 
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return NextResponse.json({ error: `No proof found for account ${accountId}` }, { status: 400 });
+      return NextResponse.json({ error: `No proof found for account ${accountId}` }, { status: 200 });
     }
 
     // Convert byte array to string, then parse JSON
@@ -274,19 +274,19 @@ export async function GET(request: Request) {
     if (!proposalId) {
       return NextResponse.json({ 
         error: 'proposalId is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!vote) {
       return NextResponse.json({ 
         error: 'vote is required (voting option text)' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId is required' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
 
@@ -295,7 +295,7 @@ export async function GET(request: Request) {
     if (isNaN(id) || id < 0) {
       return NextResponse.json({ 
         error: 'proposalId must be a valid positive number' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     if (!VOTING_CONTRACT) {
@@ -330,7 +330,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: `RPC error: ${proposalJson.error.message}` }, { status: 500 });
     }
     if (!proposalJson.result || !proposalJson.result.result || proposalJson.result.result.length === 0) {
-      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+      return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 200 });
     }
     const proposalBytes = proposalJson.result.result;
     const proposalRaw = Buffer.from(proposalBytes).toString("utf-8");
@@ -340,7 +340,7 @@ export async function GET(request: Request) {
     if (!proposal.voting_options || !Array.isArray(proposal.voting_options)) {
       return NextResponse.json({ 
         error: 'Proposal does not have valid voting options' 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
 
@@ -349,7 +349,7 @@ export async function GET(request: Request) {
     if (voteIndex === -1) {
       return NextResponse.json({ 
         error: `Invalid vote option "${vote}". Available options: ${proposal.voting_options.map((opt: string, idx: number) => `${idx}: "${opt}"`).join(', ')}` 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
     // Validate proposal is active for voting
@@ -368,21 +368,21 @@ export async function GET(request: Request) {
     if (!hasVotingPower) {
       return NextResponse.json({ 
         error: `Account ${accountId} has no voting power. Current voting power: ${votingPower}` 
-      }, { status: 400 });
+      }, { status: 200 });
     }
 
-    // Check if user has already voted on this proposal
-    const existingVoteResult = await checkExistingVote(accountId, id);
-    if (existingVoteResult instanceof NextResponse) {
-      return existingVoteResult;
-    }
-    const { hasVoted, existingVote } = existingVoteResult;
+      // Check if user has already voted on this proposal
+      const existingVoteResult = await checkExistingVote(accountId, id);
+      if (existingVoteResult instanceof NextResponse) {
+        return existingVoteResult;
+      }
+      const { hasVoted, existingVote } = existingVoteResult;
 
-    if (hasVoted) {
-      return NextResponse.json({ 
-        error: `Account ${accountId} has already voted on proposal ${id}. Existing vote: ${JSON.stringify(existingVote)}` 
-      }, { status: 400 });
-    }
+      if (hasVoted) {
+        return NextResponse.json({ 
+          error: `Account ${accountId} has already voted on proposal ${id}. Existing vote: ${JSON.stringify(existingVote)}` 
+        }, { status: 200 });
+      }
 
     // Fetch merkle proof and vAccount
     const proofResult = await getProof(accountId);
