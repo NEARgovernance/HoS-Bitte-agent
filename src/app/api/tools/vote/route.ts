@@ -148,7 +148,7 @@ interface ExistingVote {
 }
 
 // Check if user has already voted on the proposal
-async function checkExistingVote(accountId: string, proposalId: number): Promise<{ hasVoted: boolean; existingVote?: ExistingVote } | NextResponse> {
+async function checkExistingVote(accountId: string, proposalId: number): Promise<{ existingVote: ExistingVote | null } | NextResponse> {
   if (!VOTING_CONTRACT) {
     return NextResponse.json({ error: 'VOTING_CONTRACT environment variable not set' }, { status: 500 });
   }
@@ -188,7 +188,7 @@ async function checkExistingVote(accountId: string, proposalId: number): Promise
 
     // If no result or empty result, user hasn't voted
     if (!json.result || !json.result.result || json.result.result.length === 0) {
-      return { hasVoted: false };
+      return { existingVote: null };
     }
 
     // Convert byte array to string, then parse JSON
@@ -197,7 +197,6 @@ async function checkExistingVote(accountId: string, proposalId: number): Promise
     const existingVote = JSON.parse(raw);
 
     return {
-      hasVoted: true,
       existingVote
     };
   } catch (error) {
@@ -376,11 +375,11 @@ export async function GET(request: Request) {
       if (existingVoteResult instanceof NextResponse) {
         return existingVoteResult;
       }
-      const { hasVoted, existingVote } = existingVoteResult;
+      const { existingVote } = existingVoteResult;
 
-      if (hasVoted) {
+      if (existingVote !== null) {
         return NextResponse.json({ 
-          error: `Account ${accountId} has already voted on proposal ${id}. Existing vote: ${JSON.stringify(existingVote)}` 
+          error: `Account ${accountId} has already voted on proposal ${id}. Existing vote: ${existingVote}` 
         }, { status: 200 });
       }
 
