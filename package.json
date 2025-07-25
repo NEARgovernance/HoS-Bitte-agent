@@ -8,7 +8,7 @@
     "dev:agent": "next dev",
     "build": "next build",
     "build:deploy": "next build && make-agent deploy -u https://hos-agent.vercel.app/",
-    "build:deployt-testnet": "next build && make-agent deploy -u https://hos-agent.vercel.app/",
+    "build:deploy-testnet": "next build && make-agent deploy -u https://hos-bitte-agent-testnet.vercel.app/",
     "start": "next start",
     "lint": "next lint"
   },
