@@ -65,7 +65,7 @@ async function fetchProposal(proposalId: string): Promise<Proposal | NextRespons
 
   // Check if proposal is null after parsing
   if (!proposal || proposal === null) {
-    return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 400 });
+    return NextResponse.json({ error: `Proposal ${proposalId} does not exist` }, { status: 200 });
   }
 
   return proposal;
