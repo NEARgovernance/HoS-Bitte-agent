@@ -249,13 +249,6 @@ export async function GET() {
                                                     raw: { type: "string", description: "Balance in yoctoNEAR (smallest unit)" },
                                                     nears: { type: "string", description: "Balance in NEAR units" }
                                                 }
-                                            },
-                                            metadata: {
-                                                type: "object",
-                                                properties: {
-                                                    description: { type: "string", description: "Description of the balance data" },
-                                                    timestamp: { type: "string", description: "ISO timestamp of when the data was fetched" }
-                                                }
                                             }
                                         }
                                     }
@@ -617,58 +610,8 @@ export async function GET() {
                                                 properties: {
                                                     raw: { type: "string", description: "veNEAR balance in yoctoNEAR" },
                                                     nears: { type: "string", description: "veNEAR balance in NEAR units" },
-                                                    method: { type: "string", description: "Method used to fetch balance" },
-                                                    description: { type: "string", description: "Description of the balance data" }
                                                 }
                                             },
-                                            detailedBalance: {
-                                                type: "object",
-                                                nullable: true,
-                                                properties: {
-                                                    raw: { type: "string", description: "Detailed balance in yoctoNEAR" },
-                                                    nears: { type: "string", description: "Detailed balance in NEAR units" },
-                                                    lockedBalance: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string", description: "Locked balance in yoctoNEAR" },
-                                                            nears: { type: "string", description: "Locked balance in NEAR units" }
-                                                        }
-                                                    },
-                                                    votingPower: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string", description: "Voting power in yoctoNEAR" },
-                                                            nears: { type: "string", description: "Voting power in NEAR units" }
-                                                        }
-                                                    },
-                                                    delegationPower: {
-                                                        type: "object",
-                                                        properties: {
-                                                            raw: { type: "string", description: "Delegation power in yoctoNEAR" },
-                                                            nears: { type: "string", description: "Delegation power in NEAR units" }
-                                                        }
-                                                    },
-                                                    totalPower: {
-                                        type: "object",
-                                        properties: {
-                                                            raw: { type: "string", description: "Total power in yoctoNEAR" },
-                                                            nears: { type: "string", description: "Total power in NEAR units" }
-                                                        }
-                                                    },
-                                                    unlockTime: { type: "string", description: "Timestamp when locked funds unlock" },
-                                                    method: { type: "string", description: "Method used to fetch detailed data" },
-                                                    description: { type: "string", description: "Description of the detailed balance" }
-                                                }
-                                            },
-                                            metadata: {
-                                                type: "object",
-                                                properties: {
-                                                    contract: { type: "string", description: "veNEAR contract address" },
-                                                    token: { type: "string", description: "Token symbol (veNEAR)" },
-                                                    hasDetailedData: { type: "boolean", description: "Whether detailed data is available" },
-                                                    timestamp: { type: "string", description: "ISO timestamp of when data was fetched" }
-                                    }
-                                }
                             }
                         }
                     }
