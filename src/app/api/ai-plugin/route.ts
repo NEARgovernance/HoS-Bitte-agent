@@ -113,8 +113,8 @@ export async function GET() {
             "/api/tools/create-proposal": {
                 get: {
                     operationId: "createProposal",
-                    summary: "Create a new governance proposal",
-                    description: "Generates a NEAR transaction payload for creating governance proposal",
+                    summary: "Create a new governance proposal (via prompt)",
+                    description: "Generates a NEAR transaction payload for creating a governance proposal using natural language or text input. This endpoint is for users who want to create proposals by describing them in a prompt.",
                     parameters: [
                         {
                             name: "title",
@@ -214,6 +214,28 @@ export async function GET() {
                         },
                         "500": {
                             description: "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/api/tools/create-proposal-ui": {
+                get: {
+                    operationId: "createProposalUI",
+                    summary: "Get UI schema for proposal creation (form-based)",
+                    description: "Returns a JSON schema for a UI form to create a governance proposal. This endpoint is for users who want to create proposals through a structured form interface instead of a prompt.",
+                    responses: {
+                        "200": {
+                            description: "Form schema for proposal creation returned successfully",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            schema: { type: "object" }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
