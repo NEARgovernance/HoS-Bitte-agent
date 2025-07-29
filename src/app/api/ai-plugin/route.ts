@@ -225,7 +225,7 @@ export async function GET() {
                     description: "Returns a JSON schema for a UI form to create a governance proposal. This endpoint is for users who want to create proposals through a structured form interface instead of a prompt.",
                     responses: {
                         "200": {
-                            description: "Form schema for proposal creation returned successfully",
+                            description: "Form schema for creation proposal  ",
                             content: {
                                 "application/json": {
                                     schema: {
