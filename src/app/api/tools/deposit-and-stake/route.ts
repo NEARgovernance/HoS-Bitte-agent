@@ -159,25 +159,10 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const accountId = searchParams.get('accountId');
-    const amount = searchParams.get('amount');
 
     if (!accountId) {
       return NextResponse.json({ 
         error: 'accountId parameter is required' 
-      }, { status: 200 });
-    }
-
-    if (!amount) {
-      return NextResponse.json({ 
-        error: 'amount parameter is required' 
-      }, { status: 200 });
-    }
-
-    // Validate amount is a positive number
-    const amountValue = parseFloat(amount);
-    if (isNaN(amountValue) || amountValue <= 0) {
-      return NextResponse.json({ 
-        error: 'amount must be a positive number' 
       }, { status: 200 });
     }
 
@@ -220,13 +205,13 @@ export async function GET(request: Request) {
     }
     const { liquidOwnersBalance } = ownersBalanceResult;
 
-    // Check if liquid owner's balance is sufficient for the requested amount
-    const requestedAmountYocto = (amountValue * 1e24).toString(); // Convert to yoctoNEAR
-    if (BigInt(liquidOwnersBalance) < BigInt(requestedAmountYocto)) {
+    // Check if liquid owner's balance is sufficient (at least 1 NEAR = 10^24 yoctoNEAR)
+    const minAmount = "1000000000000000000000000"; // 1 NEAR in yoctoNEAR
+    if (BigInt(liquidOwnersBalance) < BigInt(minAmount)) {
       return NextResponse.json({ 
         error: 'Insufficient liquid owner balance to stake',
         liquidOwnersBalance,
-        requestedAmount: requestedAmountYocto
+        minimumRequired: minAmount
       }, { status: 200 });
     }
 
@@ -241,7 +226,7 @@ export async function GET(request: Request) {
             gas: tgasToGas("200"), // 200 Tgas
             deposit: "1", // 1 yoctoNEAR
             args: {
-              amount: requestedAmountYocto
+              amount: liquidOwnersBalance
             }
           }
         }
