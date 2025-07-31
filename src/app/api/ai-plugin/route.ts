@@ -1065,7 +1065,7 @@ export async function GET() {
                 get: {
                     operationId: "depositAndStake",
                     summary: "Deposit and stake NEAR tokens",
-                    description: "Generates a NEAR transaction payload for depositing and staking NEAR tokens from the lockup contract",
+                    description: "Generates a NEAR transaction payload for depositing and staking a specified amount of NEAR tokens from the lockup contract",
                     parameters: [
                         {
                             name: "accountId",
@@ -1075,6 +1075,15 @@ export async function GET() {
                                 type: "string"
                             },
                             description: "The user's account ID"
+                        },
+                        {
+                            name: "amount",
+                            in: "query",
+                            required: true,
+                            schema: {
+                                type: "string"
+                            },
+                            description: "Amount of NEAR tokens to deposit and stake (in yoctoNEAR)"
                         }
                     ],
                     responses: {
@@ -1121,7 +1130,7 @@ export async function GET() {
                             }
                         },
                         "400": {
-                            description: "Bad request - invalid parameters, no lockup found, no staking pool, or insufficient liquid owner balance"
+                            description: "Bad request - invalid parameters, no lockup found, no staking pool, insufficient liquid owner balance, or amount not provided"
                         },
                         "500": {
                             description: "Internal server error"
